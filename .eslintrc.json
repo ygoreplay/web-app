@@ -1,6 +1,6 @@
 {
     "parser": "@typescript-eslint/parser",
-    "extends": ["next/core-web-vitals", "airbnb", "plugin:css-modules/recommended", "plugin:prettier/recommended", "plugin:compat/recommended", "prettier"],
+    "extends": ["airbnb", "plugin:css-modules/recommended", "plugin:prettier/recommended", "plugin:compat/recommended", "prettier"],
     "plugins": ["@typescript-eslint/eslint-plugin", "css-modules", "prettier", "unicorn", "import"],
     "parserOptions": {
         "sourceType": "module"
