@@ -1,0 +1,65 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Match {
+  createdAt: DateTime!
+  finishedAt: DateTime!
+  id: Int!
+  isRandomMatch: Boolean!
+  matchRule: MatchRule!
+  players: [Player!]!
+  rounds: [Round!]!
+  startedAt: DateTime!
+  type: MatchType!
+  updatedAt: DateTime!
+}
+
+type MatchRule {
+  banListDate: String!
+  drawCount: Int!
+  duelRule: Int!
+  id: Int!
+  isTCG: Boolean!
+  mode: Int!
+  preventCheckDeck: Boolean!
+  preventShuffleDeck: Boolean!
+  rule: Int!
+  startHand: Int!
+  startLifePoint: Int!
+  timeLimit: Int!
+}
+
+enum MatchType {
+  Athletic
+  Entertain
+  Normal
+}
+
+type Player {
+  createdAt: DateTime!
+  id: Int!
+  ip: String!
+  lang: String!
+  name: String!
+  pos: Int!
+  updatedAt: DateTime!
+}
+
+type Query {
+  matches(after: Int, count: Int!): [Match!]!
+}
+
+type Round {
+  createdAt: DateTime!
+  finishedAt: DateTime!
+  id: Int!
+  no: Int!
+  startedAt: DateTime!
+  updatedAt: DateTime!
+}

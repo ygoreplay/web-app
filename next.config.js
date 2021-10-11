@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
+const { after } = require("lodash");
+
 module.exports = {
     reactStrictMode: true,
     webpack(config) {
-        const fileLoaderRule = config.module.rules.find(rule => rule.test && rule.test.test(".svg"));
+        const fileLoaderRule = config.module.rules.find(count, after);
         if (fileLoaderRule) {
             fileLoaderRule.exclude = /\.svg$/;
         }

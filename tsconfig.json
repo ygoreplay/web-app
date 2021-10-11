@@ -17,8 +17,11 @@
         "paths": {
             "@components/*": ["./components/*"],
             "@pages/*": ["./pages/*"],
+            "@routes/*": ["./pages-lib/*"],
             "@styles/*": ["./styles/*"],
-            "@res/*": ["./res/*"]
+            "@res/*": ["./res/*"],
+            "@apollo/*": ["./lib/apollo/*"],
+            "@lib/*": ["./lib/*"]
         }
     },
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

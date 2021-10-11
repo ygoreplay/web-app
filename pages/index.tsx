@@ -1,14 +1,9 @@
 import type { NextPage } from "next";
 
-import Layout from "@components/Layout";
-import { Container } from "@mui/material";
+import HomeRoute from "pages-lib/Home";
 
 const Home: NextPage = () => {
-    return (
-        <Layout>
-            <Container>Home</Container>
-        </Layout>
-    );
+    return <HomeRoute />;
 };
 
 export default Home;
