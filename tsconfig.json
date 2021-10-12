@@ -21,6 +21,7 @@
             "@styles/*": ["./styles/*"],
             "@res/*": ["./res/*"],
             "@apollo/*": ["./lib/apollo/*"],
+            "@query": ["./queries"],
             "@lib/*": ["./lib/*"]
         }
     },

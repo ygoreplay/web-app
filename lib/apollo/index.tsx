@@ -1,12 +1,18 @@
-import { ApolloClient, ApolloLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
-import { onError } from "@apollo/client/link/error";
+import { useMemo } from "react";
 import merge from "deepmerge";
 import { IncomingHttpHeaders } from "http";
 import fetch from "isomorphic-unfetch";
 import isEqual from "lodash/isEqual";
 import type { AppProps } from "next/app";
-import { useMemo } from "react";
+
 import { createUploadLink } from "apollo-upload-client";
+
+import { RetryLink } from "@apollo/client/link/retry";
+import { getMainDefinition } from "@apollo/client/utilities";
+import { ApolloClient, ApolloLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { SubscriptionClient } from "subscriptions-transport-ws";
 
 const APOLLO_STATE_PROP_NAME = "__APOLLO_STATE__";
 
@@ -24,6 +30,44 @@ const createApolloClient = (headers: IncomingHttpHeaders | null = null) => {
         }).then(response => response);
     };
 
+    const createHttpLink = () => {
+        return createUploadLink({
+            uri: process.env.API_ENTRYPOINT || process.env.NEXT_PUBLIC_GRAPHQL_URI,
+            fetchOptions: {
+                mode: "cors",
+            },
+            credentials: "include",
+            fetch: enhancedFetch,
+        });
+    };
+
+    const createWSLink = () => {
+        const httpLink = createHttpLink();
+        if (!process.env.NEXT_PUBLIC_WS_GRAPHQL_URI) {
+            return createHttpLink();
+        }
+
+        return new RetryLink().split(
+            sys => {
+                const mainDefinition = getMainDefinition(sys.query);
+                if ("operation" in mainDefinition) {
+                    return mainDefinition.operation === "subscription";
+                }
+
+                return false;
+            },
+            new WebSocketLink(
+                new SubscriptionClient(process.env.NEXT_PUBLIC_WS_GRAPHQL_URI, {
+                    lazy: true,
+                    reconnect: true,
+                }),
+            ),
+            httpLink,
+        );
+    };
+
+    const fetchLink = typeof window === "undefined" ? createHttpLink() : createWSLink();
+
     return new ApolloClient({
         ssrMode: typeof window === "undefined",
         link: ApolloLink.from([
@@ -35,14 +79,7 @@ const createApolloClient = (headers: IncomingHttpHeaders | null = null) => {
                 if (networkError) console.error(`[Network error]: ${networkError}. Backend is unreachable. Is it running?`);
             }),
             // this uses apollo-link-http under the hood, so all the options here come from that package
-            createUploadLink({
-                uri: process.env.API_ENTRYPOINT || process.env.NEXT_PUBLIC_GRAPHQL_URI,
-                fetchOptions: {
-                    mode: "cors",
-                },
-                credentials: "include",
-                fetch: enhancedFetch,
-            }),
+            fetchLink,
         ]),
         cache: new InMemoryCache({}),
     });
