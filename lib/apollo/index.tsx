@@ -95,7 +95,7 @@ interface IInitializeApollo {
 export const initializeApollo = ({ headers, initialState }: IInitializeApollo = { headers: null, initialState: null }) => {
     const localApolloClient = apolloClient ?? createApolloClient(headers);
 
-    // If your page has Next.js data fetching methods that use Apollo Client, the initial state
+    // If your page has Next.js data fetching methods that use Apollo Client, the initial stat
     // get hydrated here
     if (initialState) {
         // Get existing cache, loaded during client side data fetching
