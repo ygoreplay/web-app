@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Container, Toolbar } from "@mui/material";
+import { Toolbar } from "@mui/material";
 
 import { AppBar, Logo } from "@components/Header.styles";
 
