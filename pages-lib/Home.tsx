@@ -1,4 +1,5 @@
 import React from "react";
+import * as _ from "lodash";
 
 import { Container, Grid } from "@mui/material";
 
@@ -7,32 +8,33 @@ import Paper from "@components/Paper";
 import RecentMatches from "@components/RecentMatches";
 
 import { OnSubscriptionDataOptions } from "@apollo/client";
-
-import { MatchCountProps, MatchCountUpdatedComponent, MatchCountUpdatedSubscription, withMatchCount } from "@query";
+import {
+    MatchCountUpdatedComponent,
+    MatchCountUpdatedSubscription,
+    MatchesProps,
+    NewMatchCreatedComponent,
+    NewMatchCreatedSubscription,
+    withMatches,
+} from "@query";
 
 import { Root } from "@routes/Home.styles";
 
-interface HomeRouteProps extends MatchCountProps {}
+import { Match } from "@utils/type";
+
+interface HomeRouteProps extends MatchesProps {}
 interface HomeRouteStates {
     matchCount: number | null;
+    matches: Match[] | null;
 }
 
 class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
     public state: HomeRouteStates = {
         matchCount: null,
+        matches: null,
     };
 
-    public componentDidUpdate(prevProps: Readonly<HomeRouteProps>) {
-        if (this.props.data.loading !== prevProps.data.loading && !this.props.data.loading && typeof this.props.data.matchCount === "number") {
-            // eslint-disable-next-line react/no-did-update-set-state
-            this.setState({
-                matchCount: this.props.data.matchCount,
-            });
-        }
-    }
-
     private handleMatchCountUpdated = ({ subscriptionData }: OnSubscriptionDataOptions<MatchCountUpdatedSubscription>) => {
-        if (!subscriptionData.data || this.state.matchCount === null) {
+        if (!subscriptionData || !subscriptionData.data?.matchCountUpdated) {
             return;
         }
 
@@ -40,19 +42,42 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
             matchCount: subscriptionData.data.matchCountUpdated,
         });
     };
+    private handleNewMatchCreated = ({ subscriptionData: { data } }: OnSubscriptionDataOptions<NewMatchCreatedSubscription>) => {
+        const {
+            data: { matches },
+        } = this.props;
+
+        if (!data || !matches) {
+            return;
+        }
+
+        this.setState((prevState: HomeRouteStates) => ({
+            matches: _.uniqBy([data.newMatchCreated, ...(prevState.matches || []), ...matches], m => m.id).slice(0, 10),
+        }));
+    };
 
     public render() {
-        const { matchCount } = this.state;
+        const { data } = this.props;
+        const { matchCount, matches } = this.state;
 
         return (
             <Layout>
+                {!data.loading && (
+                    <>
+                        <MatchCountUpdatedComponent onSubscriptionData={this.handleMatchCountUpdated} />
+                        <NewMatchCreatedComponent onSubscriptionData={this.handleNewMatchCreated} />
+                    </>
+                )}
                 <Container>
                     <Root>
                         <Grid container spacing={2}>
                             <Grid item xs={8}>
-                                <Paper loading={matchCount === null} title="Recent matches" subtitle={`${matchCount} Matches`}>
-                                    <MatchCountUpdatedComponent onSubscriptionData={this.handleMatchCountUpdated} />
-                                    <RecentMatches />
+                                <Paper
+                                    loading={data.loading}
+                                    title="Recent matches"
+                                    subtitle={data.matchCount ? `${matchCount || data.matchCount} Matches` : ""}
+                                >
+                                    <RecentMatches matches={matches || data.matches || null} />
                                 </Paper>
                             </Grid>
                         </Grid>
@@ -63,4 +88,10 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
     }
 }
 
-export default withMatchCount()(HomeRoute);
+export default withMatches({
+    options: {
+        variables: {
+            count: 10,
+        },
+    },
+})(HomeRoute);

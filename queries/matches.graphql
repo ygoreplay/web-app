@@ -1,4 +1,5 @@
 query matches($count: Int = 15, $after: Int) {
+    matchCount
     matches(count: $count, after: $after) {
         id
         startedAt
