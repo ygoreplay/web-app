@@ -36,3 +36,4 @@ graphql.schema.json
 
 queries/index.tsx
 queries/index.d.ts
+/.idea
