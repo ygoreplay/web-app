@@ -8,6 +8,7 @@ subscription newMatchCreated {
             playerDecks {
                 player {
                     name
+                    lang
                 }
                 deck {
                     id

@@ -66,6 +66,7 @@ type PlayerDeck {
 }
 
 type Query {
+  matchCount: Int!
   matches(after: Int, count: Int!): [Match!]!
 }
 
@@ -80,5 +81,6 @@ type Round {
 }
 
 type Subscription {
+  matchCountUpdated: Int!
   newMatchCreated: Match!
 }

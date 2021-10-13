@@ -5,10 +5,20 @@ export const Root = styled.div`
     padding: 0;
 `;
 
-export const Item = styled.div`
+export const Item = styled.a`
     padding: ${({ theme }) => theme.spacing(1.5)};
 
     display: flex;
+
+    user-select: none;
+
+    &:not(:last-of-type) {
+        border-bottom: 1px solid rgb(229, 232, 236);
+    }
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
 `;
 
 export const Entry = styled.div`

@@ -8,6 +8,7 @@ query matches($count: Int = 15, $after: Int) {
             playerDecks {
                 player {
                     name
+                    lang
                 }
                 deck {
                     id

@@ -9,6 +9,9 @@ export const Root = styled(Card)`
 
 export const TitleWrapper = styled.div`
     padding: ${({ theme }) => theme.spacing(2)};
+
+    display: flex;
+    align-items: baseline;
 `;
 
 export const Content = styled.div`
