@@ -71,7 +71,7 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
                 <Container>
                     <Root>
                         <Grid container spacing={2}>
-                            <Grid item xs={8}>
+                            <Grid item lg={8} xs={12}>
                                 <Paper
                                     loading={data.loading}
                                     title="Recent matches"
