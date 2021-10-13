@@ -10,6 +10,9 @@ generates:
             - "typescript"
             - "typescript-operations"
             - "typescript-react-apollo"
+        config:
+            withHOC: true
+            withComponent: true
     ./graphql.schema.json:
         plugins:
             - "introspection"

@@ -7,6 +7,15 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Deck {
+  createdAt: DateTime!
+  id: Int!
+  main: [Int!]!
+  recognizedName: String!
+  side: [Int!]!
+  updatedAt: DateTime!
+}
+
 type Match {
   createdAt: DateTime!
   finishedAt: DateTime!
@@ -51,6 +60,11 @@ type Player {
   updatedAt: DateTime!
 }
 
+type PlayerDeck {
+  deck: Deck!
+  player: Player!
+}
+
 type Query {
   matches(after: Int, count: Int!): [Match!]!
 }
@@ -60,6 +74,11 @@ type Round {
   finishedAt: DateTime!
   id: Int!
   no: Int!
+  playerDecks: [PlayerDeck!]!
   startedAt: DateTime!
   updatedAt: DateTime!
+}
+
+type Subscription {
+  newMatchCreated: Match!
 }
