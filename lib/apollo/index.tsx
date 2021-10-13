@@ -18,6 +18,9 @@ const APOLLO_STATE_PROP_NAME = "__APOLLO_STATE__";
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
+console.info("API_ENTRYPOINT", process.env.API_ENTRYPOINT || process.env.NEXT_PUBLIC_GRAPHQL_URI);
+console.info("API_WS_ENTRYPOINT", process.env.API_WS_ENTRYPOINT || process.env.NEXT_PUBLIC_WS_GRAPHQL_URI);
+
 const createApolloClient = (headers: IncomingHttpHeaders | null = null) => {
     const enhancedFetch = (url: RequestInfo, init: RequestInit) => {
         return fetch(url, {
@@ -57,7 +60,7 @@ const createApolloClient = (headers: IncomingHttpHeaders | null = null) => {
                 return false;
             },
             new WebSocketLink(
-                new SubscriptionClient(process.env.NEXT_PUBLIC_WS_GRAPHQL_URI, {
+                new SubscriptionClient(process.env.API_WS_ENTRYPOINT || process.env.NEXT_PUBLIC_WS_GRAPHQL_URI, {
                     lazy: true,
                     reconnect: true,
                 }),
