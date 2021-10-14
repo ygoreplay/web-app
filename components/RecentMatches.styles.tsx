@@ -21,9 +21,11 @@ export const Item = styled.a`
     }
 `;
 
-export const Entry = styled.div`
+export const Entry = styled.div<{ won: boolean }>`
     display: flex;
     flex: 1 1 0;
+
+    color: ${({ theme, won }) => (won ? theme.palette.primary.main : "inherit")};
 
     &:first-of-type {
         justify-content: flex-end;
@@ -33,6 +35,12 @@ export const Entry = styled.div`
         flex-direction: row-reverse;
         justify-content: flex-end;
     }
+`;
+
+export const Type = styled.span`
+    flex: 0 0 auto;
+
+    color: rgba(0, 0, 0, 0.35);
 `;
 
 export const Symbol = styled.div`

@@ -1,12 +1,17 @@
 subscription newMatchCreated {
     newMatchCreated {
         id
+        type
         startedAt
         finishedAt
+        winner {
+            id
+        }
         rounds {
             id
             playerDecks {
                 player {
+                    id
                     name
                     lang
                 }

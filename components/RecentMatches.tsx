@@ -3,9 +3,10 @@ import Link from "next/link";
 
 import { Skeleton } from "@mui/material";
 
-import { DeckName, Entry, Item, PlayerName, Root, Symbol } from "@components/RecentMatches.styles";
+import { DeckName, Entry, Item, PlayerName, Root, Symbol, Type } from "@components/RecentMatches.styles";
 
 import { Match } from "@utils/type";
+import { MatchType } from "queries/index";
 
 interface RecentMatchesProps {
     matches: Match[] | null;
@@ -18,7 +19,10 @@ export default class RecentMatches extends React.Component<RecentMatchesProps, R
         for (let i = 0; i < 10; i++) {
             result.push(
                 <Item key={i}>
-                    <Entry>
+                    <Type>
+                        <Skeleton animation="wave" width={40} />
+                    </Type>
+                    <Entry won={false}>
                         <PlayerName>
                             <Skeleton animation="wave" width={50} />
                         </PlayerName>
@@ -27,7 +31,7 @@ export default class RecentMatches extends React.Component<RecentMatchesProps, R
                         </DeckName>
                     </Entry>
                     <Symbol>vs</Symbol>
-                    <Entry>
+                    <Entry won={false}>
                         <PlayerName>
                             <Skeleton animation="wave" width={100} />
                         </PlayerName>
@@ -48,12 +52,13 @@ export default class RecentMatches extends React.Component<RecentMatchesProps, R
         return (
             <Link key={match.id} href="/matches/[id]" as={`/matches/${match.id}`} passHref>
                 <Item>
-                    <Entry>
+                    <Type>{match.type === MatchType.Athletic ? "티어" : "일반"}</Type>
+                    <Entry won={playerNames[0].player.id === match.winner?.id}>
                         <PlayerName>{playerNames[0].player.name}</PlayerName>
                         <DeckName>{playerNames[0].deck.recognizedName}</DeckName>
                     </Entry>
                     <Symbol>vs</Symbol>
-                    <Entry>
+                    <Entry won={playerNames[1].player.id === match.winner?.id}>
                         <PlayerName>{playerNames[1].player.name}</PlayerName>
                         <DeckName>{playerNames[1].deck.recognizedName}</DeckName>
                     </Entry>

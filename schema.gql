@@ -27,6 +27,7 @@ type Match {
   startedAt: DateTime!
   type: MatchType!
   updatedAt: DateTime!
+  winner: Player
 }
 
 type MatchRule {
