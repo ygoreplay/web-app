@@ -18,8 +18,6 @@ query matches($count: Int = 15, $after: Int) {
                 }
                 deck {
                     id
-                    main
-                    side
                     recognizedName
                 }
             }

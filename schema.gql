@@ -2,6 +2,27 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Card {
+  _setcode: Int!
+  alias: Int!
+  atk: Int!
+  attribute: Int!
+  category: Int!
+  def: Int!
+  id: Int!
+  level: Int!
+  ot: Int!
+  race: Int!
+  text: Text!
+  type: CardType!
+}
+
+enum CardType {
+  Monster
+  Spell
+  Trap
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -9,10 +30,14 @@ scalar DateTime
 
 type Deck {
   createdAt: DateTime!
+  extra: [Card!]!
+  extraIds: [Int!]!
   id: Int!
-  main: [Int!]!
+  main: [Card!]!
+  mainIds: [Int!]!
   recognizedName: String!
-  side: [Int!]!
+  side: [Card!]!
+  sideIds: [Int!]!
   updatedAt: DateTime!
 }
 
@@ -67,6 +92,8 @@ type PlayerDeck {
 }
 
 type Query {
+  card(id: Int!): Card
+  match(id: Int!): Match
   matchCount: Int!
   matches(after: Int, count: Int!): [Match!]!
 }
@@ -84,4 +111,26 @@ type Round {
 type Subscription {
   matchCountUpdated: Int!
   newMatchCreated: Match!
+}
+
+type Text {
+  desc: String!
+  id: Int!
+  name: String!
+  str1: String!
+  str2: String!
+  str3: String!
+  str4: String!
+  str5: String!
+  str6: String!
+  str7: String!
+  str8: String!
+  str9: String!
+  str10: String!
+  str11: String!
+  str12: String!
+  str13: String!
+  str14: String!
+  str15: String!
+  str16: String!
 }

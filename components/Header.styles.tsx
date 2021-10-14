@@ -8,7 +8,7 @@ export const AppBar = styled(MuiAppBar)`
     color: ${({ theme }) => theme.palette.text.primary};
 
     background: rgba(255, 255, 255, 0.72);
-    box-shadow: inset 0px -1px 1px #eaeef3;
+    box-shadow: inset 0px -1px 1px #e0e5ee;
     backdrop-filter: saturate(180%) blur(5px);
 `;
 

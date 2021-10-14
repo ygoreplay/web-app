@@ -1,0 +1,71 @@
+query matchDetailed($id: Int!) {
+    match(id: $id) {
+        id
+        type
+        winner {
+            id
+            name
+        }
+        matchRule {
+            banListDate
+            drawCount
+            duelRule
+            id
+            isTCG
+            mode
+            preventCheckDeck
+            preventShuffleDeck
+            rule
+            startHand
+            startLifePoint
+            timeLimit
+        }
+        rounds {
+            id
+            no
+            startedAt
+            finishedAt
+            playerDecks {
+                player {
+                    id
+                }
+                deck {
+                    id
+                    main {
+                        id
+                        type
+                        text {
+                            name
+                        }
+                    }
+                    extra {
+                        id
+                        type
+                        text {
+                            name
+                        }
+                    }
+                    side {
+                        id
+                        type
+                        text {
+                            name
+                        }
+                    }
+                    recognizedName
+                }
+            }
+        }
+        players {
+            id
+            ip
+            lang
+            name
+            pos
+        }
+        startedAt
+        finishedAt
+        createdAt
+        updatedAt
+    }
+}

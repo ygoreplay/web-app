@@ -17,8 +17,6 @@ subscription newMatchCreated {
                 }
                 deck {
                     id
-                    main
-                    side
                     recognizedName
                 }
             }
