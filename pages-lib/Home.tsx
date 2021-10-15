@@ -86,6 +86,7 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
 
 export default withMatches({
     options: {
+        fetchPolicy: "network-only",
         variables: {
             count: 10,
         },
