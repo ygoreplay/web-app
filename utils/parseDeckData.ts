@@ -1,7 +1,19 @@
 import _ from "lodash";
 
 import { DeckBase } from "@utils/type";
-import { CardType } from "@query";
+import { CardType, MonsterCardType } from "@query";
+
+const monsterTypeMap = {
+    [MonsterCardType.Fusion]: 0,
+    [MonsterCardType.Synchro]: 1,
+    [MonsterCardType.Xyz]: 2,
+    [MonsterCardType.Pendulum]: 3,
+    [MonsterCardType.Link]: 4,
+};
+
+function monsterCardTypeSelector(card: DeckBase["main"][0]) {
+    return monsterTypeMap[card.monsterType[0] as keyof typeof monsterTypeMap] || -300;
+}
 
 function idSelector(card: DeckBase["main"][0]) {
     return card.id;
@@ -28,6 +40,7 @@ function generateCardCount(deck: DeckBase["main"], map: _.Dictionary<number>) {
     return _.chain(deck)
         .uniqBy(idSelector)
         .sortBy(cardNameSelector)
+        .sortBy(monsterCardTypeSelector)
         .sortBy(cardTypeSorter)
         .map(c => ({ card: c, count: map[c.id] }))
         .value();

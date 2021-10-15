@@ -1,15 +1,18 @@
 import styled from "@emotion/styled";
 import { Card } from "@query";
+import { getColorByCardType } from "@utils/getColorByCardType";
 
 export const Root = styled.div`
-    width: 250px;
-
     margin: 0;
     padding: 0;
+
+    display: flex;
 `;
 
-export const TitleWrapper = styled.div`
-    margin: 0;
+export const Column = styled.div`
+    width: 250px;
+
+    margin: 0 ${({ theme }) => theme.spacing(1)} 0 0;
     padding: 0;
 `;
 
@@ -31,12 +34,27 @@ export const Item = styled.div`
     }
 `;
 
+export const Separator = styled.div`
+    padding: ${({ theme }) => theme.spacing(1.5)};
+    border: 1px solid black;
+    border-bottom: 0;
+
+    color: white;
+    background: #31311e;
+
+    * {
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    }
+`;
+
 export const Graphics = styled.div`
     position: absolute;
     top: 0;
     left: 10%;
     right: 0;
     bottom: 0;
+
+    font-size: 0.9em;
 
     background-size: cover;
     background-position: center center;
@@ -45,7 +63,7 @@ export const Graphics = styled.div`
         content: "";
 
         background: rgb(49, 49, 30);
-        background: linear-gradient(90deg, rgba(49, 49, 30, 1) 0%, rgba(49, 49, 30, 1) 10%, rgba(0, 0, 0, 0) 65%);
+        background: linear-gradient(90deg, rgba(49, 49, 30, 1) 0%, rgba(49, 49, 30, 1) 10%, rgba(0, 0, 0, 0) 85%);
 
         position: absolute;
         top: 0;
@@ -55,7 +73,7 @@ export const Graphics = styled.div`
     }
 `;
 
-export const CardType = styled.div<{ type: Card["type"] }>`
+export const CardType = styled.div<{ card: Pick<Card, "type" | "monsterType"> }>`
     width: 8px;
     border-right: 1px solid black;
 
@@ -64,18 +82,7 @@ export const CardType = styled.div<{ type: Card["type"] }>`
     left: 0;
     bottom: 0;
 
-    background: ${({ type }) => {
-        switch (type) {
-            case "Monster":
-                return "rgb(152,74,35)";
-
-            case "Spell":
-                return "rgb(3, 141, 125)";
-
-            default:
-                return "rgb(166,23,111)";
-        }
-    }};
+    background: ${({ card }) => getColorByCardType(card)};
 `;
 
 export const Label = styled.span`
