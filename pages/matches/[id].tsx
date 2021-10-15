@@ -1,4 +1,4 @@
-import type { GetServerSideProps, NextPage } from "next";
+import type { NextPage } from "next";
 
 import { initializeApollo } from "@lib/apollo";
 
@@ -20,10 +20,10 @@ const Match: NextPage<MatchRouteProps> = ({ match }) => {
     return <MatchRoute match={match} />;
 };
 
-export const getServerSideProps: GetServerSideProps = async context => {
+Match.getInitialProps = async context => {
     if (typeof context.query.id === "undefined" || Array.isArray(context.query.id) || Number.isNaN(context.query.id)) {
         return {
-            props: {},
+            match: null,
         };
     }
 
@@ -37,15 +37,11 @@ export const getServerSideProps: GetServerSideProps = async context => {
         });
 
         return {
-            props: {
-                match: data.match,
-            },
+            match: data.match || null,
         };
     }
 
-    return {
-        props: {},
-    };
+    return { match: null };
 };
 
 export default Match;
