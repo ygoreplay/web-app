@@ -27,21 +27,17 @@ Match.getInitialProps = async context => {
         };
     }
 
-    if (context.req) {
-        const client = initializeApollo({ headers: context.req.headers });
-        const { data } = await client.query<MatchDetailedQuery, MatchDetailedQueryVariables>({
-            query: MatchDetailedDocument,
-            variables: {
-                id: parseInt(context.query.id, 10),
-            },
-        });
+    const client = initializeApollo({ headers: context.req?.headers });
+    const { data } = await client.query<MatchDetailedQuery, MatchDetailedQueryVariables>({
+        query: MatchDetailedDocument,
+        variables: {
+            id: parseInt(context.query.id, 10),
+        },
+    });
 
-        return {
-            match: data.match || null,
-        };
-    }
-
-    return { match: null };
+    return {
+        match: data.match || null,
+    };
 };
 
 export default Match;
