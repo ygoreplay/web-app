@@ -36,6 +36,7 @@ type Deck {
   id: Int!
   main: [Card!]!
   mainIds: [Int!]!
+  recognizedDeckTags: [String!]!
   recognizedName: String!
   recognizedTags: [String!]!
   side: [Card!]!
