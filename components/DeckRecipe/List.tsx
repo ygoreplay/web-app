@@ -15,6 +15,12 @@ export interface DeckRecipeListStates {
 }
 
 export default class DeckRecipeList extends React.Component<DeckRecipeListProps, DeckRecipeListStates> {
+    public static getDerivedStateFromProps = (nextProps: DeckRecipeListProps): DeckRecipeListStates => {
+        return {
+            parsedDeck: parseDeckData(nextProps.deck),
+        };
+    };
+
     public state: DeckRecipeListStates = {
         parsedDeck: parseDeckData(this.props.deck),
     };

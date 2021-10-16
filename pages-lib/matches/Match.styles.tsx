@@ -17,6 +17,8 @@ export const SideBar = styled.div`
     flex: 0 0 300px;
 `;
 
+export const Wrapper = styled.div``;
+
 export const Content = styled.div`
     padding: ${({ theme }) => theme.spacing(2)};
 
