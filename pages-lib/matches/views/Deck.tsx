@@ -15,16 +15,11 @@ interface MatchDeckViewStates {}
 export default class MatchDeckView extends React.Component<MatchDeckViewProps, MatchDeckViewStates> {
     public render() {
         const { match, currentTab } = this.props;
-        const index = currentTab === "homeDeck" ? 0 : 1;
-        const targetPlayer = match.players[index];
-        const playerDeck = match.rounds[0].playerDecks.find(pd => pd.player.id === targetPlayer.id);
-        if (!playerDeck) {
-            return null;
-        }
+        const targetPlayerDeck = currentTab === "homeDeck" ? match.home : match.away;
 
         return (
             <Root>
-                <DeckRecipe type="list" deck={playerDeck.deck} />
+                <DeckRecipe type="list" deck={targetPlayerDeck.deck} />
             </Root>
         );
     }

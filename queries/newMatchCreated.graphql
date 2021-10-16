@@ -4,22 +4,14 @@ subscription newMatchCreated {
         type
         startedAt
         finishedAt
+        away {
+            ...PlayerDeckInformation
+        }
+        home {
+            ...PlayerDeckInformation
+        }
         winner {
             id
-        }
-        rounds {
-            id
-            playerDecks {
-                player {
-                    id
-                    name
-                    lang
-                }
-                deck {
-                    id
-                    recognizedName
-                }
-            }
         }
     }
 }

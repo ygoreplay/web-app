@@ -45,12 +45,15 @@ type Deck {
 }
 
 type Match {
+  away: PlayerDeck!
   createdAt: DateTime!
   finishedAt: DateTime!
+  home: PlayerDeck!
   id: Int!
   isRandomMatch: Boolean!
   matchRule: MatchRule!
   players: [Player!]!
+  roundCount: Int!
   rounds: [Round!]!
   startedAt: DateTime!
   type: MatchType!

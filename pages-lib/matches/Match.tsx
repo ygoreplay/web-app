@@ -30,12 +30,7 @@ export default class MatchRoute extends React.Component<MatchRouteProps, MatchRo
         });
     };
 
-    private renderPlayerInformation = (player: MatchDetail["players"][0], groupName: string) => {
-        const playerDeck = this.props.match.rounds[0].playerDecks.find(pd => pd.player.id === player.id);
-        if (!playerDeck) {
-            return null;
-        }
-
+    private renderPlayerInformation = (playerDeck: MatchDetail["home"], groupName: string) => {
         return (
             <FieldGroup>
                 <Field>
@@ -44,7 +39,7 @@ export default class MatchRoute extends React.Component<MatchRouteProps, MatchRo
                 <Field>
                     <FieldTitle>이름</FieldTitle>
                     <FieldValue>
-                        <time>{player.name}</time>
+                        <time>{playerDeck.player.name}</time>
                     </FieldValue>
                 </Field>
                 <Field>
@@ -66,8 +61,8 @@ export default class MatchRoute extends React.Component<MatchRouteProps, MatchRo
                         {match.type === MatchType.Athletic ? "티어" : "일반"} 매치 #{match.id}
                     </Typography>
                 </Title>
-                {this.renderPlayerInformation(match.players[0], "홈 플레이어")}
-                {this.renderPlayerInformation(match.players[1], "어웨이 플레이어")}
+                {this.renderPlayerInformation(match.home, "홈 플레이어")}
+                {this.renderPlayerInformation(match.away, "어웨이 플레이어")}
                 <FieldGroup>
                     {match.winner && (
                         <Field>
@@ -88,7 +83,7 @@ export default class MatchRoute extends React.Component<MatchRouteProps, MatchRo
                     <Field>
                         <FieldTitle>라운드 수</FieldTitle>
                         <FieldValue>
-                            <time>{match.rounds.length}</time>
+                            <time>{match.roundCount}</time>
                         </FieldValue>
                     </Field>
                     <Field>
@@ -111,9 +106,6 @@ export default class MatchRoute extends React.Component<MatchRouteProps, MatchRo
         const { match } = this.props;
         const { currentTab } = this.state;
 
-        const homeDeckName = match.rounds[0].playerDecks.find(pd => pd.player.id === match.players[0].id)!.deck.recognizedName;
-        const awayDeckName = match.rounds[0].playerDecks.find(pd => pd.player.id === match.players[1].id)!.deck.recognizedName;
-
         return (
             <Layout withoutPadding fullHeight>
                 <Root>
@@ -122,8 +114,8 @@ export default class MatchRoute extends React.Component<MatchRouteProps, MatchRo
                         <Box style={{ borderBottom: "1px solid #e0e5ee" }}>
                             <Tabs onChange={this.handleTabChange} value={currentTab}>
                                 <Tab label="개요" />
-                                <Tab value="homeDeck" label={`홈 플레이어 덱 (${homeDeckName})`} />
-                                <Tab value="awayDeck" label={`어웨이 플레이어 덱 (${awayDeckName})`} />
+                                <Tab value="homeDeck" label={`홈 플레이어 덱 (${match.home.deck.recognizedName})`} />
+                                <Tab value="awayDeck" label={`어웨이 플레이어 덱 (${match.away.deck.recognizedName})`} />
                             </Tabs>
                         </Box>
                         <Content>{(currentTab === "homeDeck" || currentTab === "awayDeck") && <MatchDeckView match={match} currentTab={currentTab} />}</Content>

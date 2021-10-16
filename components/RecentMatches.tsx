@@ -46,21 +46,18 @@ export default class RecentMatches extends React.Component<RecentMatchesProps, R
         return result;
     };
     private renderMatch = (match: Match) => {
-        const firstRound = match.rounds[0];
-        const playerNames = firstRound.playerDecks;
-
         return (
             <Link key={match.id} href="/matches/[id]" as={`/matches/${match.id}`} passHref>
                 <Item>
                     <Type>{match.type === MatchType.Athletic ? "티어" : "일반"}</Type>
-                    <Entry won={playerNames[0].player.id === match.winner?.id}>
-                        <PlayerName>{playerNames[0].player.name}</PlayerName>
-                        <DeckName>{playerNames[0].deck.recognizedName}</DeckName>
+                    <Entry won={match.home.player.id === match.winner?.id}>
+                        <PlayerName>{match.home.player.name}</PlayerName>
+                        <DeckName>{match.home.deck.recognizedName}</DeckName>
                     </Entry>
                     <Symbol>vs</Symbol>
-                    <Entry won={playerNames[1].player.id === match.winner?.id}>
-                        <PlayerName>{playerNames[1].player.name}</PlayerName>
-                        <DeckName>{playerNames[1].deck.recognizedName}</DeckName>
+                    <Entry won={match.away.player.id === match.winner?.id}>
+                        <PlayerName>{match.away.player.name}</PlayerName>
+                        <DeckName>{match.away.deck.recognizedName}</DeckName>
                     </Entry>
                 </Item>
             </Link>
