@@ -3,6 +3,8 @@ import moment from "moment";
 
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 
+import MatchDeckView from "@routes/matches/views/Deck";
+
 import Layout from "@components/Layout";
 
 import { MatchType } from "queries/index";
@@ -10,7 +12,6 @@ import { MatchType } from "queries/index";
 import { Content, Field, FieldGroup, FieldTitle, FieldValue, Root, SideBar, Title, Wrapper } from "@routes/matches/Match.styles";
 
 import { MatchDetail } from "@utils/type";
-import MatchDeckView from "@routes/matches/views/Deck";
 
 export interface MatchRouteProps {
     match: MatchDetail;
