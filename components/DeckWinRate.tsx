@@ -16,7 +16,7 @@ export default class DeckWinRate extends React.Component<DeckWinRateProps, DeckW
         return (
             <Item key={winRate.deckName}>
                 <DeckName>{winRate.deckName}</DeckName>
-                <WinRateSpan winRateValue={value}>{value}%</WinRateSpan>
+                <WinRateSpan winRateValue={value}>{value.toFixed(1)}%</WinRateSpan>
             </Item>
         );
     };
