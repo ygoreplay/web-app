@@ -49,6 +49,14 @@ export default class MatchRoute extends React.Component<MatchRouteProps, MatchRo
                         <time>{playerDeck.deck.recognizedName}</time>
                     </FieldValue>
                 </Field>
+                {playerDeck.deck.recognizedDeckTags.length > 1 && (
+                    <Field>
+                        <FieldTitle>덱 태그</FieldTitle>
+                        <FieldValue>
+                            <time>{playerDeck.deck.recognizedDeckTags.join(", ")}</time>
+                        </FieldValue>
+                    </Field>
+                )}
             </FieldGroup>
         );
     };
