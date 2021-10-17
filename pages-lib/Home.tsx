@@ -83,7 +83,7 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
                             </Grid>
                             <Grid item lg={4} xs={12}>
                                 <Paper loading={data.loading} title="덱 승률">
-                                    <DeckWinRate winRates={data.winRate || []} />
+                                    <DeckWinRate winRates={data.winRate} />
                                 </Paper>
                             </Grid>
                         </Grid>

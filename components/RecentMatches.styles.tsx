@@ -6,9 +6,8 @@ export const Root = styled.div`
 `;
 
 export const Item = styled.a`
-    padding: ${({ theme }) => theme.spacing(1.5)};
-
     display: flex;
+    align-items: stretch;
 
     user-select: none;
 
@@ -22,6 +21,8 @@ export const Item = styled.a`
 `;
 
 export const Entry = styled.div<{ won: boolean }>`
+    padding: ${({ theme }) => theme.spacing(1.5)};
+
     display: flex;
     flex: 1 1 0;
 
@@ -38,13 +39,16 @@ export const Entry = styled.div<{ won: boolean }>`
 `;
 
 export const Type = styled.span`
+    padding: ${({ theme }) => theme.spacing(1.5)};
+
     flex: 0 0 auto;
 
     color: rgba(0, 0, 0, 0.35);
 `;
 
 export const Symbol = styled.div`
-    margin: 0 ${({ theme }) => theme.spacing(1.5)};
+    padding: ${({ theme }) => theme.spacing(1.5)} 0;
+
     flex: 0 0 auto;
 `;
 

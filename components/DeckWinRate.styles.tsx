@@ -24,7 +24,7 @@ export const DeckName = styled.span`
     flex: 1 1 auto;
 `;
 
-export const WinRate = styled.span<{ winRateValue: number }>`
+export const WinRate = styled.span`
     display: block;
     flex: 0 0 auto;
 
