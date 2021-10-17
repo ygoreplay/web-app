@@ -17,8 +17,6 @@ export default class DeckWinRate extends React.Component<DeckWinRateProps, DeckW
     private renderWinRate = (winRate: WinRate, index: number) => {
         const value = Math.floor(winRate.rate * 1000) / 10;
 
-        console.info(colors[index].toHex());
-
         return (
             <Item key={winRate.deckName}>
                 <DeckName>{winRate.deckName}</DeckName>
