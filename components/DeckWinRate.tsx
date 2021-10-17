@@ -1,4 +1,5 @@
 import React from "react";
+import tinygradient from "tinygradient";
 
 import { WinRate } from "queries/index";
 
@@ -9,14 +10,21 @@ interface DeckWinRateProps {
 }
 interface DeckWinRateStates {}
 
+const gradient = tinygradient(["#1ec600", "#ecde13", "#ff3d00"]);
+const colors = gradient.rgb(10);
+
 export default class DeckWinRate extends React.Component<DeckWinRateProps, DeckWinRateStates> {
-    private renderWinRate = (winRate: WinRate) => {
+    private renderWinRate = (winRate: WinRate, index: number) => {
         const value = Math.floor(winRate.rate * 1000) / 10;
+
+        console.info(colors[index].toHex());
 
         return (
             <Item key={winRate.deckName}>
                 <DeckName>{winRate.deckName}</DeckName>
-                <WinRateSpan winRateValue={value}>{value.toFixed(1)}%</WinRateSpan>
+                <WinRateSpan winRateValue={value} style={{ color: `#${colors[index].toHex()}` }}>
+                    {value.toFixed(1)}%
+                </WinRateSpan>
             </Item>
         );
     };

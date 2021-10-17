@@ -28,15 +28,5 @@ export const WinRate = styled.span<{ winRateValue: number }>`
     display: block;
     flex: 0 0 auto;
 
-    color: ${({ winRateValue }) => {
-        if (winRateValue > 50) {
-            return "rgb(41, 128, 10)";
-        }
-
-        if (winRateValue <= 50 && winRateValue >= 48) {
-            return "rgb(253, 121, 0)";
-        }
-
-        return "rgb(255, 90, 39)";
-    }};
+    font-weight: bold;
 `;
