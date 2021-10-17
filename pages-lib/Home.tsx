@@ -6,6 +6,7 @@ import { Container, Grid } from "@mui/material";
 import Layout from "@components/Layout";
 import Paper from "@components/Paper";
 import RecentMatches from "@components/RecentMatches";
+import DeckWinRate from "@components/DeckWinRate";
 
 import { OnSubscriptionDataOptions } from "@apollo/client";
 import {
@@ -72,8 +73,17 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
                     <Root>
                         <Grid container spacing={2}>
                             <Grid item lg={8} xs={12}>
-                                <Paper loading={data.loading} title="최근 경기" subtitle={data.matchCount ? `총 ${matchCount || data.matchCount}회` : ""}>
+                                <Paper
+                                    loading={data.loading}
+                                    title="최근 경기"
+                                    subtitle={data.matchCount ? `총 ${(matchCount || data.matchCount).toLocaleString()}회` : ""}
+                                >
                                     <RecentMatches matches={matches || data.matches || null} />
+                                </Paper>
+                            </Grid>
+                            <Grid item lg={4} xs={12}>
+                                <Paper loading={data.loading} title="덱 승률">
+                                    <DeckWinRate winRates={data.winRate || []} />
                                 </Paper>
                             </Grid>
                         </Grid>

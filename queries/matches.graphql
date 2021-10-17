@@ -1,5 +1,9 @@
 query matches($count: Int = 15, $after: Int) {
     matchCount
+    winRate(count: 10) {
+        deckName
+        rate
+    }
     matches(count: $count, after: $after) {
         id
         type

@@ -113,6 +113,7 @@ type Query {
   match(id: Int!): Match
   matchCount: Int!
   matches(after: Int, count: Int!): [Match!]!
+  winRate(count: Int = 10): [WinRate!]!
 }
 
 type Round {
@@ -150,4 +151,9 @@ type Text {
   str14: String!
   str15: String!
   str16: String!
+}
+
+type WinRate {
+  deckName: String!
+  rate: Float!
 }
