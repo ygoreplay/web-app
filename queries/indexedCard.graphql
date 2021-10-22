@@ -1,0 +1,8 @@
+query indexedCard($index: Int!) {
+    indexedCard(index: $index) {
+        id
+        text {
+            name
+        }
+    }
+}

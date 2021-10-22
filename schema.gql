@@ -110,6 +110,8 @@ type PlayerDeck {
 
 type Query {
   card(id: Int!): Card
+  cardCount: Int!
+  indexedCard(index: Int!): Card
   match(id: Int!): Match
   matchCount: Int!
   matches(after: Int, count: Int!): [Match!]!

@@ -23,7 +23,7 @@
             "@apollo/*": ["./lib/apollo/*"],
             "@query": ["./queries"],
             "@lib/*": ["./lib/*"],
-            "@utils/*": ["./utils/*"]
+            "@utils/*": ["./utils/*"],
         }
     },
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
