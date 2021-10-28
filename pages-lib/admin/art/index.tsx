@@ -48,8 +48,8 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         selection: {
             x: 0,
             y: 0,
-            width: 304,
-            height: 304,
+            width: 50,
+            height: 50,
         },
         currentCard: null,
         imageUrl: null,
@@ -155,8 +155,8 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
                 selection: {
                     x: 0,
                     y: 0,
-                    width: 304,
-                    height: 304,
+                    width: 50,
+                    height: 50,
                 },
                 currentCard: null,
                 flip: false,
@@ -192,8 +192,8 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         const selection = currentData[key] || {
             x: 0,
             y: 0,
-            width: 304,
-            height: 304,
+            width: 50,
+            height: 50,
         };
 
         this.setState(
@@ -266,7 +266,16 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
     private renderArtPanel(__: ArtCropperPaneType, path: MosaicBranch[]) {
         const { flip } = this.state;
 
-        return <ArtPanel flip={flip} path={path} card={this.state.currentCard} onChange={this.handleSelectionChange} selection={this.state.selection} />;
+        return (
+            <ArtPanel
+                targetPreviewSize={{ width: 223, height: 36 }}
+                flip={flip}
+                path={path}
+                card={this.state.currentCard}
+                onChange={this.handleSelectionChange}
+                selection={this.state.selection}
+            />
+        );
     }
     private renderCropPreviewPanel(__: ArtCropperPaneType, path: MosaicBranch[]) {
         return (

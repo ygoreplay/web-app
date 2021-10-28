@@ -11,7 +11,7 @@ import ResizeHandle from "@components/ResizeHandle";
 
 import { Canvas, Fill, Image, Root } from "@routes/admin/art/ArtPanel.styles";
 
-import { Rectangle } from "@utils/generateClipArea";
+import { Rectangle, Size } from "@utils/generateClipArea";
 
 import { IndexedCardQuery } from "@query";
 
@@ -20,6 +20,7 @@ export interface ArtPanelProps extends PaneBaseProps {
     card: IndexedCardQuery["indexedCard"] | null;
     selection: Rectangle;
     onChange(selection: Rectangle): void;
+    targetPreviewSize: Size;
 }
 export interface ArtPanelStates {}
 
@@ -50,6 +51,19 @@ export default class ArtPanel extends React.Component<ArtPanelProps, ArtPanelSta
             ...position,
         });
     };
+    private handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        const { targetPreviewSize, onChange } = this.props;
+        const { x, y } = e.currentTarget.getBoundingClientRect();
+
+        // noinspection JSSuspiciousNameCombination
+        onChange({
+            ...this.props.selection,
+            x: Math.max(0, e.clientX - x - targetPreviewSize.height / 2),
+            y: Math.max(0, e.clientY - y - targetPreviewSize.height / 2),
+            width: targetPreviewSize.height,
+            height: targetPreviewSize.height,
+        });
+    };
 
     private renderToolBar = (props: MosaicWindowProps<ArtCropperPaneType>) => {
         return <MosaicWindowToolbar {...props} />;
@@ -67,6 +81,7 @@ export default class ArtPanel extends React.Component<ArtPanelProps, ArtPanelSta
                                 backgroundImage: card ? `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${card.id}.jpg)` : undefined,
                                 transform: flip ? "scaleX(-1)" : undefined,
                             }}
+                            onClick={this.handleImageClick}
                         />
                         {!card && <Skeleton variant="rectangular" height={304} width={304} />}
                         {card && (
