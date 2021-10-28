@@ -57,8 +57,6 @@ export default class ArtPanel extends React.Component<ArtPanelProps, ArtPanelSta
     public render() {
         const { path, card, selection } = this.props;
 
-        console.info(card);
-
         return (
             <MosaicWindow<ArtCropperPaneType> title="작업 영역" path={path} draggable={false} renderToolbar={this.renderToolBar}>
                 <Root>
@@ -70,6 +68,7 @@ export default class ArtPanel extends React.Component<ArtPanelProps, ArtPanelSta
                             <Rnd
                                 bounds="parent"
                                 size={selection}
+                                position={selection}
                                 height={selection}
                                 maxWidth={304}
                                 maxHeight={304}

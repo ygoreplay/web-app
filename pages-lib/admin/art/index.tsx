@@ -43,7 +43,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
     };
 
     public state: AdminArtRouteStates = {
-        currentIndex: 10128,
+        currentIndex: 0,
         selection: {
             x: 0,
             y: 0,
@@ -125,11 +125,18 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             return;
         }
 
-        this.getSavedData();
+        const currentData = this.getSavedData();
+        const selection = currentData[indexedCard.id.toString()] || {
+            x: 0,
+            y: 0,
+            width: 304,
+            height: 304,
+        };
 
         this.setState({
             currentCard: indexedCard,
             imageUrl: null,
+            selection,
         });
     };
     private handlePrevClick = () => {
@@ -144,11 +151,21 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         }));
     };
     private handleSelectionChange = (selection: Rectangle) => {
+        const { currentCard } = this.state;
+        if (!currentCard) {
+            return;
+        }
+
         this.setState({
             selection,
         });
 
         this.generateArea();
+
+        const savedData = this.getSavedData();
+        savedData[currentCard.id.toString()] = selection;
+
+        this.saveData(savedData);
     };
     private handleLayoutChange = (newNode: MosaicNode<ArtCropperPaneType> | null) => {
         this.setState({
