@@ -125,19 +125,27 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             return;
         }
 
+        const key = indexedCard.id.toString();
         const currentData = this.getSavedData();
-        const selection = currentData[indexedCard.id.toString()] || {
+        const selection = currentData[key] || {
             x: 0,
             y: 0,
             width: 304,
             height: 304,
         };
 
-        this.setState({
-            currentCard: indexedCard,
-            imageUrl: null,
-            selection,
-        });
+        this.setState(
+            {
+                currentCard: indexedCard,
+                imageUrl: null,
+                selection,
+            },
+            () => {
+                if (key in currentData) {
+                    this.generateArea();
+                }
+            },
+        );
     };
     private handlePrevClick = () => {
         this.mutateIndex(-1);
