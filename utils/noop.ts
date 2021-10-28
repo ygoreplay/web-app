@@ -1,3 +1,5 @@
-export function noop() {
+export function noopReact() {
     return null;
 }
+
+export function noop() {}

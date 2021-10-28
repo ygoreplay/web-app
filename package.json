@@ -32,7 +32,8 @@
         "react-mosaic-component": "^5.0.0",
         "react-rnd": "^10.3.5",
         "rxjs": "^7.4.0",
-        "tinygradient": "^1.1.5"
+        "tinygradient": "^1.1.5",
+        "utility-types": "^3.10.0"
     },
     "devDependencies": {
         "@babel/core": "^7.15.8",

@@ -11,7 +11,7 @@ import { CardCountProps, IndexedCardComponent, IndexedCardQuery, withCardCount }
 
 import { generateClipArea, Rectangle } from "@utils/generateClipArea";
 import { generateClippedImage } from "@utils/generateClippedImage";
-import { noop } from "@utils/noop";
+import { noop, noopReact } from "@utils/noop";
 
 import { Button, Content, Controls, Root, Title, ToggleButton, TopBar } from "@routes/admin/art/index.styles";
 import { Placeholder } from "@styles/Placeholder";
@@ -21,10 +21,10 @@ export interface AdminArtRouteStates {
     currentIndex: number;
     selection: Rectangle;
     currentCard: IndexedCardQuery["indexedCard"] | null;
-    preview: boolean;
     layout: MosaicNode<ArtCropperPaneType> | null;
     imageUrl: string | null;
     flip: boolean;
+    removePreview(): void;
 }
 
 interface ArtCropperData {
@@ -52,10 +52,30 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             height: 304,
         },
         currentCard: null,
-        preview: false,
         imageUrl: null,
         layout: { direction: "row", first: "art", second: "preview", splitPercentage: 80 },
         flip: false,
+        removePreview: noop,
+    };
+
+    private isPreviewActivated = (layout = this.state.layout): boolean => {
+        if (!layout) {
+            return false;
+        }
+
+        if (typeof layout === "string") {
+            return layout === "preview";
+        }
+
+        if (typeof layout.first === "string" && layout.first === "preview") {
+            return true;
+        }
+
+        if (typeof layout.second === "string" && layout.second === "preview") {
+            return true;
+        }
+
+        return this.isPreviewActivated(layout.first) || this.isPreviewActivated(layout.second);
     };
 
     private getSavedData = (): ArtCropperData => {
@@ -137,6 +157,11 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         });
     };
 
+    private handlePreviewRemoveRetrieved = (remove: () => void) => {
+        this.setState({
+            removePreview: remove,
+        });
+    };
     private handleIndexedCardComplete = ({ indexedCard }: IndexedCardQuery) => {
         if (!indexedCard) {
             return;
@@ -172,9 +197,16 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         this.mutateIndex(1);
     };
     private handlePreviewClick = () => {
-        this.setState((prevState: AdminArtRouteStates) => ({
-            preview: !prevState.preview,
-        }));
+        const { removePreview } = this.state;
+        const isPreviewActivated = this.isPreviewActivated();
+
+        if (isPreviewActivated) {
+            removePreview();
+        } else {
+            this.setState({
+                layout: { direction: "row", first: "art", second: "preview", splitPercentage: 80 },
+            });
+        }
     };
     private handleFlipClick = () => {
         this.setState(
@@ -211,13 +243,15 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         });
     };
 
-    private renderArtPanel(_: ArtCropperPaneType, path: MosaicBranch[]) {
+    private renderArtPanel(__: ArtCropperPaneType, path: MosaicBranch[]) {
         const { flip } = this.state;
 
         return <ArtPanel flip={flip} path={path} card={this.state.currentCard} onChange={this.handleSelectionChange} selection={this.state.selection} />;
     }
-    private renderCropPreviewPanel(_: ArtCropperPaneType, path: MosaicBranch[]) {
-        return <CropPreviewPanel path={path} card={this.state.currentCard} imageUrl={this.state.imageUrl} />;
+    private renderCropPreviewPanel(__: ArtCropperPaneType, path: MosaicBranch[]) {
+        return (
+            <CropPreviewPanel onRemoveRetrieved={this.handlePreviewRemoveRetrieved} path={path} card={this.state.currentCard} imageUrl={this.state.imageUrl} />
+        );
     }
     private renderContent = () => {
         const { data } = this.props;
@@ -235,7 +269,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
                         </Button>
                         <Placeholder />
                         <Tooltip title="미리보기">
-                            <ToggleButton onClick={this.handlePreviewClick}>
+                            <ToggleButton activated={this.isPreviewActivated()} onClick={this.handlePreviewClick}>
                                 <Preview />
                             </ToggleButton>
                         </Tooltip>
@@ -271,7 +305,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         return (
             <>
                 <IndexedCardComponent onCompleted={this.handleIndexedCardComplete} variables={{ index: currentIndex }}>
-                    {noop}
+                    {noopReact}
                 </IndexedCardComponent>
                 {this.renderContent()}
             </>

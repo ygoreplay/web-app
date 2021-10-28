@@ -6,18 +6,19 @@ import { ArtCropperPaneType, PaneBaseProps } from "@routes/admin/art";
 
 import MosaicWindowToolbar from "@components/MosaicWindowToolbar";
 import DeckRecipeListItem from "@components/DeckRecipe/ListItem";
+import { withMosaic, WithMosaicProps } from "@components/HOC/withMosaic";
 
 import { Root } from "@routes/admin/art/CropPreviewPanel.styles";
 
 import { CardType, IndexedCardQuery, MonsterCardType } from "@query";
 
-export interface CropPreviewPanelProps extends PaneBaseProps {
+export interface CropPreviewPanelProps extends PaneBaseProps, WithMosaicProps<ArtCropperPaneType> {
     card: IndexedCardQuery["indexedCard"] | null;
     imageUrl: string | null;
 }
 export interface CropPreviewPanelStates {}
 
-export default class CropPreviewPanel extends React.Component<CropPreviewPanelProps, CropPreviewPanelStates> {
+class CropPreviewPanel extends React.Component<CropPreviewPanelProps, CropPreviewPanelStates> {
     private renderToolBar = (props: MosaicWindowProps<ArtCropperPaneType>) => {
         return <MosaicWindowToolbar {...props} />;
     };
@@ -42,3 +43,5 @@ export default class CropPreviewPanel extends React.Component<CropPreviewPanelPr
         );
     }
 }
+
+export default withMosaic<ArtCropperPaneType, CropPreviewPanelProps>(CropPreviewPanel);
