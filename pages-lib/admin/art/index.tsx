@@ -58,6 +58,13 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         removePreview: noop,
     };
 
+    public componentDidMount() {
+        window.addEventListener("keydown", this.handleKeyDown, false);
+    }
+    public componentWillUnmount() {
+        window.removeEventListener("keydown", this.handleKeyDown, false);
+    }
+
     private isPreviewActivated = (layout = this.state.layout): boolean => {
         if (!layout) {
             return false;
@@ -157,6 +164,19 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         });
     };
 
+    private handleKeyDown = (e: KeyboardEvent) => {
+        console.info(e.key);
+
+        if (e.key === "ArrowRight") {
+            this.setState((prevState: AdminArtRouteStates) => ({
+                currentIndex: prevState.currentIndex + 1,
+            }));
+        } else if (e.key === "ArrowLeft") {
+            this.setState((prevState: AdminArtRouteStates) => ({
+                currentIndex: prevState.currentIndex - 1,
+            }));
+        }
+    };
     private handlePreviewRemoveRetrieved = (remove: () => void) => {
         this.setState({
             removePreview: remove,
