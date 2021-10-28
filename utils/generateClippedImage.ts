@@ -17,7 +17,25 @@ export function scalingImage(image: HTMLImageElement | HTMLCanvasElement, scalin
     return canvasDOM;
 }
 
-export async function generateClippedImage(src: string, clipArea: ImageClipArea, container: Container) {
+export function flipImage(image: HTMLImageElement | HTMLCanvasElement) {
+    const canvasDOM = document.createElement("canvas");
+    canvasDOM.width = Math.round(image.width);
+    canvasDOM.height = Math.round(image.height);
+
+    const context = canvasDOM.getContext("2d");
+    if (!context) {
+        return null;
+    }
+
+    context.imageSmoothingEnabled = false;
+    context.translate(image.width, 0);
+    context.scale(-1, 1);
+    context.drawImage(image, 0, 0, image.width, image.height, 0, 0, image.width, image.height);
+
+    return canvasDOM;
+}
+
+export async function generateClippedImage(src: string, clipArea: ImageClipArea, container: Container, flip: boolean) {
     let image: HTMLImageElement | HTMLCanvasElement = await loadImage(src);
     if (clipArea.scaling !== 1) {
         const scaledImage = scalingImage(image, clipArea.scaling, 304, 304);
@@ -26,6 +44,15 @@ export async function generateClippedImage(src: string, clipArea: ImageClipArea,
         }
 
         image = scaledImage;
+    }
+
+    if (flip) {
+        const flippedImage = flipImage(image);
+        if (!flippedImage) {
+            return Promise.resolve(null);
+        }
+
+        image = flippedImage;
     }
 
     const canvasDOM = document.createElement("canvas");

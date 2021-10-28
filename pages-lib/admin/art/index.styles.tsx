@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { IconButton } from "@mui/material";
+import React from "react";
 
 export const Root = styled.div`
     margin: 0;
@@ -114,11 +115,14 @@ export const Button = styled.button`
     }
 `;
 
-export const ToggleButton = styled(IconButton)`
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const ToggleButton = styled(({ activated, ...props }: React.ComponentProps<typeof IconButton> & { activated?: boolean }) => <IconButton {...props} />)<{
+    activated?: boolean;
+}>`
     width: ${({ theme }) => theme.spacing(5)};
     height: ${({ theme }) => theme.spacing(5)};
 
     margin-right: ${({ theme }) => theme.spacing(1)};
 
-    color: rgb(175, 175, 175);
+    color: ${({ activated }) => (activated ? "white" : "rgb(175, 175, 175)")};
 `;

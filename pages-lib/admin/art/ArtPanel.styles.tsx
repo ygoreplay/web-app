@@ -34,6 +34,14 @@ export const Canvas = styled.div`
     }
 `;
 
+export const Image = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+`;
+
 export const Fill = styled.div`
     position: absolute;
     top: 0;

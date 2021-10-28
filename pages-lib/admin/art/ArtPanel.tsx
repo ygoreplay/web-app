@@ -9,13 +9,14 @@ import { ArtCropperPaneType, PaneBaseProps } from "@routes/admin/art";
 import MosaicWindowToolbar from "@components/MosaicWindowToolbar";
 import ResizeHandle from "@components/ResizeHandle";
 
-import { Canvas, Fill, Root } from "@routes/admin/art/ArtPanel.styles";
+import { Canvas, Fill, Image, Root } from "@routes/admin/art/ArtPanel.styles";
 
 import { Rectangle } from "@utils/generateClipArea";
 
 import { IndexedCardQuery } from "@query";
 
 export interface ArtPanelProps extends PaneBaseProps {
+    flip: boolean;
     card: IndexedCardQuery["indexedCard"] | null;
     selection: Rectangle;
     onChange(selection: Rectangle): void;
@@ -55,14 +56,18 @@ export default class ArtPanel extends React.Component<ArtPanelProps, ArtPanelSta
     };
 
     public render() {
-        const { path, card, selection } = this.props;
+        const { path, card, selection, flip } = this.props;
 
         return (
             <MosaicWindow<ArtCropperPaneType> title="작업 영역" path={path} draggable={false} renderToolbar={this.renderToolBar}>
                 <Root>
-                    <Canvas
-                        style={{ backgroundImage: card ? `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${card.id}.jpg)` : undefined }}
-                    >
+                    <Canvas>
+                        <Image
+                            style={{
+                                backgroundImage: card ? `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${card.id}.jpg)` : undefined,
+                                transform: flip ? "scaleX(-1)" : undefined,
+                            }}
+                        />
                         {!card && <Skeleton variant="rectangular" height={304} width={304} />}
                         {card && (
                             <Rnd

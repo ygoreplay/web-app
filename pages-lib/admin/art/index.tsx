@@ -24,10 +24,11 @@ export interface AdminArtRouteStates {
     preview: boolean;
     layout: MosaicNode<ArtCropperPaneType> | null;
     imageUrl: string | null;
+    flip: boolean;
 }
 
 interface ArtCropperData {
-    [key: string]: Rectangle;
+    [key: string]: Rectangle & { flip: boolean };
 }
 export type ArtCropperPaneType = "art" | "preview" | "attributes";
 
@@ -54,6 +55,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         preview: false,
         imageUrl: null,
         layout: { direction: "row", first: "art", second: "preview", splitPercentage: 80 },
+        flip: false,
     };
 
     private getSavedData = (): ArtCropperData => {
@@ -68,9 +70,18 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
     private saveData = (data: ArtCropperData) => {
         localStorage.setItem("art-cropper", JSON.stringify(data));
     };
+    private saveCurrentSelection = (card: Exclude<IndexedCardQuery["indexedCard"], null | undefined>, selection: Rectangle, flip: boolean) => {
+        const savedData = this.getSavedData();
+        savedData[card.id.toString()] = {
+            ...selection,
+            flip,
+        };
 
-    private generateArea = async () => {
-        const { currentCard, selection } = this.state;
+        this.saveData(savedData);
+    };
+
+    private generateCroppedImage = async () => {
+        const { currentCard, selection, flip } = this.state;
         if (!currentCard) {
             return;
         }
@@ -90,14 +101,19 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             },
             304,
         );
-        const imageUrl = await generateClippedImage(`https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${currentCard.id}.jpg`, clipArea, {
-            width: 223,
-            height: 36,
-            anchor: {
-                x: 207,
-                y: 19,
+        const imageUrl = await generateClippedImage(
+            `https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${currentCard.id}.jpg`,
+            clipArea,
+            {
+                width: 223,
+                height: 36,
+                anchor: {
+                    x: 207,
+                    y: 19,
+                },
             },
-        });
+            flip,
+        );
 
         this.setState({
             imageUrl,
@@ -116,6 +132,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
                     height: 304,
                 },
                 currentCard: null,
+                flip: false,
             };
         });
     };
@@ -139,10 +156,11 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
                 currentCard: indexedCard,
                 imageUrl: null,
                 selection,
+                flip: currentData[key]?.flip || false,
             },
             () => {
                 if (key in currentData) {
-                    this.generateArea();
+                    this.generateCroppedImage();
                 }
             },
         );
@@ -158,8 +176,24 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             preview: !prevState.preview,
         }));
     };
+    private handleFlipClick = () => {
+        this.setState(
+            ({ flip }: AdminArtRouteStates) => ({
+                flip: !flip,
+            }),
+            () => {
+                const { currentCard, selection, flip } = this.state;
+                if (!currentCard) {
+                    return;
+                }
+
+                this.generateCroppedImage();
+                this.saveCurrentSelection(currentCard, selection, flip);
+            },
+        );
+    };
     private handleSelectionChange = (selection: Rectangle) => {
-        const { currentCard } = this.state;
+        const { currentCard, flip } = this.state;
         if (!currentCard) {
             return;
         }
@@ -168,12 +202,8 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             selection,
         });
 
-        this.generateArea();
-
-        const savedData = this.getSavedData();
-        savedData[currentCard.id.toString()] = selection;
-
-        this.saveData(savedData);
+        this.generateCroppedImage();
+        this.saveCurrentSelection(currentCard, selection, flip);
     };
     private handleLayoutChange = (newNode: MosaicNode<ArtCropperPaneType> | null) => {
         this.setState({
@@ -182,14 +212,16 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
     };
 
     private renderArtPanel(_: ArtCropperPaneType, path: MosaicBranch[]) {
-        return <ArtPanel path={path} card={this.state.currentCard} onChange={this.handleSelectionChange} selection={this.state.selection} />;
+        const { flip } = this.state;
+
+        return <ArtPanel flip={flip} path={path} card={this.state.currentCard} onChange={this.handleSelectionChange} selection={this.state.selection} />;
     }
     private renderCropPreviewPanel(_: ArtCropperPaneType, path: MosaicBranch[]) {
         return <CropPreviewPanel path={path} card={this.state.currentCard} imageUrl={this.state.imageUrl} />;
     }
     private renderContent = () => {
         const { data } = this.props;
-        const { currentCard: card, currentIndex, layout } = this.state;
+        const { flip, currentCard: card, currentIndex, layout } = this.state;
         if (!data || data.loading || !data.cardCount) {
             return null;
         }
@@ -208,7 +240,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
                             </ToggleButton>
                         </Tooltip>
                         <Tooltip title="X축 반전">
-                            <ToggleButton>
+                            <ToggleButton activated={flip} onClick={this.handleFlipClick}>
                                 <Flip />
                             </ToggleButton>
                         </Tooltip>
