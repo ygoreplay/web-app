@@ -86,11 +86,6 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
                                     <DeckWinRate winRates={data.winRate} />
                                 </Paper>
                             </Grid>
-                            <Grid item lg={4} xs={12}>
-                                <Paper loading={data.loading} title="덱 승률">
-                                    <DeckWinRate winRates={data.winRate} />
-                                </Paper>
-                            </Grid>
                         </Grid>
                     </Root>
                 </Container>
