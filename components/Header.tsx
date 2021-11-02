@@ -1,20 +1,30 @@
 import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 import { Toolbar } from "@mui/material";
 
-import { AppBar, Logo } from "@components/Header.styles";
+import { AppBar, LinkContent, Logo, Root } from "@components/Header.styles";
 
-interface HeaderProps {}
-interface HeaderStates {}
+export default function Header() {
+    const router = useRouter();
 
-export default class Header extends React.Component<HeaderProps, HeaderStates> {
-    public render() {
-        return (
-            <AppBar elevation={0} position="sticky">
-                <Toolbar>
+    return (
+        <AppBar elevation={0} position="sticky">
+            <Toolbar>
+                <Root>
                     <Logo />
-                </Toolbar>
-            </AppBar>
-        );
-    }
+                    <Link href="/" passHref>
+                        <LinkContent active={router.route === "/"}>홈</LinkContent>
+                    </Link>
+                    <Link href="/matches" passHref>
+                        <LinkContent active={router.route === "/matches"}>매치</LinkContent>
+                    </Link>
+                    <Link href="/decks" passHref>
+                        <LinkContent>덱</LinkContent>
+                    </Link>
+                </Root>
+            </Toolbar>
+        </AppBar>
+    );
 }

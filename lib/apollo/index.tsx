@@ -13,6 +13,7 @@ import { ApolloClient, ApolloLink, InMemoryCache, NormalizedCacheObject } from "
 import { onError } from "@apollo/client/link/error";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { SubscriptionClient } from "subscriptions-transport-ws";
+import { Match } from "queries/index";
 
 const APOLLO_STATE_PROP_NAME = "__APOLLO_STATE__";
 
@@ -81,7 +82,22 @@ const createApolloClient = (headers: IncomingHttpHeaders | null = null) => {
             // this uses apollo-link-http under the hood, so all the options here come from that package
             fetchLink,
         ]),
-        cache: new InMemoryCache({}),
+        cache: new InMemoryCache({
+            typePolicies: {
+                Query: {
+                    fields: {
+                        matches: {
+                            keyArgs: false,
+                            merge(existing: Match[], incoming: Match[]) {
+                                console.info(existing, incoming);
+
+                                return [...(existing || []), ...incoming];
+                            },
+                        },
+                    },
+                },
+            },
+        }),
     });
 };
 
