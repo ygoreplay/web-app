@@ -8,6 +8,8 @@ export const Root = styled.a`
     align-content: center;
     justify-content: center;
 
+    position: relative;
+
     &:not(:last-child) {
         border-bottom: 1px solid #e3e8f0;
     }
@@ -43,4 +45,17 @@ export const DeckName = styled.span``;
 export const PlayerName = styled.span`
     margin: 0 ${({ theme }) => theme.spacing(1)};
     opacity: 0.5;
+`;
+
+export const TierIndicator = styled.div`
+    width: ${({ theme }) => theme.spacing(1)};
+    height: ${({ theme }) => theme.spacing(1)};
+
+    border-radius: 100%;
+
+    position: absolute;
+    top: ${({ theme }) => theme.spacing(1)};
+    left: ${({ theme }) => theme.spacing(1)};
+
+    background: rgba(255, 165, 0, 0.45);
 `;

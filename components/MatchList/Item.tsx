@@ -3,9 +3,10 @@ import Link from "next/link";
 
 import { Skeleton } from "@mui/material";
 
-import { DeckName, Part, PlayerName, Root, Versus } from "@components/MatchList/Item.styles";
+import { DeckName, Part, PlayerName, Root, TierIndicator, Versus } from "@components/MatchList/Item.styles";
 
 import { Match } from "@utils/type";
+import { MatchType } from "queries/index";
 
 export interface SkeletonMatchListItemProps {
     loading: true;
@@ -51,6 +52,7 @@ export default class MatchListItem extends React.Component<MatchListItemProps, M
                         <DeckName>{match.away.deck.recognizedName}</DeckName>
                         <PlayerName>{match.away.player.name}</PlayerName>
                     </Part>
+                    {match.type === MatchType.Athletic && <TierIndicator />}
                 </Root>
             </Link>
         );
