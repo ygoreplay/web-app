@@ -18,6 +18,7 @@ export interface MatchListProps {
 }
 export interface MatchListStates {
     matches: Match[];
+    hasMore: boolean;
 }
 
 const MINIMAL_COUNT = 15;
@@ -25,6 +26,7 @@ const MINIMAL_COUNT = 15;
 class MatchList extends React.Component<WithApolloClient<MatchListProps>, MatchListStates> {
     public state: MatchListStates = {
         matches: [],
+        hasMore: true,
     };
 
     public async componentDidMount() {
@@ -55,7 +57,6 @@ class MatchList extends React.Component<WithApolloClient<MatchListProps>, MatchL
             return;
         }
 
-        console.info(page);
         const { data } = await client.query<MatchesQuery, MatchesQueryVariables>({
             query: MatchesDocument,
             variables: {
@@ -67,6 +68,7 @@ class MatchList extends React.Component<WithApolloClient<MatchListProps>, MatchL
 
         this.setState((prevState: MatchListStates) => ({
             matches: [...prevState.matches, ...data.matches],
+            hasMore: data.matches.length >= MINIMAL_COUNT,
         }));
     };
 
@@ -82,7 +84,7 @@ class MatchList extends React.Component<WithApolloClient<MatchListProps>, MatchL
     };
     public render() {
         const { infinite } = this.props;
-        const { matches } = this.state;
+        const { matches, hasMore } = this.state;
 
         if (!matches.length) {
             return (
@@ -97,7 +99,7 @@ class MatchList extends React.Component<WithApolloClient<MatchListProps>, MatchL
         let content: React.ReactNode = matches.map(this.renderListItem);
         if (infinite) {
             content = (
-                <InfiniteScroll pageStart={0} threshold={300} loadMore={this.ensureFetch} hasMore loader={this.renderLoader()}>
+                <InfiniteScroll pageStart={0} threshold={300} loadMore={this.ensureFetch} hasMore={hasMore} loader={this.renderLoader()}>
                     {content}
                 </InfiniteScroll>
             );
