@@ -12,17 +12,17 @@ import { OnSubscriptionDataOptions } from "@apollo/client";
 import {
     MatchCountUpdatedComponent,
     MatchCountUpdatedSubscription,
-    MatchesProps,
+    HomeDataProps,
     NewMatchCreatedComponent,
     NewMatchCreatedSubscription,
-    withMatches,
+    withHomeData,
 } from "@query";
 
 import { Root } from "@routes/Home.styles";
 
 import { Match } from "@utils/type";
 
-interface HomeRouteProps extends MatchesProps {}
+interface HomeRouteProps extends HomeDataProps {}
 interface HomeRouteStates {
     matchCount: number | null;
     matches: Match[] | null;
@@ -94,7 +94,7 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
     }
 }
 
-export default withMatches({
+export default withHomeData({
     options: {
         fetchPolicy: "network-only",
         variables: {

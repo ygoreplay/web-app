@@ -1,4 +1,7 @@
 import React from "react";
+import InfiniteScroll from "react-infinite-scroller";
+
+import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
 import { CircularProgress } from "@mui/material";
 
@@ -6,72 +9,82 @@ import MatchListItem from "@components/MatchList/Item";
 
 import { LoaderWrapper, Root } from "@components/MatchList/index.styles";
 
-import { MatchesProps, withMatches } from "@query";
+import { MatchesDocument, MatchesQuery, MatchesQueryVariables } from "@query";
+
 import { Match } from "@utils/type";
-import { InView } from "react-intersection-observer";
 
 export interface MatchListProps {
     infinite: boolean;
 }
 export interface MatchListStates {
-    currentLoadingId: number;
+    matches: Match[];
 }
 
 const MINIMAL_COUNT = 15;
 
-class MatchList extends React.Component<MatchListProps & MatchesProps, MatchListStates> {
+class MatchList extends React.Component<WithApolloClient<MatchListProps>, MatchListStates> {
     public state: MatchListStates = {
-        currentLoadingId: -1,
+        matches: [],
     };
 
-    private handleLoaderInViewChange = async (inView?: boolean) => {
-        const {
-            data: { matches, fetchMore },
-        } = this.props;
-        const { currentLoadingId } = this.state;
-
-        console.info(inView, matches, currentLoadingId, matches[matches.length - 1].id);
-
-        if (!inView || !matches || currentLoadingId === matches[matches.length - 1].id) {
+    public async componentDidMount() {
+        const { client } = this.props;
+        const { matches } = this.state;
+        if (!client) {
             return;
         }
 
-        this.setState({
-            currentLoadingId: matches[matches.length - 1].id,
-        });
-
-        const { data } = await fetchMore({
+        const { data } = await client.query<MatchesQuery, MatchesQueryVariables>({
+            query: MatchesDocument,
             variables: {
                 count: MINIMAL_COUNT,
-                after: matches[matches.length - 1].id,
+                after: matches[matches.length - 1]?.id,
             },
+            fetchPolicy: "no-cache",
         });
 
-        console.info(data);
+        this.setState((prevState: MatchListStates) => ({
+            matches: [...prevState.matches, ...data.matches],
+        }));
+    }
 
-        this.setState({
-            currentLoadingId: -1,
+    private ensureFetch = async (page: number) => {
+        const { client } = this.props;
+        const { matches } = this.state;
+        if (!client) {
+            return;
+        }
+
+        console.info(page);
+        const { data } = await client.query<MatchesQuery, MatchesQueryVariables>({
+            query: MatchesDocument,
+            variables: {
+                count: MINIMAL_COUNT,
+                after: matches[page * MINIMAL_COUNT - 1].id,
+            },
+            fetchPolicy: "no-cache",
         });
+
+        this.setState((prevState: MatchListStates) => ({
+            matches: [...prevState.matches, ...data.matches],
+        }));
     };
 
     private renderLoader = () => {
         return (
-            <InView onChange={this.handleLoaderInViewChange}>
-                {({ ref }) => (
-                    <LoaderWrapper ref={ref}>
-                        <CircularProgress size={24} />
-                    </LoaderWrapper>
-                )}
-            </InView>
+            <LoaderWrapper>
+                <CircularProgress size={24} />
+            </LoaderWrapper>
         );
     };
     private renderListItem = (match: Match) => {
         return <MatchListItem key={match.id} match={match} />;
     };
     public render() {
-        const { data, infinite } = this.props;
+        const { infinite } = this.props;
+        const { matches } = this.state;
 
-        if (!data.matches || !data.matchCount) {
+        if (!matches.length) {
             return (
                 <Root>
                     {new Array(MINIMAL_COUNT).fill(null).map((_, index) => {
@@ -81,19 +94,17 @@ class MatchList extends React.Component<MatchListProps & MatchesProps, MatchList
             );
         }
 
-        return (
-            <Root>
-                {data.matches.map(this.renderListItem)}
-                {infinite && this.renderLoader()}
-            </Root>
-        );
+        let content: React.ReactNode = matches.map(this.renderListItem);
+        if (infinite) {
+            content = (
+                <InfiniteScroll pageStart={0} threshold={300} loadMore={this.ensureFetch} hasMore loader={this.renderLoader()}>
+                    {content}
+                </InfiniteScroll>
+            );
+        }
+
+        return <Root>{content}</Root>;
     }
 }
 
-export default withMatches<MatchListProps>({
-    options: {
-        variables: {
-            count: MINIMAL_COUNT,
-        },
-    },
-})(MatchList);
+export default withApollo<MatchListProps>(MatchList);

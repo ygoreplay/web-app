@@ -1,22 +1,5 @@
-query matches($count: Int = 15, $after: Int) {
-    matchCount
-    winRate(count: 10) {
-        deckName
-        rate
-    }
-    matches(count: $count, after: $after) {
-        id
-        type
-        startedAt
-        finishedAt
-        away {
-            ...PlayerDeckInformation
-        }
-        home {
-            ...PlayerDeckInformation
-        }
-        winner {
-            id
-        }
+query matches($count: Int!, $after: Int) {
+    matches(after: $after, count: $count) {
+        ...MatchListItem
     }
 }

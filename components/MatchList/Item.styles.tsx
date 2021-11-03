@@ -8,8 +8,12 @@ export const Root = styled.a`
     align-content: center;
     justify-content: center;
 
-    &:not(:last-of-type) {
+    &:not(:last-child) {
         border-bottom: 1px solid #e3e8f0;
+    }
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.05);
     }
 `;
 
