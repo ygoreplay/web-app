@@ -18,7 +18,7 @@ export default function Header() {
                         <LinkContent active={router.route === "/"}>홈</LinkContent>
                     </Link>
                     <Link href="/matches" passHref>
-                        <LinkContent active={router.route === "/matches"}>매치</LinkContent>
+                        <LinkContent active={router.route.startsWith("/matches")}>매치</LinkContent>
                     </Link>
                     <Link href="/decks" passHref>
                         <LinkContent>덱</LinkContent>
