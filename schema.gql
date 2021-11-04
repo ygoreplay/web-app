@@ -61,6 +61,13 @@ type Match {
   winner: Player
 }
 
+input MatchFilter {
+  includeMatches: Boolean!
+  includeNormalMatches: Boolean!
+  includeSingles: Boolean!
+  includeTierMatches: Boolean!
+}
+
 type MatchRule {
   banListDate: String!
   drawCount: Int!
@@ -114,7 +121,7 @@ type Query {
   indexedCard(index: Int!): Card
   match(id: Int!): Match
   matchCount: Int!
-  matches(after: Int, count: Int!): [Match!]!
+  matches(after: Int, count: Int!, filter: MatchFilter): [Match!]!
   winRate(count: Int = 10): [WinRate!]!
 }
 

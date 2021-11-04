@@ -2,7 +2,7 @@
 module.exports = {
     reactStrictMode: true,
     webpack(config) {
-        const fileLoaderRule = config.module.rules.find(rule => rule.test && rule.test.test(".svg"));
+        const fileLoaderRule = config.module.rules.find(rule => rule.test && rule.test.test(".svg"), undefined);
         if (fileLoaderRule) {
             fileLoaderRule.exclude = /\.svg$/;
         }

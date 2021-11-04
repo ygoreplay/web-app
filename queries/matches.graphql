@@ -1,5 +1,5 @@
-query matches($count: Int!, $after: Int) {
-    matches(after: $after, count: $count) {
+query matches($count: Int!, $after: Int, $filter: MatchFilter) {
+    matches(after: $after, count: $count, filter: $filter) {
         ...MatchListItem
     }
 }

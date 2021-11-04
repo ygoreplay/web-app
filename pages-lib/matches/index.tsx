@@ -1,32 +1,43 @@
 import React from "react";
 
-import { Container, Grid } from "@mui/material";
-
 import Layout from "@components/Layout";
 import MatchList from "@components/MatchList";
 
 import { Root } from "@routes/matches/index.styles";
-import MatchListFilterForm from "@forms/MatchListFilter";
+import MatchListFilterForm, { MatchListFilterFormValues } from "@forms/MatchListFilter";
 
 export interface MatchesRouteProps {}
-export interface MatchesRouteStates {}
+export interface MatchesRouteStates {
+    filterValue: MatchListFilterFormValues;
+}
+
+const INITIAL_MATCH_LIST_FILTER_OPTIONS: MatchListFilterFormValues = {
+    includeNormalMatches: true,
+    includeTierMatches: true,
+    includeMatches: true,
+    includeSingles: true,
+};
 
 export default class MatchesRoute extends React.Component<MatchesRouteProps, MatchesRouteStates> {
+    public state: MatchesRouteStates = {
+        filterValue: INITIAL_MATCH_LIST_FILTER_OPTIONS,
+    };
+
+    private handleSubmit = async (value: MatchListFilterFormValues) => {
+        this.setState({
+            filterValue: value,
+        });
+    };
+
     public render() {
+        const { filterValue } = this.state;
+
         return (
             <Layout>
-                <Container maxWidth="xl">
-                    <Root>
-                        <Grid container spacing={2}>
-                            <Grid item xs={3}>
-                                <MatchListFilterForm />
-                            </Grid>
-                            <Grid item xs={9}>
-                                <MatchList infinite />
-                            </Grid>
-                        </Grid>
-                    </Root>
-                </Container>
+                <Root>
+                    <MatchListFilterForm onSubmit={this.handleSubmit} value={filterValue} initialValues={INITIAL_MATCH_LIST_FILTER_OPTIONS} />
+                    <MatchList infinite filterValue={filterValue} />
+                </Root>
             </Layout>
         );
     }

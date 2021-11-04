@@ -5,6 +5,8 @@ export const Root = styled.div`
     padding: 0;
     border: 1px solid #e3e8f0;
     border-radius: 4px;
+
+    flex: 1 1 auto;
 `;
 
 export const LoaderWrapper = styled.div`
@@ -15,4 +17,13 @@ export const LoaderWrapper = styled.div`
     align-items: center;
 
     position: relative;
+`;
+
+export const EmptyMessage = styled.div`
+    margin: 0;
+    padding: ${({ theme }) => theme.spacing(4)};
+
+    text-align: center;
+
+    color: rgba(0, 0, 0, 0.45);
 `;
