@@ -23,4 +23,13 @@ query homeData($count: Int = 15, $after: Int) {
     matches(count: $count, after: $after) {
         ...MatchListItem
     }
+    topUsageCards(count: 10) {
+        card {
+            id
+            text {
+                name
+            }
+        }
+        count
+    }
 }

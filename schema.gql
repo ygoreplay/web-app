@@ -24,6 +24,11 @@ enum CardType {
   Trap
 }
 
+type CardUsage {
+  card: Card!
+  count: Float!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -124,6 +129,7 @@ type Query {
   match(id: Int!): Match
   matchCount: Int!
   matches(after: Int, count: Int!, filter: MatchFilter): [Match!]!
+  topUsageCards(count: Int!): [CardUsage!]!
   winRate(count: Int = 10): [WinRate!]!
 }
 
@@ -138,6 +144,7 @@ type Round {
 }
 
 type Subscription {
+  cardUsageListUpdated: [CardUsage!]!
   matchCountUpdated: Int!
   newMatchCreated: Match!
 }

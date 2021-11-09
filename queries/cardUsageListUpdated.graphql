@@ -1,0 +1,11 @@
+subscription cardUsageListUpdated {
+    cardUsageListUpdated {
+        card {
+            id
+            text {
+                name
+            }
+        }
+        count
+    }
+}

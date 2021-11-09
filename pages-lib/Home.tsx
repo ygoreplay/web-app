@@ -7,6 +7,7 @@ import Layout from "@components/Layout";
 import Paper from "@components/Paper";
 import RecentMatches from "@components/RecentMatches";
 import DeckWinRate from "@components/DeckWinRate";
+import CardUsage from "@components/CardUsage";
 
 import { OnSubscriptionDataOptions } from "@apollo/client";
 import {
@@ -16,22 +17,26 @@ import {
     NewMatchCreatedComponent,
     NewMatchCreatedSubscription,
     withHomeData,
+    CardUsageListUpdatedComponent,
+    CardUsageListUpdatedSubscription,
 } from "@query";
 
 import { Root } from "@routes/Home.styles";
 
-import { Match } from "@utils/type";
+import { CardUsageData, Match } from "@utils/type";
 
 interface HomeRouteProps extends HomeDataProps {}
 interface HomeRouteStates {
     matchCount: number | null;
     matches: Match[] | null;
+    cardUsageList: CardUsageData[] | null;
 }
 
 class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
     public state: HomeRouteStates = {
         matchCount: null,
         matches: null,
+        cardUsageList: null,
     };
 
     private handleMatchCountUpdated = ({ subscriptionData }: OnSubscriptionDataOptions<MatchCountUpdatedSubscription>) => {
@@ -56,10 +61,23 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
             matches: _.uniqBy([data.newMatchCreated, ...(prevState.matches || []), ...matches], m => m.id).slice(0, 10),
         }));
     };
+    private handleCardUsageListUpdated = ({ subscriptionData: { data } }: OnSubscriptionDataOptions<CardUsageListUpdatedSubscription>) => {
+        const {
+            data: { topUsageCards },
+        } = this.props;
+
+        if (!data || !topUsageCards || topUsageCards.length === 0) {
+            return;
+        }
+
+        this.setState({
+            cardUsageList: data.cardUsageListUpdated,
+        });
+    };
 
     public render() {
         const { data } = this.props;
-        const { matchCount, matches } = this.state;
+        const { matchCount, matches, cardUsageList } = this.state;
 
         return (
             <Layout>
@@ -67,6 +85,7 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
                     <>
                         <MatchCountUpdatedComponent onSubscriptionData={this.handleMatchCountUpdated} />
                         <NewMatchCreatedComponent onSubscriptionData={this.handleNewMatchCreated} />
+                        <CardUsageListUpdatedComponent onSubscriptionData={this.handleCardUsageListUpdated} />
                     </>
                 )}
                 <Container>
@@ -84,6 +103,11 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
                             <Grid item lg={4} xs={12}>
                                 <Paper loading={data.loading} title="덱 승률">
                                     <DeckWinRate winRates={data.winRate} />
+                                </Paper>
+                            </Grid>
+                            <Grid item lg={4} xs={12}>
+                                <Paper loading={data.loading} title="지난 5분간 채용된 카드">
+                                    <CardUsage usages={cardUsageList || data.topUsageCards || []} />
                                 </Paper>
                             </Grid>
                         </Grid>
