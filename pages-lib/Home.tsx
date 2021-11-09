@@ -24,6 +24,7 @@ import {
 import { Root } from "@routes/Home.styles";
 
 import { CardUsageData, Match } from "@utils/type";
+import DeckUsage from "@components/DeckUsage";
 
 interface HomeRouteProps extends HomeDataProps {}
 interface HomeRouteStates {
@@ -108,6 +109,11 @@ class HomeRoute extends React.Component<HomeRouteProps, HomeRouteStates> {
                             <Grid item lg={4} xs={12}>
                                 <Paper loading={data.loading} title="지난 5분간 채용된 카드">
                                     <CardUsage usages={cardUsageList || data.topUsageCards || []} />
+                                </Paper>
+                            </Grid>
+                            <Grid item lg={4} xs={12}>
+                                <Paper loading={data.loading} title="지난 30분간 사용된 덱">
+                                    <DeckUsage usages={data.topUsageDecks || []} loading={data.loading} />
                                 </Paper>
                             </Grid>
                         </Grid>

@@ -49,6 +49,11 @@ type Deck {
   updatedAt: DateTime!
 }
 
+type DeckUsage {
+  count: Int!
+  deckName: String!
+}
+
 type Match {
   away: PlayerDeck!
   createdAt: DateTime!
@@ -130,6 +135,7 @@ type Query {
   matchCount: Int!
   matches(after: Int, count: Int!, filter: MatchFilter): [Match!]!
   topUsageCards(count: Int!): [CardUsage!]!
+  topUsageDecks(count: Int!): [DeckUsage!]!
   winRate(count: Int = 10): [WinRate!]!
 }
 
