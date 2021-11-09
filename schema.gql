@@ -62,6 +62,7 @@ type Match {
 }
 
 input MatchFilter {
+  banLists: [String!]!
   includeMatches: Boolean!
   includeNormalMatches: Boolean!
   includeSingles: Boolean!
@@ -116,6 +117,7 @@ type PlayerDeck {
 }
 
 type Query {
+  banLists: [String!]!
   card(id: Int!): Card
   cardCount: Int!
   indexedCard(index: Int!): Card

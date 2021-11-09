@@ -1,6 +1,7 @@
 import _ from "lodash";
 import React from "react";
 import { FormikProps, withFormik } from "formik";
+import memoizeOne from "memoize-one";
 
 import { Button, Checkbox, FormControlLabel, FormGroup, Grid } from "@mui/material";
 
@@ -12,6 +13,7 @@ export interface MatchListFilterFormProps {
     onSubmit(values: MatchListFilterFormValues): Promise<void>;
     initialValues: MatchListFilterFormValues;
     value: MatchListFilterFormValues;
+    banLists: string[];
 }
 export interface MatchListFilterFormStates {}
 
@@ -20,16 +22,31 @@ export interface MatchListFilterFormValues {
     includeMatches: boolean;
     includeTierMatches: boolean;
     includeNormalMatches: boolean;
+    banLists: string[];
 }
 
 class MatchListFilterForm extends React.Component<MatchListFilterFormProps & FormikProps<MatchListFilterFormValues>, MatchListFilterFormStates> {
-    private renderCheckBox = (name: keyof MatchListFilterFormValues) => {
+    private handleBanListCheckBoxChange = memoizeOne((value: string) => {
+        return (e: React.ChangeEvent<HTMLInputElement>) => {
+            const { values, setFieldValue } = this.props;
+            const newValue = e.currentTarget.checked ? [...values.banLists, value] : values.banLists.filter(item => item !== value);
+
+            setFieldValue("banLists", newValue, true);
+        };
+    });
+
+    private renderBanListCheckBox = (value: string) => {
+        const { values } = this.props;
+
+        return <Checkbox size="small" checked={values.banLists.indexOf(value) >= 0} onChange={this.handleBanListCheckBoxChange(value)} />;
+    };
+    private renderCheckBox = (name: Exclude<keyof MatchListFilterFormValues, "banLists">) => {
         const { values, handleChange, handleBlur } = this.props;
 
         return <Checkbox size="small" checked={values[name]} name={name} onChange={handleChange} onBlur={handleBlur} />;
     };
     public render() {
-        const { initialValues, values, handleReset, handleSubmit, value } = this.props;
+        const { initialValues, values, handleReset, handleSubmit, value, banLists } = this.props;
         const isChanged = !_.isEqual(value, values);
 
         return (
@@ -51,6 +68,15 @@ class MatchListFilterForm extends React.Component<MatchListFilterFormProps & For
                             <FormGroup>
                                 <FormControlLabel control={this.renderCheckBox("includeTierMatches")} label="티어" />
                                 <FormControlLabel control={this.renderCheckBox("includeNormalMatches")} label="일반" />
+                            </FormGroup>
+                        </OptionBox>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <OptionBox title="금제 설정">
+                            <FormGroup>
+                                {banLists.map(v => (
+                                    <FormControlLabel key={v} control={this.renderBanListCheckBox(v)} label={v} />
+                                ))}
                             </FormGroup>
                         </OptionBox>
                     </Grid>
