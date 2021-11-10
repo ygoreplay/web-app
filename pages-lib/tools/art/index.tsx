@@ -58,7 +58,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         },
         currentCard: null,
         imageUrls: null,
-        layout: { direction: "row", first: "art", second: "preview", splitPercentage: 80 },
+        layout: { direction: "row", first: "art", second: "preview", splitPercentage: 20 },
         flip: false,
         removePreview: noop,
     };
@@ -129,7 +129,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
 
             // eslint-disable-next-line no-await-in-loop
             imageUrls[cropperPresetKey] = await generateClippedImage(
-                `https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${currentCard.id}.jpg`,
+                `/api/304x304/${currentCard.id}.jpg`,
                 clipArea,
                 CROPPER_UI_PRESETS[cropperPresetKey],
                 flip,
