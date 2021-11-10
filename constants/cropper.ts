@@ -22,7 +22,7 @@ export const CROPPER_UI_PRESETS: { [key in CropperUIPresetType]: Container } = {
             y: 24,
         },
         threshold: {
-            width: 0.9,
+            width: 1,
         },
     },
 };
