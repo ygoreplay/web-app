@@ -54,7 +54,7 @@ class CardSearchInput extends React.Component<WithApolloClient<CardSearchInputPr
     public componentDidMount() {
         this.unmounted = false;
     }
-    public componentDidUpdate(prevProps: Readonly<WithApolloClient<CardSearchInputProps>>, prevState: Readonly<CardSearchInputStates>, snapshot?: any) {
+    public componentDidUpdate(prevProps: Readonly<WithApolloClient<CardSearchInputProps>>, prevState: Readonly<CardSearchInputStates>) {
         const { value, inputValue } = this.state;
         if (value !== prevState.value || inputValue !== prevState.inputValue) {
             this.handleRefresh();
