@@ -7,3 +7,9 @@ export const theme = createTheme({
         },
     },
 });
+
+export const toolTheme = createTheme({
+    palette: {
+        mode: "dark",
+    },
+});

@@ -2,13 +2,13 @@ import React from "react";
 
 import { MosaicWindow, MosaicWindowProps } from "react-mosaic-component";
 
-import { ArtCropperPaneType, PaneBaseProps } from "@routes/admin/art";
+import { ArtCropperPaneType, PaneBaseProps } from "@routes/tools/art";
 
 import MosaicWindowToolbar from "@components/MosaicWindowToolbar";
 import DeckRecipeListItem from "@components/DeckRecipe/ListItem";
 import { withMosaic, WithMosaicProps } from "@components/HOC/withMosaic";
 
-import { Root } from "@routes/admin/art/CropPreviewPanel.styles";
+import { Root } from "@routes/tools/art/CropPreviewPanel.styles";
 
 import { CardType, IndexedCardQuery, MonsterCardType } from "@query";
 

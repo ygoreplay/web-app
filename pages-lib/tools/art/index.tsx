@@ -4,16 +4,19 @@ import { Mosaic, TileRenderer, MosaicBranch, MosaicNode } from "react-mosaic-com
 import { Tooltip } from "@mui/material";
 import { ArrowBack, ArrowForward, Flip, Preview } from "@mui/icons-material";
 
-import CropPreviewPanel from "@routes/admin/art/CropPreviewPanel";
-import ArtPanel from "@routes/admin/art/ArtPanel";
+import CropPreviewPanel from "@routes/tools/art/CropPreviewPanel";
+import ArtPanel from "@routes/tools/art/ArtPanel";
+import CardSearchInput from "@routes/tools/art/CardSearchInput";
 
 import { CardCountProps, IndexedCardComponent, IndexedCardQuery, withCardCount } from "@query";
 
 import { generateClipArea, Rectangle } from "@utils/generateClipArea";
 import { generateClippedImage } from "@utils/generateClippedImage";
 import { noop, noopReact } from "@utils/noop";
+import { CardSuggestionData } from "@utils/type";
 
-import { Button, Content, Controls, Root, Title, ToggleButton, TopBar } from "@routes/admin/art/index.styles";
+import { Button, CardSearchInputWrapper, Content, Controls, Root, Title, ToggleButton, TopBar } from "@routes/tools/art/index.styles";
+
 import { Placeholder } from "@styles/Placeholder";
 
 export interface AdminArtRouteProps extends CardCountProps {}
@@ -262,6 +265,19 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             layout: newNode,
         });
     };
+    public handleCardSearchSubmit = (item: CardSuggestionData) => {
+        this.setState({
+            currentIndex: item.index,
+            selection: {
+                x: 0,
+                y: 0,
+                width: 50,
+                height: 50,
+            },
+            currentCard: null,
+            flip: false,
+        });
+    };
 
     private renderArtPanel(__: ArtCropperPaneType, path: MosaicBranch[]) {
         const { flip } = this.state;
@@ -296,6 +312,10 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
                         <Button onClick={this.handlePrevClick}>
                             <ArrowBack />
                         </Button>
+                        <Placeholder />
+                        <CardSearchInputWrapper>
+                            <CardSearchInput onSubmit={this.handleCardSearchSubmit} />
+                        </CardSearchInputWrapper>
                         <Placeholder />
                         <Tooltip title="미리보기">
                             <ToggleButton activated={this.isPreviewActivated()} onClick={this.handlePreviewClick}>

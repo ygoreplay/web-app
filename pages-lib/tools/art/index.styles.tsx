@@ -126,3 +126,7 @@ export const ToggleButton = styled(({ activated, ...props }: React.ComponentProp
 
     color: ${({ activated }) => (activated ? "white" : "rgb(175, 175, 175)")};
 `;
+
+export const CardSearchInputWrapper = styled.div`
+    width: 350px;
+`;

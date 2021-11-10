@@ -4,12 +4,12 @@ import { MosaicWindow, MosaicWindowProps } from "react-mosaic-component";
 
 import { Skeleton } from "@mui/material";
 
-import { ArtCropperPaneType, PaneBaseProps } from "@routes/admin/art";
+import { ArtCropperPaneType, PaneBaseProps } from "@routes/tools/art";
 
 import MosaicWindowToolbar from "@components/MosaicWindowToolbar";
 import ResizeHandle from "@components/ResizeHandle";
 
-import { Canvas, Fill, Image, Root } from "@routes/admin/art/ArtPanel.styles";
+import { Canvas, Fill, Image, Root } from "@routes/tools/art/ArtPanel.styles";
 
 import { Rectangle, Size } from "@utils/generateClipArea";
 

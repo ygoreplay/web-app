@@ -18,6 +18,12 @@ type Card {
   type: CardType!
 }
 
+type CardSuggestion {
+  id: Int!
+  index: Int!
+  name: String!
+}
+
 enum CardType {
   Monster
   Spell
@@ -130,6 +136,7 @@ type Query {
   banLists: [String!]!
   card(id: Int!): Card
   cardCount: Int!
+  cardSuggestions(count: Int!, query: String!): [CardSuggestion!]!
   indexedCard(index: Int!): Card
   match(id: Int!): Match
   matchCount: Int!
