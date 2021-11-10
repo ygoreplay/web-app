@@ -1,5 +1,5 @@
 import React from "react";
-import { Mosaic, TileRenderer, MosaicBranch, MosaicNode } from "react-mosaic-component";
+import { Mosaic, MosaicBranch, MosaicNode, TileRenderer } from "react-mosaic-component";
 
 import { Tooltip } from "@mui/material";
 import { ArrowBack, ArrowForward, Flip, Preview } from "@mui/icons-material";
@@ -17,6 +17,8 @@ import { CardSuggestionData } from "@utils/type";
 
 import { Button, CardSearchInputWrapper, Content, Controls, Root, Title, ToggleButton, TopBar } from "@routes/tools/art/index.styles";
 
+import { CROPPER_UI_PRESET_KEYS, CROPPER_UI_PRESETS, CropperUIPresetType } from "@constants/cropper";
+
 import { Placeholder } from "@styles/Placeholder";
 
 export interface AdminArtRouteProps extends CardCountProps {}
@@ -25,7 +27,7 @@ export interface AdminArtRouteStates {
     selection: Rectangle;
     currentCard: IndexedCardQuery["indexedCard"] | null;
     layout: MosaicNode<ArtCropperPaneType> | null;
-    imageUrl: string | null;
+    imageUrls: { [key in CropperUIPresetType]: string | null } | null;
     flip: boolean;
     removePreview(): void;
 }
@@ -55,7 +57,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             height: 50,
         },
         currentCard: null,
-        imageUrl: null,
+        imageUrls: null,
         layout: { direction: "row", first: "art", second: "preview", splitPercentage: 80 },
         flip: false,
         removePreview: noop,
@@ -116,37 +118,26 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             return;
         }
 
-        const clipArea = generateClipArea(
-            selection,
-            {
-                width: 223,
-                height: 36,
-                anchor: {
-                    x: 207,
-                    y: 19,
-                },
-                threshold: {
-                    width: 0.9,
-                },
-            },
-            304,
-        );
-        const imageUrl = await generateClippedImage(
-            `https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${currentCard.id}.jpg`,
-            clipArea,
-            {
-                width: 223,
-                height: 36,
-                anchor: {
-                    x: 207,
-                    y: 19,
-                },
-            },
-            flip,
-        );
+        const imageUrls: { [key in CropperUIPresetType]: string | null } = {
+            "card-usage-list-item": null,
+            "deck-list-item": null,
+        };
+
+        for (let i = 0; i < CROPPER_UI_PRESET_KEYS.length; i++) {
+            const cropperPresetKey = CROPPER_UI_PRESET_KEYS[i];
+            const clipArea = generateClipArea(selection, CROPPER_UI_PRESETS[cropperPresetKey], 304);
+
+            // eslint-disable-next-line no-await-in-loop
+            imageUrls[cropperPresetKey] = await generateClippedImage(
+                `https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${currentCard.id}.jpg`,
+                clipArea,
+                CROPPER_UI_PRESETS[cropperPresetKey],
+                flip,
+            );
+        }
 
         this.setState({
-            imageUrl,
+            imageUrls,
         });
     };
     private mutateIndex = (delta: 1 | -1) => {
@@ -202,7 +193,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         this.setState(
             {
                 currentCard: indexedCard,
-                imageUrl: null,
+                imageUrls: null,
                 selection,
                 flip: currentData[key]?.flip || false,
             },
@@ -295,7 +286,12 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
     }
     private renderCropPreviewPanel(__: ArtCropperPaneType, path: MosaicBranch[]) {
         return (
-            <CropPreviewPanel onRemoveRetrieved={this.handlePreviewRemoveRetrieved} path={path} card={this.state.currentCard} imageUrl={this.state.imageUrl} />
+            <CropPreviewPanel
+                onRemoveRetrieved={this.handlePreviewRemoveRetrieved}
+                path={path}
+                card={this.state.currentCard}
+                imageUrls={this.state.imageUrls}
+            />
         );
     }
     private renderContent = () => {

@@ -11,3 +11,7 @@ export const Root = styled.div`
     bottom: 0;
     color: white;
 `;
+
+export const Container = styled.div`
+    margin-bottom: ${({ theme }) => theme.spacing(2)};
+`;

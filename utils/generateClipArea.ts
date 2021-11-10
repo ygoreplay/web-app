@@ -21,8 +21,9 @@ export type ImageClipArea = ReturnType<typeof generateClipArea>;
 export function generateClipArea(clip: Rectangle, { width: containerWidth, height: containerHeight, threshold }: Container, imageSize: number = 304) {
     const { x, y, width: clipWidth, height: clipHeight } = clip;
     let newX = x;
+    let newY = y;
     let newWidth = clipWidth;
-    const newHeight = clipHeight;
+    let newHeight = clipHeight;
     let scaling = 1;
 
     if (clipHeight > containerHeight) {
@@ -41,11 +42,19 @@ export function generateClipArea(clip: Rectangle, { width: containerWidth, heigh
         }
     }
 
+    while (newHeight < containerHeight) {
+        newHeight++;
+        if (newY > 0) {
+            newY--;
+        }
+    }
+
     return {
         ...clip,
         width: newWidth,
         height: newHeight,
         x: newX,
+        y: newY,
         imageSize,
         scaling,
     };

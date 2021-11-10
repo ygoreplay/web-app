@@ -6,15 +6,17 @@ import { Root, CardName, Item, UsageCount, CardImage } from "./CardUsage.styles"
 import FlipMove from "react-flip-move";
 
 export interface CardUsageProps {
-    usages: CardUsageData[];
+    usages: (CardUsageData & { image?: string | null })[];
 }
 export interface CardUsageStates {}
 
 export default class CardUsage extends React.Component<CardUsageProps, CardUsageStates> {
-    private renderItem = (usage: CardUsageData) => {
+    private renderItem = (usage: CardUsageData & { image?: string | null }) => {
+        const imageUrl = usage.image || `https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${usage.card.id}.jpg`;
+
         return (
             <Item key={usage.card.id}>
-                <CardImage style={{ backgroundImage: `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${usage.card.id}.jpg)` }} />
+                <CardImage style={{ backgroundImage: `url(${imageUrl})` }} />
                 <CardName>{usage.card.text.name}</CardName>
                 <UsageCount>
                     <span>{usage.count.toLocaleString()}</span>
