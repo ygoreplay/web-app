@@ -55,6 +55,24 @@ type Deck {
   updatedAt: DateTime!
 }
 
+type DeckTitleCard {
+  cardId: Int!
+  createdAt: DateTime!
+  id: Int!
+  name: String!
+  updatedAt: DateTime!
+}
+
+input DeckTitleCardInput {
+  cardId: Int!
+  deckName: String!
+}
+
+type DeckType {
+  id: Int!
+  name: String!
+}
+
 type DeckUsage {
   count: Int!
   deckName: String!
@@ -117,6 +135,10 @@ enum MonsterCardType {
   Xyz
 }
 
+type Mutation {
+  registerDeckTitleCards(input: [DeckTitleCardInput!]!): [DeckTitleCard!]!
+}
+
 type Player {
   createdAt: DateTime!
   id: Int!
@@ -137,6 +159,9 @@ type Query {
   card(id: Int!): Card
   cardCount: Int!
   cardSuggestions(count: Int!, query: String!): [CardSuggestion!]!
+  deck(id: Int!): Deck
+  deckTitleCards: [DeckTitleCard!]!
+  deckTypes: [DeckType!]!
   indexedCard(index: Int!): Card
   match(id: Int!): Match
   matchCount: Int!

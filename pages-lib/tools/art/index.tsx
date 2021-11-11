@@ -169,6 +169,22 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             this.setState((prevState: AdminArtRouteStates) => ({
                 currentIndex: prevState.currentIndex - 1,
             }));
+        } else if (e.key === "Tab") {
+            this.setState(
+                ({ flip }: AdminArtRouteStates) => ({
+                    flip: !flip,
+                }),
+                () => {
+                    const { currentCard, selection, flip } = this.state;
+                    if (!currentCard) {
+                        return;
+                    }
+
+                    this.generateCroppedImage();
+                    this.saveCurrentSelection(currentCard, selection, flip);
+                },
+            );
+            e.preventDefault();
         }
     };
     private handlePreviewRemoveRetrieved = (remove: () => void) => {

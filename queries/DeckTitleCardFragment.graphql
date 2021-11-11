@@ -1,0 +1,7 @@
+fragment NormalDeckTitleCard on DeckTitleCard {
+    id
+    name
+    createdAt
+    updatedAt
+    cardId
+}

@@ -1,0 +1,5 @@
+mutation registerDeckTitleCards($input: [DeckTitleCardInput!]!) {
+    registerDeckTitleCards(input: $input) {
+        ...NormalDeckTitleCard
+    }
+}

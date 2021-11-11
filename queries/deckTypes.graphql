@@ -1,0 +1,6 @@
+query deckTypes {
+    deckTypes {
+        id
+        name
+    }
+}

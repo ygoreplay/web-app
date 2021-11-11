@@ -1,0 +1,22 @@
+fragment CardDataForDeckCardTool on Card {
+    id
+    type
+    text {
+        name
+    }
+}
+
+query deckForDeckCardTool($id: Int!) {
+    deck(id: $id) {
+        id
+        main {
+            ...CardDataForDeckCardTool
+        }
+        extra {
+            ...CardDataForDeckCardTool
+        }
+        side {
+            ...CardDataForDeckCardTool
+        }
+    }
+}
