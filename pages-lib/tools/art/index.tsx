@@ -2,7 +2,7 @@ import React from "react";
 import { Mosaic, MosaicBranch, MosaicNode, TileRenderer } from "react-mosaic-component";
 
 import { Tooltip } from "@mui/material";
-import { ArrowBack, ArrowForward, Flip, Preview } from "@mui/icons-material";
+import { ArrowBack, ArrowForward, Preview } from "@mui/icons-material";
 
 import CropPreviewPanel from "@routes/tools/art/CropPreviewPanel";
 import ArtPanel from "@routes/tools/art/ArtPanel";
@@ -28,12 +28,11 @@ export interface AdminArtRouteStates {
     currentCard: IndexedCardQuery["indexedCard"] | null;
     layout: MosaicNode<ArtCropperPaneType> | null;
     imageUrls: { [key in CropperUIPresetType]: string | null } | null;
-    flip: boolean;
     removePreview(): void;
 }
 
 interface ArtCropperData {
-    [key: string]: Rectangle & { flip: boolean };
+    [key: string]: Rectangle;
 }
 export type ArtCropperPaneType = "art" | "preview" | "attributes";
 
@@ -59,7 +58,6 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         currentCard: null,
         imageUrls: null,
         layout: { direction: "row", first: "art", second: "preview", splitPercentage: 20 },
-        flip: false,
         removePreview: noop,
     };
 
@@ -102,18 +100,17 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
     private saveData = (data: ArtCropperData) => {
         localStorage.setItem("art-cropper", JSON.stringify(data));
     };
-    private saveCurrentSelection = (card: Exclude<IndexedCardQuery["indexedCard"], null | undefined>, selection: Rectangle, flip: boolean) => {
+    private saveCurrentSelection = (card: Exclude<IndexedCardQuery["indexedCard"], null | undefined>, selection: Rectangle) => {
         const savedData = this.getSavedData();
         savedData[card.id.toString()] = {
             ...selection,
-            flip,
         };
 
         this.saveData(savedData);
     };
 
     private generateCroppedImage = async () => {
-        const { currentCard, selection, flip } = this.state;
+        const { currentCard, selection } = this.state;
         if (!currentCard) {
             return;
         }
@@ -121,6 +118,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         const imageUrls: { [key in CropperUIPresetType]: string | null } = {
             "card-usage-list-item": null,
             "deck-list-item": null,
+            "match-list-item": null,
         };
 
         for (let i = 0; i < CROPPER_UI_PRESET_KEYS.length; i++) {
@@ -128,12 +126,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             const clipArea = generateClipArea(selection, CROPPER_UI_PRESETS[cropperPresetKey], 304);
 
             // eslint-disable-next-line no-await-in-loop
-            imageUrls[cropperPresetKey] = await generateClippedImage(
-                `/api/304x304/${currentCard.id}.jpg`,
-                clipArea,
-                CROPPER_UI_PRESETS[cropperPresetKey],
-                flip,
-            );
+            imageUrls[cropperPresetKey] = await generateClippedImage(`/api/304x304/${currentCard.id}.jpg`, clipArea, CROPPER_UI_PRESETS[cropperPresetKey]);
         }
 
         this.setState({
@@ -153,7 +146,6 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
                     height: 50,
                 },
                 currentCard: null,
-                flip: false,
             };
         });
     };
@@ -169,22 +161,6 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             this.setState((prevState: AdminArtRouteStates) => ({
                 currentIndex: prevState.currentIndex - 1,
             }));
-        } else if (e.key === "Tab") {
-            this.setState(
-                ({ flip }: AdminArtRouteStates) => ({
-                    flip: !flip,
-                }),
-                () => {
-                    const { currentCard, selection, flip } = this.state;
-                    if (!currentCard) {
-                        return;
-                    }
-
-                    this.generateCroppedImage();
-                    this.saveCurrentSelection(currentCard, selection, flip);
-                },
-            );
-            e.preventDefault();
         }
     };
     private handlePreviewRemoveRetrieved = (remove: () => void) => {
@@ -211,7 +187,6 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
                 currentCard: indexedCard,
                 imageUrls: null,
                 selection,
-                flip: currentData[key]?.flip || false,
             },
             () => {
                 if (key in currentData) {
@@ -238,24 +213,8 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             });
         }
     };
-    private handleFlipClick = () => {
-        this.setState(
-            ({ flip }: AdminArtRouteStates) => ({
-                flip: !flip,
-            }),
-            () => {
-                const { currentCard, selection, flip } = this.state;
-                if (!currentCard) {
-                    return;
-                }
-
-                this.generateCroppedImage();
-                this.saveCurrentSelection(currentCard, selection, flip);
-            },
-        );
-    };
     private handleSelectionChange = (selection: Rectangle) => {
-        const { currentCard, flip } = this.state;
+        const { currentCard } = this.state;
         if (!currentCard) {
             return;
         }
@@ -265,7 +224,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         });
 
         this.generateCroppedImage();
-        this.saveCurrentSelection(currentCard, selection, flip);
+        this.saveCurrentSelection(currentCard, selection);
     };
     private handleLayoutChange = (newNode: MosaicNode<ArtCropperPaneType> | null) => {
         this.setState({
@@ -282,17 +241,13 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
                 height: 50,
             },
             currentCard: null,
-            flip: false,
         });
     };
 
     private renderArtPanel(__: ArtCropperPaneType, path: MosaicBranch[]) {
-        const { flip } = this.state;
-
         return (
             <ArtPanel
                 targetPreviewSize={{ width: 223, height: 36 }}
-                flip={flip}
                 path={path}
                 card={this.state.currentCard}
                 onChange={this.handleSelectionChange}
@@ -312,7 +267,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
     }
     private renderContent = () => {
         const { data } = this.props;
-        const { flip, currentCard: card, currentIndex, layout } = this.state;
+        const { currentCard: card, currentIndex, layout } = this.state;
         if (!data || data.loading || !data.cardCount) {
             return null;
         }
@@ -332,11 +287,6 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
                         <Tooltip title="미리보기">
                             <ToggleButton activated={this.isPreviewActivated()} onClick={this.handlePreviewClick}>
                                 <Preview />
-                            </ToggleButton>
-                        </Tooltip>
-                        <Tooltip title="X축 반전">
-                            <ToggleButton activated={flip} onClick={this.handleFlipClick}>
-                                <Flip />
                             </ToggleButton>
                         </Tooltip>
                         <Button onClick={this.handleNextClick}>

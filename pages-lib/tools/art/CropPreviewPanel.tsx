@@ -4,6 +4,7 @@ import { MosaicWindow, MosaicWindowProps } from "react-mosaic-component";
 
 import { ArtCropperPaneType, PaneBaseProps } from "@routes/tools/art";
 
+import MatchListItem from "@components/MatchList/Item";
 import MosaicWindowToolbar from "@components/MosaicWindowToolbar";
 import DeckRecipeListItem from "@components/DeckRecipe/ListItem";
 import { withMosaic, WithMosaicProps } from "@components/HOC/withMosaic";
@@ -13,7 +14,7 @@ import { Container, Root } from "@routes/tools/art/CropPreviewPanel.styles";
 
 import { CardType, IndexedCardQuery, MonsterCardType } from "@query";
 
-import { CropperUIPresetType } from "@constants/cropper";
+import { CROPPER_PREVIEW_MATCH_LIST_ITEM, CropperUIPresetType } from "@constants/cropper";
 
 export interface CropPreviewPanelProps extends PaneBaseProps, WithMosaicProps<ArtCropperPaneType> {
     card: IndexedCardQuery["indexedCard"] | null;
@@ -51,6 +52,11 @@ class CropPreviewPanel extends React.Component<CropPreviewPanelProps, CropPrevie
                             {imageUrls["card-usage-list-item"] && (
                                 <Container style={{ width: 372 }}>
                                     <CardUsage usages={[{ card: { id: card.id, text: card.text }, count: 1, image: imageUrls["card-usage-list-item"] }]} />
+                                </Container>
+                            )}
+                            {imageUrls["match-list-item"] && (
+                                <Container style={{ width: 900 }}>
+                                    <MatchListItem imageUrl={imageUrls["match-list-item"]} match={CROPPER_PREVIEW_MATCH_LIST_ITEM} />
                                 </Container>
                             )}
                         </>

@@ -1,17 +1,16 @@
 import { Container } from "@utils/generateClipArea";
+import { Match } from "@utils/type";
+import { MatchType } from "queries/index";
 
-export type CropperUIPresetType = "deck-list-item" | "card-usage-list-item";
+export type CropperUIPresetType = "deck-list-item" | "card-usage-list-item" | "match-list-item";
 
 export const CROPPER_UI_PRESETS: { [key in CropperUIPresetType]: Container } = {
     "deck-list-item": {
-        width: 223,
+        width: 224,
         height: 36,
         anchor: {
-            x: 207,
-            y: 19,
-        },
-        threshold: {
-            width: 0.9,
+            x: 180,
+            y: 18,
         },
     },
     "card-usage-list-item": {
@@ -21,10 +20,33 @@ export const CROPPER_UI_PRESETS: { [key in CropperUIPresetType]: Container } = {
             x: 250,
             y: 24,
         },
-        threshold: {
-            width: 1,
+    },
+    "match-list-item": {
+        width: 200,
+        height: 56,
+        anchor: {
+            x: 50,
+            y: 28,
         },
     },
 };
 
 export const CROPPER_UI_PRESET_KEYS = Object.keys(CROPPER_UI_PRESETS) as CropperUIPresetType[];
+
+export const CROPPER_PREVIEW_MATCH_LIST_ITEM: Match = {
+    id: -1,
+    type: MatchType.Athletic,
+    home: {
+        deck: { id: -1, main: [], extra: [], side: [], recognizedName: "테스트 덱", recognizedDeckTags: [], recognizedTags: [] },
+        player: { id: 1, name: "테스트 플레이어" },
+    },
+    away: {
+        deck: { id: -1, main: [], extra: [], side: [], recognizedName: "테스트 덱", recognizedDeckTags: [], recognizedTags: [] },
+        player: { id: -1, name: "테스트 플레이어" },
+    },
+    finishedAt: "",
+    startedAt: "",
+    winner: {
+        id: -1,
+    },
+};

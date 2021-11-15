@@ -35,24 +35,13 @@ export function flipImage(image: HTMLImageElement | HTMLCanvasElement) {
     return canvasDOM;
 }
 
-export async function generateClippedImage(src: string, clipArea: ImageClipArea, container: Container, flip: boolean) {
+export async function generateClippedImage(src: string, clipArea: ImageClipArea, container: Container) {
     let image: HTMLImageElement | HTMLCanvasElement = await loadImage(src);
-    if (clipArea.scaling !== 1) {
-        const scaledImage = scalingImage(image, clipArea.scaling, 304, 304);
-        if (!scaledImage) {
-            return Promise.resolve(null);
-        }
-
-        image = scaledImage;
-    }
-
-    if (flip) {
+    if (clipArea.flip) {
         const flippedImage = flipImage(image);
-        if (!flippedImage) {
-            return Promise.resolve(null);
+        if (flippedImage) {
+            image = flippedImage;
         }
-
-        image = flippedImage;
     }
 
     const canvasDOM = document.createElement("canvas");
@@ -65,14 +54,10 @@ export async function generateClippedImage(src: string, clipArea: ImageClipArea,
     }
 
     context.imageSmoothingEnabled = false;
-    let targetX = container.anchor.x - Math.round(clipArea.width * clipArea.scaling) / 2;
-    const targetY = container.anchor.y - Math.round(clipArea.height * clipArea.scaling) / 2 - 1;
+    const targetX = container.anchor.x - clipArea.clip.width / 2 + clipArea.translate.x;
+    const targetY = container.anchor.y - clipArea.clip.height / 2 + clipArea.translate.y;
     const targetWidth = Math.round(clipArea.width * clipArea.scaling);
     const targetHeight = Math.round(clipArea.height * clipArea.scaling);
-
-    while (targetX + targetWidth > container.width) {
-        targetX--;
-    }
 
     context.drawImage(
         image,
