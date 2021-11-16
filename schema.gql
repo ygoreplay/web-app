@@ -8,7 +8,9 @@ type Card {
   atk: Int!
   attribute: Int!
   category: Int!
+  cropperItem: CardCropperItem
   def: Int!
+  hasCropperItem: Boolean!
   id: Int!
   level: Int!
   monsterType: [MonsterCardType!]!
@@ -16,6 +18,25 @@ type Card {
   race: Int!
   text: Text!
   type: CardType!
+}
+
+input CardCropperDataInput {
+  cardId: Int!
+  height: Int!
+  width: Int!
+  x: Int!
+  y: Int!
+}
+
+type CardCropperItem {
+  cardId: Int!
+  createdAt: DateTime!
+  height: Int!
+  id: Int!
+  updatedAt: DateTime!
+  width: Int!
+  x: Int!
+  y: Int!
 }
 
 type CardSuggestion {
@@ -52,10 +73,12 @@ type Deck {
   recognizedTags: [String!]!
   side: [Card!]!
   sideIds: [Int!]!
+  titleCard: DeckTitleCard
   updatedAt: DateTime!
 }
 
 type DeckTitleCard {
+  card: Card!
   cardId: Int!
   createdAt: DateTime!
   id: Int!
@@ -137,6 +160,7 @@ enum MonsterCardType {
 
 type Mutation {
   registerDeckTitleCards(input: [DeckTitleCardInput!]!): [DeckTitleCard!]!
+  saveCropperData(input: [CardCropperDataInput!]!): [CardCropperItem!]!
 }
 
 type Player {
@@ -159,6 +183,8 @@ type Query {
   card(id: Int!): Card
   cardCount: Int!
   cardSuggestions(count: Int!, query: String!): [CardSuggestion!]!
+  cards(ids: [Int!]): [Card!]!
+  cropperItem(id: Int!): CardCropperItem
   deck(id: Int!): Deck
   deckTitleCards: [DeckTitleCard!]!
   deckTypes: [DeckType!]!

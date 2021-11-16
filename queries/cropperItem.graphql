@@ -1,0 +1,9 @@
+query cropperItem($id: Int!) {
+    cropperItem(id: $id) {
+        id
+        x
+        y
+        width
+        height
+    }
+}

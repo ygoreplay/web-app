@@ -1,6 +1,13 @@
 query indexedCard($index: Int!) {
     indexedCard(index: $index) {
         id
+        cropperItem {
+            id
+            x
+            y
+            width
+            height
+        }
         text {
             name
         }

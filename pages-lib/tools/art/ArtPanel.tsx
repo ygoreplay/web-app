@@ -20,6 +20,7 @@ export interface ArtPanelProps extends PaneBaseProps {
     selection: Rectangle;
     onChange(selection: Rectangle): void;
     targetPreviewSize: Size;
+    loading: boolean;
 }
 export interface ArtPanelStates {}
 
@@ -69,19 +70,21 @@ export default class ArtPanel extends React.Component<ArtPanelProps, ArtPanelSta
     };
 
     public render() {
-        const { path, card, selection } = this.props;
+        const { path, card, selection, loading } = this.props;
 
         return (
             <MosaicWindow<ArtCropperPaneType> title="작업 영역" path={path} draggable={false} renderToolbar={this.renderToolBar}>
                 <Root>
                     <Canvas>
-                        <Image
-                            style={{
-                                backgroundImage: card ? `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${card.id}.jpg)` : undefined,
-                            }}
-                            onClick={this.handleImageClick}
-                        />
-                        {!card && <Skeleton variant="rectangular" height={304} width={304} />}
+                        {!loading && (
+                            <Image
+                                style={{
+                                    backgroundImage: card ? `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${card.id}.jpg)` : undefined,
+                                }}
+                                onClick={this.handleImageClick}
+                            />
+                        )}
+                        {(!card || loading) && <Skeleton variant="rectangular" height={304} width={304} />}
                         {card && (
                             <Rnd
                                 bounds="parent"

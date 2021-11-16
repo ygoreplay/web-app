@@ -1,27 +1,41 @@
 import React from "react";
 import { Mosaic, MosaicBranch, MosaicNode, TileRenderer } from "react-mosaic-component";
 
-import { Tooltip } from "@mui/material";
-import { ArrowBack, ArrowForward, Preview } from "@mui/icons-material";
+import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
+
+import { Fab, Tooltip, Zoom } from "@mui/material";
+import { ArrowBack, ArrowForward, Preview, Save } from "@mui/icons-material";
 
 import CropPreviewPanel from "@routes/tools/art/CropPreviewPanel";
 import ArtPanel from "@routes/tools/art/ArtPanel";
 import CardSearchInput from "@routes/tools/art/CardSearchInput";
+import CropperCardList, { CropperCardListUpdater } from "@routes/tools/art/CardList";
 
-import { CardCountProps, IndexedCardComponent, IndexedCardQuery, withCardCount } from "@query";
+import {
+    CardCountProps,
+    CardCropperDataInput,
+    IndexedCardComponent,
+    IndexedCardQuery,
+    IndexedCardQueryResult,
+    SaveCropperDataDocument,
+    SaveCropperDataMutation,
+    SaveCropperDataMutationVariables,
+    withCardCount,
+} from "@query";
 
 import { generateClipArea, Rectangle } from "@utils/generateClipArea";
 import { generateClippedImage } from "@utils/generateClippedImage";
-import { noop, noopReact } from "@utils/noop";
+import { noop } from "@utils/noop";
 import { CardSuggestionData } from "@utils/type";
 
 import { Button, CardSearchInputWrapper, Content, Controls, Root, Title, ToggleButton, TopBar } from "@routes/tools/art/index.styles";
+import { FabContainer } from "@routes/tools/deck-card/index.styles";
 
 import { CROPPER_UI_PRESET_KEYS, CROPPER_UI_PRESETS, CropperUIPresetType } from "@constants/cropper";
 
 import { Placeholder } from "@styles/Placeholder";
 
-export interface AdminArtRouteProps extends CardCountProps {}
+export interface AdminArtRouteProps {}
 export interface AdminArtRouteStates {
     currentIndex: number;
     selection: Rectangle;
@@ -29,84 +43,55 @@ export interface AdminArtRouteStates {
     layout: MosaicNode<ArtCropperPaneType> | null;
     imageUrls: { [key in CropperUIPresetType]: string | null } | null;
     removePreview(): void;
+    unsavedSelectionData: { [key: number]: Rectangle | undefined };
 }
 
-interface ArtCropperData {
-    [key: string]: Rectangle;
-}
 export type ArtCropperPaneType = "art" | "preview" | "attributes";
 
 export interface PaneBaseProps {
     path: MosaicBranch[];
 }
 
-class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteStates> {
-    private renderer: { [key in ArtCropperPaneType]: TileRenderer<ArtCropperPaneType> } = {
+class AdminArtRoute extends React.Component<WithApolloClient<AdminArtRouteProps & CardCountProps>, AdminArtRouteStates> {
+    private renderer: {
+        [key in ArtCropperPaneType]: (...args: [...Parameters<TileRenderer<ArtCropperPaneType>>, boolean]) => ReturnType<TileRenderer<ArtCropperPaneType>>;
+    } = {
         art: this.renderArtPanel.bind(this),
         preview: this.renderCropPreviewPanel.bind(this),
         attributes: () => <></>,
     };
+    private cardListUpdater: CropperCardListUpdater | null = null;
 
     public state: AdminArtRouteStates = {
         currentIndex: 0,
         selection: {
-            x: 0,
-            y: 0,
+            x: 152,
+            y: 152,
             width: 50,
             height: 50,
         },
         currentCard: null,
         imageUrls: null,
-        layout: { direction: "row", first: "art", second: "preview", splitPercentage: 20 },
+        layout: { direction: "row", first: "art", second: "preview", splitPercentage: 30 },
         removePreview: noop,
+        unsavedSelectionData: {},
     };
-
-    public componentDidMount() {
-        window.addEventListener("keydown", this.handleKeyDown, false);
-    }
-    public componentWillUnmount() {
-        window.removeEventListener("keydown", this.handleKeyDown, false);
-    }
 
     private isPreviewActivated = (layout = this.state.layout): boolean => {
         if (!layout) {
             return false;
         }
-
         if (typeof layout === "string") {
             return layout === "preview";
         }
-
         if (typeof layout.first === "string" && layout.first === "preview") {
             return true;
         }
-
         if (typeof layout.second === "string" && layout.second === "preview") {
             return true;
         }
 
         return this.isPreviewActivated(layout.first) || this.isPreviewActivated(layout.second);
-    };
-
-    private getSavedData = (): ArtCropperData => {
-        const savedData = localStorage.getItem("art-cropper");
-        if (!savedData) {
-            localStorage.setItem("art-cropper", JSON.stringify({}));
-            return {};
-        }
-
-        return JSON.parse(savedData);
-    };
-    private saveData = (data: ArtCropperData) => {
-        localStorage.setItem("art-cropper", JSON.stringify(data));
-    };
-    private saveCurrentSelection = (card: Exclude<IndexedCardQuery["indexedCard"], null | undefined>, selection: Rectangle) => {
-        const savedData = this.getSavedData();
-        savedData[card.id.toString()] = {
-            ...selection,
-        };
-
-        this.saveData(savedData);
     };
 
     private generateCroppedImage = async () => {
@@ -140,8 +125,8 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             return {
                 currentIndex: index,
                 selection: {
-                    x: 0,
-                    y: 0,
+                    x: 152,
+                    y: 152,
                     width: 50,
                     height: 50,
                 },
@@ -150,19 +135,6 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         });
     };
 
-    private handleKeyDown = (e: KeyboardEvent) => {
-        console.info(e.key);
-
-        if (e.key === "ArrowRight") {
-            this.setState((prevState: AdminArtRouteStates) => ({
-                currentIndex: prevState.currentIndex + 1,
-            }));
-        } else if (e.key === "ArrowLeft") {
-            this.setState((prevState: AdminArtRouteStates) => ({
-                currentIndex: prevState.currentIndex - 1,
-            }));
-        }
-    };
     private handlePreviewRemoveRetrieved = (remove: () => void) => {
         this.setState({
             removePreview: remove,
@@ -173,27 +145,18 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             return;
         }
 
-        const key = indexedCard.id.toString();
-        const currentData = this.getSavedData();
-        const selection = currentData[key] || {
-            x: 0,
-            y: 0,
+        const selection = indexedCard.cropperItem || {
+            x: 152,
+            y: 152,
             width: 50,
             height: 50,
         };
 
-        this.setState(
-            {
-                currentCard: indexedCard,
-                imageUrls: null,
-                selection,
-            },
-            () => {
-                if (key in currentData) {
-                    this.generateCroppedImage();
-                }
-            },
-        );
+        this.setState({
+            currentCard: indexedCard,
+            imageUrls: null,
+            selection,
+        });
     };
     private handlePrevClick = () => {
         this.mutateIndex(-1);
@@ -219,12 +182,15 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             return;
         }
 
-        this.setState({
+        this.setState((prevState: AdminArtRouteStates) => ({
             selection,
-        });
+            unsavedSelectionData: {
+                ...prevState.unsavedSelectionData,
+                [currentCard.id]: selection,
+            },
+        }));
 
         this.generateCroppedImage();
-        this.saveCurrentSelection(currentCard, selection);
     };
     private handleLayoutChange = (newNode: MosaicNode<ArtCropperPaneType> | null) => {
         this.setState({
@@ -243,10 +209,56 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             currentCard: null,
         });
     };
+    public handleIndexChange = (index: number) => {
+        this.setState({
+            currentIndex: index,
+            selection: {
+                x: 152,
+                y: 152,
+                width: 50,
+                height: 50,
+            },
+            currentCard: null,
+        });
+    };
+    public handleSaveClick = async () => {
+        if (!this.props.client || !this.cardListUpdater) {
+            return;
+        }
 
-    private renderArtPanel(__: ArtCropperPaneType, path: MosaicBranch[]) {
+        const { unsavedSelectionData } = this.state;
+        const items = Object.entries(unsavedSelectionData)
+            .map<CardCropperDataInput | null>(([cardId, selection]) =>
+                selection ? { cardId: parseInt(cardId, 10), x: selection.x, y: selection.y, width: selection.width, height: selection.height } : null,
+            )
+            .filter((a: CardCropperDataInput | null): a is CardCropperDataInput => Boolean(a));
+
+        const { data } = await this.props.client.mutate<SaveCropperDataMutation, SaveCropperDataMutationVariables>({
+            mutation: SaveCropperDataDocument,
+            variables: {
+                inputs: items,
+            },
+        });
+
+        if (!data) {
+            return;
+        }
+
+        const targetCardIds = data.saveCropperData.map(item => item.cardId);
+        await this.cardListUpdater.update(targetCardIds);
+
+        this.setState({
+            unsavedSelectionData: {},
+        });
+    };
+    public handleCardListUpdater = (updater: CropperCardListUpdater) => {
+        this.cardListUpdater = updater;
+    };
+
+    private renderArtPanel(__: ArtCropperPaneType, path: MosaicBranch[], loading: boolean) {
         return (
             <ArtPanel
+                loading={loading}
                 targetPreviewSize={{ width: 223, height: 36 }}
                 path={path}
                 card={this.state.currentCard}
@@ -265,7 +277,7 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
             />
         );
     }
-    private renderContent = () => {
+    private renderContent = ({ loading }: IndexedCardQueryResult) => {
         const { data } = this.props;
         const { currentCard: card, currentIndex, layout } = this.state;
         if (!data || data.loading || !data.cardCount) {
@@ -273,55 +285,70 @@ class AdminArtRoute extends React.Component<AdminArtRouteProps, AdminArtRouteSta
         }
 
         return (
-            <Root>
-                <TopBar>
-                    <Controls>
-                        <Button onClick={this.handlePrevClick}>
-                            <ArrowBack />
-                        </Button>
-                        <Placeholder />
-                        <CardSearchInputWrapper>
-                            <CardSearchInput onSubmit={this.handleCardSearchSubmit} />
-                        </CardSearchInputWrapper>
-                        <Placeholder />
-                        <Tooltip title="미리보기">
-                            <ToggleButton activated={this.isPreviewActivated()} onClick={this.handlePreviewClick}>
-                                <Preview />
-                            </ToggleButton>
-                        </Tooltip>
-                        <Button onClick={this.handleNextClick}>
-                            <ArrowForward />
-                        </Button>
-                    </Controls>
-                    <Title>{card ? `[${currentIndex} / ${data.cardCount}] ${card.text.name} (${card.id})` : `로딩중...`}</Title>
-                </TopBar>
-                <Content>
-                    <Mosaic<ArtCropperPaneType>
-                        renderTile={(tile, path) => this.renderer[tile](tile, path)}
-                        onChange={this.handleLayoutChange}
-                        value={layout}
-                        className=""
-                    />
-                </Content>
-            </Root>
+            <>
+                <Root>
+                    <TopBar>
+                        <Controls>
+                            <Button onClick={this.handlePrevClick}>
+                                <ArrowBack />
+                            </Button>
+                            <Placeholder />
+                            <CardSearchInputWrapper>
+                                <CardSearchInput onSubmit={this.handleCardSearchSubmit} />
+                            </CardSearchInputWrapper>
+                            <Placeholder />
+                            <Tooltip title="미리보기">
+                                <ToggleButton activated={this.isPreviewActivated()} onClick={this.handlePreviewClick}>
+                                    <Preview />
+                                </ToggleButton>
+                            </Tooltip>
+                            <Button onClick={this.handleNextClick}>
+                                <ArrowForward />
+                            </Button>
+                        </Controls>
+                        <Title>{card ? `[${currentIndex} / ${data.cardCount}] ${card.text.name} (${card.id})` : `로딩중...`}</Title>
+                    </TopBar>
+                    <Content>
+                        <Mosaic<ArtCropperPaneType>
+                            renderTile={(tile, path) => this.renderer[tile](tile, path, loading)}
+                            onChange={this.handleLayoutChange}
+                            value={layout}
+                            className=""
+                        />
+                    </Content>
+                </Root>
+            </>
         );
     };
     public render() {
         const { data } = this.props;
-        const { currentIndex } = this.state;
+        const { currentIndex, unsavedSelectionData } = this.state;
+        const isChanged = Object.keys(unsavedSelectionData).length > 0;
         if (!data || data.loading || !data.cardCount) {
             return null;
         }
 
         return (
             <>
-                <IndexedCardComponent onCompleted={this.handleIndexedCardComplete} variables={{ index: currentIndex }}>
-                    {noopReact}
+                <CropperCardList
+                    unsavedSelectionData={unsavedSelectionData}
+                    currentIndex={currentIndex}
+                    onChange={this.handleIndexChange}
+                    onUpdater={this.handleCardListUpdater}
+                />
+                <IndexedCardComponent fetchPolicy="no-cache" onCompleted={this.handleIndexedCardComplete} variables={{ index: currentIndex }}>
+                    {this.renderContent}
                 </IndexedCardComponent>
-                {this.renderContent()}
+                <FabContainer>
+                    <Zoom in={isChanged} timeout={150} unmountOnExit>
+                        <Fab color="primary" aria-label="save" onClick={this.handleSaveClick}>
+                            <Save />
+                        </Fab>
+                    </Zoom>
+                </FabContainer>
             </>
         );
     }
 }
 
-export default withCardCount({})(AdminArtRoute);
+export default withCardCount<AdminArtRouteProps>({})(withApollo<AdminArtRouteProps & CardCountProps>(AdminArtRoute));

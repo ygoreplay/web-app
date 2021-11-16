@@ -1,0 +1,9 @@
+query allCards($ids: [Int!]) {
+    cards(ids: $ids) {
+        id
+        hasCropperItem
+        text {
+            name
+        }
+    }
+}

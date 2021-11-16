@@ -1,13 +1,20 @@
+import { NextPage } from "next";
+
+import { useApolloClient } from "@apollo/client";
 import { ThemeProvider } from "@emotion/react";
 
 import AdminArtRoute from "@routes/tools/art";
 
 import { toolTheme } from "@styles/theme";
 
-export default function AdminArt() {
+const AdminArt: NextPage = () => {
+    const client = useApolloClient();
+
     return (
         <ThemeProvider theme={toolTheme}>
-            <AdminArtRoute />
+            <AdminArtRoute client={client} />
         </ThemeProvider>
     );
-}
+};
+
+export default AdminArt;

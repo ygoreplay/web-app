@@ -26,6 +26,10 @@ fragment PlayerDeckInformation on PlayerDeck {
         recognizedName
         recognizedTags
         recognizedDeckTags
+        titleCard {
+            id
+            cardId
+        }
     }
 }
 

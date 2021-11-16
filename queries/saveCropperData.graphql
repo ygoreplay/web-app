@@ -1,0 +1,6 @@
+mutation saveCropperData($inputs: [CardCropperDataInput!]!) {
+    saveCropperData(input: $inputs) {
+        id
+        cardId
+    }
+}
