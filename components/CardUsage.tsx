@@ -12,7 +12,7 @@ export interface CardUsageStates {}
 
 export default class CardUsage extends React.Component<CardUsageProps, CardUsageStates> {
     private renderItem = (usage: CardUsageData & { image?: string | null }) => {
-        const imageUrl = usage.image || `https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${usage.card.id}.jpg`;
+        const imageUrl = usage.image || `https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/card-usage-list-item/${usage.card.id}.png`;
 
         return (
             <Item key={usage.card.id}>
