@@ -194,6 +194,7 @@ type Query {
   matches(after: Int, count: Int!, filter: MatchFilter): [Match!]!
   topUsageCards(count: Int!): [CardUsage!]!
   topUsageDecks(count: Int!): [DeckUsage!]!
+  usedCards(deckName: String!): [Card!]!
   winRate(count: Int = 10): [WinRate!]!
 }
 

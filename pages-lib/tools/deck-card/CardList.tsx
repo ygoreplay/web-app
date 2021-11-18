@@ -7,7 +7,7 @@ import { Check } from "@mui/icons-material";
 import { CardContainer, CardImage, CardItem, CardName, Root, CardType as CardDescription } from "@routes/tools/deck-card/CardList.styles";
 
 import { DeckTitleCard, DeckType } from "@utils/type";
-import { CardDataForDeckCardToolFragment, CardType, DeckForDeckCardToolProps, DeckTitleCardInput, withDeckForDeckCardTool } from "queries/index";
+import { CardDataForDeckCardToolFragment, CardType, DeckTitleCardInput, UsedCardsProps, withUsedCards } from "queries/index";
 
 export interface CardListProps {
     deckType: DeckType;
@@ -16,7 +16,7 @@ export interface CardListProps {
 }
 export interface CardListStates {}
 
-class CardList extends React.Component<CardListProps & DeckForDeckCardToolProps, CardListStates> {
+class CardList extends React.Component<CardListProps & UsedCardsProps, CardListStates> {
     public handleClick = memoizeOne((cardId: number) => {
         return () => {
             this.props.onChange(cardId);
@@ -64,26 +64,24 @@ class CardList extends React.Component<CardListProps & DeckForDeckCardToolProps,
 
     public render() {
         const { data } = this.props;
-        if (data.loading || !data.deck) {
+        if (data.loading || !data.usedCards) {
             return <Root />;
         }
 
-        const mainDeck = _.uniqBy(data.deck.main, c => c.id);
-        const extraDeck = _.uniqBy(data.deck.extra, c => c.id);
+        const mainDeck = _.uniqBy(data.usedCards, c => c.id);
 
         return (
             <Root>
                 <CardContainer>{mainDeck.map(this.renderCardItem)}</CardContainer>
-                <CardContainer>{extraDeck.map(this.renderCardItem)}</CardContainer>
             </Root>
         );
     }
 }
 
-export default withDeckForDeckCardTool<CardListProps>({
+export default withUsedCards<CardListProps>({
     options: props => ({
         variables: {
-            id: props.deckType.id,
+            deckName: props.deckType.name,
         },
     }),
 })(CardList);

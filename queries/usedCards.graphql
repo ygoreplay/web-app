@@ -1,0 +1,9 @@
+query usedCards($deckName: String!) {
+    usedCards(deckName: $deckName) {
+        id
+        type
+        text {
+            name
+        }
+    }
+}
