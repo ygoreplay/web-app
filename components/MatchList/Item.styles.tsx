@@ -1,27 +1,6 @@
 import styled from "@emotion/styled";
 
-export const Root = styled.a`
-    margin: 0;
-    padding: 0;
-
-    display: flex;
-    align-content: center;
-    justify-content: center;
-
-    position: relative;
-
-    background: white;
-
-    &:not(:last-child) {
-        border-bottom: 1px solid #e3e8f0;
-    }
-
-    &:hover {
-        background: rgba(0, 0, 0, 0.05);
-    }
-`;
-
-export const TitleCard = styled.div`
+export const TitleCard = styled.div<{ won?: boolean }>`
     width: 200px;
 
     margin: 0;
@@ -33,6 +12,9 @@ export const TitleCard = styled.div`
 
     background-size: cover;
     background-color: black;
+
+    filter: grayscale(0.6);
+    opacity: 0.5;
 
     &:after {
         content: "";
@@ -72,7 +54,7 @@ export const Part = styled.div<{ won?: boolean }>`
             transform: scaleX(-1);
 
             &:after {
-                background: linear-gradient(90deg, rgba(0, 0, 0, 0) 35%, rgba(255, 255, 255, 1) 80%);
+                background: linear-gradient(90deg, rgba(0, 0, 0, 0) 15%, rgba(255, 255, 255, 1) 75%);
             }
         }
     }
@@ -103,4 +85,50 @@ export const TierIndicator = styled.div`
     left: ${({ theme }) => theme.spacing(1)};
 
     background: rgba(255, 165, 0, 0.45);
+`;
+
+export const Root = styled.a`
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    align-content: center;
+    justify-content: center;
+
+    position: relative;
+
+    background: white;
+
+    &:not(:last-child) {
+        border-bottom: 1px solid #e3e8f0;
+    }
+
+    &:hover {
+        background: #f2f2f2;
+
+        ${Part} {
+            &:first-of-type {
+                justify-content: flex-end;
+
+                ${TitleCard} {
+                    left: 0;
+
+                    &:after {
+                        background: linear-gradient(90deg, rgba(0, 0, 0, 0) 35%, #f2f2f2 80%);
+                    }
+                }
+            }
+
+            &:not(:first-of-type) {
+                ${TitleCard} {
+                    right: 0;
+                    transform: scaleX(-1);
+
+                    &:after {
+                        background: linear-gradient(90deg, rgba(0, 0, 0, 0) 35%, #f2f2f2 80%);
+                    }
+                }
+            }
+        }
+    }
 `;

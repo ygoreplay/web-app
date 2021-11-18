@@ -49,6 +49,7 @@ export default class MatchListItem extends React.Component<MatchListItemProps, M
                         <DeckName>{match.home.deck.recognizedName}</DeckName>
                         {(imageUrl || match.home.deck.titleCard) && (
                             <TitleCard
+                                won={match.home.player.id === match.winner?.id}
                                 style={{
                                     backgroundImage: imageUrl
                                         ? `url(${imageUrl})`
@@ -65,6 +66,7 @@ export default class MatchListItem extends React.Component<MatchListItemProps, M
                         <PlayerName>{match.away.player.name}</PlayerName>
                         {(imageUrl || match.away.deck.titleCard) && (
                             <TitleCard
+                                won={match.away.player.id === match.winner?.id}
                                 style={{
                                     backgroundImage: imageUrl
                                         ? `url(${imageUrl})`
