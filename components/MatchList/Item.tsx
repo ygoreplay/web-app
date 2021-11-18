@@ -52,7 +52,9 @@ export default class MatchListItem extends React.Component<MatchListItemProps, M
                                 style={{
                                     backgroundImage: imageUrl
                                         ? `url(${imageUrl})`
-                                        : `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${match.home.deck.titleCard!.cardId}.jpg)`,
+                                        : `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/match-list-item/${
+                                              match.home.deck.titleCard!.cardId
+                                          }.png)`,
                                 }}
                             />
                         )}
@@ -66,7 +68,9 @@ export default class MatchListItem extends React.Component<MatchListItemProps, M
                                 style={{
                                     backgroundImage: imageUrl
                                         ? `url(${imageUrl})`
-                                        : `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/304x304/${match.away.deck.titleCard!.cardId}.jpg)`,
+                                        : `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/match-list-item/${
+                                              match.away.deck.titleCard!.cardId
+                                          }.png)`,
                                 }}
                             />
                         )}

@@ -26,6 +26,9 @@ query homeData($count: Int = 15, $after: Int) {
     topUsageDecks(count: 10) {
         count
         deckName
+        titleCard {
+            id
+        }
     }
     topUsageCards(count: 10) {
         card {

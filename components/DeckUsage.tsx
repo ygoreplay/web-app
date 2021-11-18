@@ -31,10 +31,14 @@ export default class DeckUsage extends React.Component<DeckUsageProps, DeckUsage
 
         return result;
     };
-    private renderUsage = ({ deckName, count }: DeckUsageData) => {
+    private renderUsage = ({ deckName, count, titleCard }: DeckUsageData) => {
+        const backgroundImage = titleCard
+            ? `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/card-usage-list-item/${titleCard.id}.png)`
+            : undefined;
+
         return (
             <Item key={deckName}>
-                <DeckImage />
+                <DeckImage style={{ backgroundImage }} />
                 <DeckName>{deckName}</DeckName>
                 <UsageCount>
                     <span>{count.toLocaleString()}</span>

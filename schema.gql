@@ -99,6 +99,7 @@ type DeckType {
 type DeckUsage {
   count: Int!
   deckName: String!
+  titleCard: Card
 }
 
 type Match {
