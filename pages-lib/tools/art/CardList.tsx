@@ -7,9 +7,10 @@ import memoizeOne from "memoize-one";
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 import { AllCardsDocument, AllCardsProps, AllCardsQuery, AllCardsQueryVariables, withAllCards } from "@query";
 
-import { Item, Root } from "@routes/tools/art/CardList.styles";
+import { Content, Item, Root, SearchWrapper } from "@routes/tools/art/CardList.styles";
 
 import { Rectangle } from "@utils/generateClipArea";
+import { TextField } from "@mui/material";
 
 export interface CropperCardListUpdater {
     update(cardIds: number[]): Promise<void>;
@@ -23,6 +24,8 @@ export interface CropperCardListProps {
 }
 export interface CropperCardListStates {
     cards: AllCardsQuery["cards"];
+    filteredCards: AllCardsQuery["cards"] | null;
+    search: string;
 }
 
 class CropperCardList extends React.Component<WithApolloClient<CropperCardListProps & AllCardsProps>, CropperCardListStates> {
@@ -30,6 +33,8 @@ class CropperCardList extends React.Component<WithApolloClient<CropperCardListPr
 
     public state: CropperCardListStates = {
         cards: [],
+        filteredCards: null,
+        search: "",
     };
 
     public handleItemClick = memoizeOne((index: number) => {
@@ -64,6 +69,14 @@ class CropperCardList extends React.Component<WithApolloClient<CropperCardListPr
         }
     }
 
+    public handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.persist();
+        this.setState((prevState: CropperCardListStates) => ({
+            search: e.target.value,
+            filteredCards: prevState.cards.filter(card => card.text.name.indexOf(e.target.value) >= 0),
+        }));
+    };
+
     private updateCardList = async (cardIds: number[]) => {
         if (!this.list.current || !this.props.client) {
             return;
@@ -93,7 +106,7 @@ class CropperCardList extends React.Component<WithApolloClient<CropperCardListPr
             currentIndex,
             unsavedSelectionData,
         } = this.props;
-        const { cards } = this.state;
+        const { cards, filteredCards } = this.state;
         if (loading || cards.length <= 0) {
             return <Item key={key} style={style} />;
         }
@@ -107,7 +120,7 @@ class CropperCardList extends React.Component<WithApolloClient<CropperCardListPr
                 activated={currentIndex === index}
                 onClick={this.handleItemClick(index)}
             >
-                <span>{cards[index].text.name}</span>
+                <span>{(filteredCards || cards)[index].text.name}</span>
             </Item>
         );
     };
@@ -115,26 +128,31 @@ class CropperCardList extends React.Component<WithApolloClient<CropperCardListPr
         const {
             data: { loading },
         } = this.props;
-        const { cards } = this.state;
+        const { cards, search, filteredCards } = this.state;
 
         return (
             <Root>
-                {!loading && cards.length > 0 && (
-                    <AutoSizer>
-                        {({ width, height }) => (
-                            <List
-                                ref={this.list}
-                                width={width}
-                                height={height}
-                                overscanColumnCount={50}
-                                noRowsRenderer={this.renderNoRows}
-                                rowCount={cards!.length}
-                                rowHeight={48}
-                                rowRenderer={this.renderRow}
-                            />
-                        )}
-                    </AutoSizer>
-                )}
+                <SearchWrapper>
+                    <TextField size="small" fullWidth onChange={this.handleSearchChange} value={search} />
+                </SearchWrapper>
+                <Content>
+                    {!loading && cards.length > 0 && (
+                        <AutoSizer>
+                            {({ width, height }) => (
+                                <List
+                                    ref={this.list}
+                                    width={width}
+                                    height={height}
+                                    overscanColumnCount={50}
+                                    noRowsRenderer={this.renderNoRows}
+                                    rowCount={filteredCards ? filteredCards!.length : cards!.length}
+                                    rowHeight={48}
+                                    rowRenderer={this.renderRow}
+                                />
+                            )}
+                        </AutoSizer>
+                    )}
+                </Content>
             </Root>
         );
     }

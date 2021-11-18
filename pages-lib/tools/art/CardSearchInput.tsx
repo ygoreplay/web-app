@@ -49,7 +49,7 @@ class CardSearchInput extends React.Component<WithApolloClient<CardSearchInputPr
                 this.setState({ loading: false });
                 callback(data.data.cardSuggestions);
             });
-    }, 200);
+    }, 500);
 
     public componentDidMount() {
         this.unmounted = false;

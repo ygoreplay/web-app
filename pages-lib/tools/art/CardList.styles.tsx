@@ -22,6 +22,15 @@ export const Root = styled.div`
     top: 0;
     left: 0;
     bottom: 0;
+
+    display: flex;
+    flex-direction: column;
+`;
+
+export const SearchWrapper = styled.div`
+    padding: ${({ theme }) => theme.spacing(2)};
+
+    flex: 0 0 auto;
 `;
 
 export const Item = styled.button<{ activated?: boolean; changed?: boolean; hasValue?: boolean }>`
@@ -73,4 +82,8 @@ export const Item = styled.button<{ activated?: boolean; changed?: boolean; hasV
         opacity: ${({ changed, hasValue }) => (hasValue || changed ? 1 : 0)};
         background-color: ${({ changed, hasValue }) => getCardIndicatorColor(changed, hasValue)};
     }
+`;
+
+export const Content = styled.div`
+    flex: 1 1 auto;
 `;

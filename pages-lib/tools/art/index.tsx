@@ -3,12 +3,11 @@ import { Mosaic, MosaicBranch, MosaicNode, TileRenderer } from "react-mosaic-com
 
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
-import { Fab, Tooltip, Zoom } from "@mui/material";
+import { Fab, ThemeProvider, Tooltip, Zoom } from "@mui/material";
 import { ArrowBack, ArrowForward, Preview, Save } from "@mui/icons-material";
 
 import CropPreviewPanel from "@routes/tools/art/CropPreviewPanel";
 import ArtPanel from "@routes/tools/art/ArtPanel";
-import CardSearchInput from "@routes/tools/art/CardSearchInput";
 import CropperCardList, { CropperCardListUpdater } from "@routes/tools/art/CardList";
 
 import {
@@ -26,13 +25,13 @@ import {
 import { generateClipArea, Rectangle } from "@utils/generateClipArea";
 import { generateClippedImage } from "@utils/generateClippedImage";
 import { noop } from "@utils/noop";
-import { CardSuggestionData } from "@utils/type";
 
-import { Button, CardSearchInputWrapper, Content, Controls, Root, Title, ToggleButton, TopBar } from "@routes/tools/art/index.styles";
+import { Button, Content, Controls, Root, Title, ToggleButton, TopBar } from "@routes/tools/art/index.styles";
 import { FabContainer } from "@routes/tools/deck-card/index.styles";
 
 import { CROPPER_UI_PRESET_KEYS, CROPPER_UI_PRESETS, CropperUIPresetType } from "@constants/cropper";
 
+import { toolTheme } from "@styles/theme";
 import { Placeholder } from "@styles/Placeholder";
 
 export interface AdminArtRouteProps {}
@@ -197,18 +196,6 @@ class AdminArtRoute extends React.Component<WithApolloClient<AdminArtRouteProps 
             layout: newNode,
         });
     };
-    public handleCardSearchSubmit = (item: CardSuggestionData) => {
-        this.setState({
-            currentIndex: item.index,
-            selection: {
-                x: 0,
-                y: 0,
-                width: 50,
-                height: 50,
-            },
-            currentCard: null,
-        });
-    };
     public handleIndexChange = (index: number) => {
         this.setState({
             currentIndex: index,
@@ -293,10 +280,6 @@ class AdminArtRoute extends React.Component<WithApolloClient<AdminArtRouteProps 
                                 <ArrowBack />
                             </Button>
                             <Placeholder />
-                            <CardSearchInputWrapper>
-                                <CardSearchInput onSubmit={this.handleCardSearchSubmit} />
-                            </CardSearchInputWrapper>
-                            <Placeholder />
                             <Tooltip title="미리보기">
                                 <ToggleButton activated={this.isPreviewActivated()} onClick={this.handlePreviewClick}>
                                     <Preview />
@@ -336,16 +319,18 @@ class AdminArtRoute extends React.Component<WithApolloClient<AdminArtRouteProps 
                     onChange={this.handleIndexChange}
                     onUpdater={this.handleCardListUpdater}
                 />
-                <IndexedCardComponent fetchPolicy="no-cache" onCompleted={this.handleIndexedCardComplete} variables={{ index: currentIndex }}>
-                    {this.renderContent}
-                </IndexedCardComponent>
-                <FabContainer>
-                    <Zoom in={isChanged} timeout={150} unmountOnExit>
-                        <Fab color="primary" aria-label="save" onClick={this.handleSaveClick}>
-                            <Save />
-                        </Fab>
-                    </Zoom>
-                </FabContainer>
+                <ThemeProvider theme={toolTheme}>
+                    <IndexedCardComponent fetchPolicy="no-cache" onCompleted={this.handleIndexedCardComplete} variables={{ index: currentIndex }}>
+                        {this.renderContent}
+                    </IndexedCardComponent>
+                    <FabContainer>
+                        <Zoom in={isChanged} timeout={150} unmountOnExit>
+                            <Fab color="primary" aria-label="save" onClick={this.handleSaveClick}>
+                                <Save />
+                            </Fab>
+                        </Zoom>
+                    </FabContainer>
+                </ThemeProvider>
             </>
         );
     }
