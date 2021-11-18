@@ -240,4 +240,5 @@ type Text {
 type WinRate {
   deckName: String!
   rate: Float!
+  titleCard: Card
 }

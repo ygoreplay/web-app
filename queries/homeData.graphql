@@ -19,6 +19,9 @@ query homeData($count: Int = 15, $after: Int) {
     winRate(count: 10) {
         deckName
         rate
+        titleCard {
+            id
+        }
     }
     matches(count: $count, after: $after) {
         ...MatchListItem

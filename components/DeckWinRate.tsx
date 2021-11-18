@@ -3,7 +3,7 @@ import tinygradient from "tinygradient";
 
 import { WinRate } from "queries/index";
 
-import { DeckName, Item, Root, WinRate as WinRateSpan } from "@components/DeckWinRate.styles";
+import { CardImage, DeckName, DeckNameContent, Item, Root, WinRate as WinRateSpan, WinRateContainer } from "@components/DeckWinRate.styles";
 import { Skeleton } from "@mui/material";
 
 interface DeckWinRateProps {
@@ -35,11 +35,19 @@ export default class DeckWinRate extends React.Component<DeckWinRateProps, DeckW
     };
     private renderWinRate = (winRate: WinRate, index: number) => {
         const value = Math.floor(winRate.rate * 1000) / 10;
+        const backgroundImage = winRate.titleCard
+            ? `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/card-usage-list-item/${winRate.titleCard.id}.png)`
+            : undefined;
 
         return (
             <Item key={winRate.deckName}>
-                <DeckName>{winRate.deckName}</DeckName>
-                <WinRateSpan style={{ color: `#${colors[index].toHex()}` }}>{value.toFixed(1)}%</WinRateSpan>
+                <DeckName>
+                    <CardImage style={{ backgroundImage }} />
+                    <DeckNameContent>{winRate.deckName}</DeckNameContent>
+                </DeckName>
+                <WinRateContainer>
+                    <WinRateSpan style={{ color: `#${colors[index].toHex()}` }}>{value.toFixed(1)}%</WinRateSpan>
+                </WinRateContainer>
             </Item>
         );
     };
