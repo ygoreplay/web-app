@@ -39,7 +39,8 @@ class CropperCardList extends React.Component<WithApolloClient<CropperCardListPr
 
     public handleItemClick = memoizeOne((index: number) => {
         return () => {
-            if (this.props.currentIndex === index) {
+            const { currentIndex } = this.props;
+            if (currentIndex === index) {
                 return;
             }
 
@@ -73,7 +74,7 @@ class CropperCardList extends React.Component<WithApolloClient<CropperCardListPr
         e.persist();
         this.setState((prevState: CropperCardListStates) => ({
             search: e.target.value,
-            filteredCards: prevState.cards.filter(card => card.text.name.indexOf(e.target.value) >= 0),
+            filteredCards: !e.target.value ? null : prevState.cards.filter(card => card.text.name.indexOf(e.target.value) >= 0),
         }));
     };
 
@@ -92,9 +93,11 @@ class CropperCardList extends React.Component<WithApolloClient<CropperCardListPr
         this.list.current.forceUpdateGrid();
         this.setState((prevState: CropperCardListStates) => {
             const newCardMap = _.chain(data.cards).keyBy("id").mapValues().value();
+            const cards = prevState.cards.map(card => (newCardMap[card.id] ? newCardMap[card.id] : card));
 
             return {
-                cards: prevState.cards.map(card => (newCardMap[card.id] ? newCardMap[card.id] : card)),
+                cards,
+                filteredCards: cards.filter(card => card.text.name.indexOf(prevState.search) >= 0),
             };
         });
     };
@@ -111,14 +114,16 @@ class CropperCardList extends React.Component<WithApolloClient<CropperCardListPr
             return <Item key={key} style={style} />;
         }
 
+        const actualIndex = !filteredCards ? index : cards.findIndex(card => card.id === filteredCards[index].id);
+
         return (
             <Item
-                hasValue={cards[index].hasCropperItem}
-                changed={Boolean(unsavedSelectionData[cards[index].id])}
+                hasValue={cards[actualIndex].hasCropperItem}
+                changed={Boolean(unsavedSelectionData[cards[actualIndex].id])}
                 key={key}
                 style={style}
-                activated={currentIndex === index}
-                onClick={this.handleItemClick(index)}
+                activated={currentIndex === actualIndex}
+                onClick={this.handleItemClick(actualIndex)}
             >
                 <span>{(filteredCards || cards)[index].text.name}</span>
             </Item>
