@@ -11,7 +11,6 @@ export const TitleCard = styled.div<{ won?: boolean }>`
     bottom: 0;
 
     background-size: cover;
-    background-color: black;
 
     filter: grayscale(0.6);
     opacity: 0.5;
