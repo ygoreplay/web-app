@@ -7,12 +7,13 @@ import { Box, Toolbar, Typography } from "@mui/material";
 
 import AppBar from "@routes/tools/deck/AppBar";
 import CardExplorer from "@routes/tools/deck/CardExplorer";
+import CardDragLayer from "@routes/tools/deck/CardDragLayer";
+import DeckView from "@routes/tools/deck/DeckView";
 
 import { Content, DeckViewWrapper, GlobalStyles, Graphics, Message, Particles } from "@routes/tools/deck/index.styles";
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
 import { AllCardsForDeckEditorDocument, AllCardsForDeckEditorQuery } from "queries/index";
-import DeckView from "@routes/tools/deck/DeckView";
 
 declare const createjs: any;
 declare const particlejs: any;
@@ -184,9 +185,10 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
                     <Content>
                         <Toolbar />
                         <DeckViewWrapper>
-                            <DeckView deck={deck} />
+                            <DeckView onAddCardRequest={this.handleAddCardRequest} deck={deck} />
                         </DeckViewWrapper>
                     </Content>
+                    <CardDragLayer />
                     <CardExplorer
                         onAddCardRequest={this.handleAddCardRequest}
                         cards={cards || []}

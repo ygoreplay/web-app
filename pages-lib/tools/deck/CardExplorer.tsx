@@ -1,27 +1,17 @@
 import React from "react";
 import { AutoSizer, List, ListRowProps } from "react-virtualized";
 import * as Hangul from "hangul-js";
+import memoizeOne from "memoize-one";
 
 import { AppBar, Box, Drawer } from "@mui/material";
 
-import {
-    CardDescription,
-    CardDescriptionItem,
-    CardImage,
-    CardListContainer,
-    CardName,
-    Container,
-    Item,
-    Root,
-    TextField,
-    Toolbar,
-} from "@routes/tools/deck/CardExplorer.styles";
+import CardExplorerItem from "@routes/tools/deck/CardExplorerItem";
 
-import { AllCardsForDeckEditorQuery, CardType, MonsterCardType } from "queries/index";
-import { CardAttributeNames, CardRaceNames, TrapSpellCardTypeNames } from "@constants/card";
-import memoizeOne from "memoize-one";
+import { CardListContainer, Root, TextField, Toolbar } from "@routes/tools/deck/CardExplorer.styles";
 
-type Card = AllCardsForDeckEditorQuery["cards"][0];
+import { AllCardsForDeckEditorQuery } from "queries/index";
+
+export type Card = AllCardsForDeckEditorQuery["cards"][0];
 
 export interface CardExplorerProps {
     open: boolean;
@@ -77,46 +67,7 @@ export default class CardExplorer extends React.Component<CardExplorerProps, Car
         const targetCards = filteredCards || cards;
         const card = targetCards[index];
 
-        let description = "알 수 없는 카드 정보";
-        // eslint-disable-next-line default-case
-        switch (card.type) {
-            case CardType.Monster:
-                description = `${CardAttributeNames[card.attribute]} - ${CardRaceNames[card.race]} - ${
-                    card.monsterType.indexOf(MonsterCardType.Xyz) >= 0 ? "☆" : "★"
-                } ${card.level}`;
-                break;
-
-            case CardType.Spell:
-                description = `마법 - ${TrapSpellCardTypeNames[card.trapSpellType]}`;
-                break;
-
-            case CardType.Trap:
-                description = `함정 - ${TrapSpellCardTypeNames[card.trapSpellType]}`;
-                break;
-        }
-
-        return (
-            <Item key={key} style={style} onContextMenu={this.handleCardContextMenu(card)}>
-                <CardImage
-                    style={{
-                        backgroundImage: `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/card-image/${card.id}.jpg)` /* , backgroundColor: "rgba(255, 255, 255, 0.15)" */,
-                    }}
-                />
-                <CardDescription>
-                    <CardName>{card.text.name}</CardName>
-                    <Container>
-                        <CardDescriptionItem>{description}</CardDescriptionItem>
-                    </Container>
-                    <Container>
-                        {card.type === CardType.Monster && (
-                            <CardDescriptionItem>
-                                {card.atk === -2 ? "?" : card.atk} / {card.def === -2 ? "?" : card.def}
-                            </CardDescriptionItem>
-                        )}
-                    </Container>
-                </CardDescription>
-            </Item>
-        );
+        return <CardExplorerItem key={key} card={card} style={style} onCardContextMenu={this.handleCardContextMenu(card)} />;
     };
     private renderContent = () => {
         const { cards } = this.props;

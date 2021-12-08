@@ -1,3 +1,6 @@
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+
 import { NextPage } from "next";
 import Head from "next/head";
 
@@ -22,12 +25,14 @@ const deckToolTheme = createTheme({
 
 const DeckTool: NextPage<DeckToolProps> = () => (
     <ThemeProvider theme={deckToolTheme}>
-        <Head>
-            <title>덱 편집 - YGOReplay</title>
-            <script src="/scripts/createjs.min.js" />
-            <script src="/scripts/particlejs.min.js" />
-        </Head>
-        <DeckToolRoute />
+        <DndProvider backend={HTML5Backend}>
+            <Head>
+                <title>덱 편집 - YGOReplay</title>
+                <script src="/scripts/createjs.min.js" />
+                <script src="/scripts/particlejs.min.js" />
+            </Head>
+            <DeckToolRoute />
+        </DndProvider>
     </ThemeProvider>
 );
 
