@@ -6,18 +6,31 @@ type Card {
   _setcode: Int!
   alias: Int!
   atk: Int!
-  attribute: Int!
+  attribute: CardAttribute!
   category: Int!
   cropperItem: CardCropperItem
   def: Int!
   hasCropperItem: Boolean!
   id: Int!
+  isExtra: Boolean!
   level: Int!
   monsterType: [MonsterCardType!]!
   ot: Int!
-  race: Int!
+  race: CardRace!
   text: Text!
+  trapSpellType: TrapSpellCardType!
   type: CardType!
+}
+
+enum CardAttribute {
+  Dark
+  Divine
+  Earth
+  Fire
+  Light
+  None
+  Water
+  Wind
 }
 
 input CardCropperDataInput {
@@ -37,6 +50,35 @@ type CardCropperItem {
   width: Int!
   x: Int!
   y: Int!
+}
+
+enum CardRace {
+  Aqua
+  Beast
+  BeastWarrior
+  CreatorGod
+  Cybers
+  Dinosaur
+  Divine
+  Dragon
+  Fairy
+  Fiend
+  Fish
+  Insect
+  Machine
+  None
+  Plant
+  Psycho
+  Pyro
+  Reptile
+  Rock
+  SeaSerpent
+  SpellCaster
+  Thunder
+  Warrior
+  WindBeast
+  Wyrm
+  Zombie
 }
 
 type CardSuggestion {
@@ -235,6 +277,16 @@ type Text {
   str14: String!
   str15: String!
   str16: String!
+}
+
+enum TrapSpellCardType {
+  Continuous
+  Counter
+  Equip
+  Field
+  Normal
+  QuickPlay
+  Ritual
 }
 
 type WinRate {

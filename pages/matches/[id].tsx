@@ -1,10 +1,12 @@
+import React from "react";
 import type { NextPage } from "next";
+import Head from "next/head";
 
 import { initializeApollo } from "@lib/apollo";
 
 import MatchRoute from "@routes/matches/Match";
 
-import { MatchDetailedDocument, MatchDetailedQuery, MatchDetailedQueryVariables } from "@query";
+import { MatchDetailedDocument, MatchDetailedQuery, MatchDetailedQueryVariables, MatchType } from "@query";
 
 import { MatchDetail } from "@utils/type";
 
@@ -17,7 +19,16 @@ const Match: NextPage<MatchRouteProps> = ({ match }) => {
         return null;
     }
 
-    return <MatchRoute match={match} />;
+    return (
+        <>
+            <Head>
+                <title>
+                    {match.type === MatchType.Athletic ? "티어" : "일반"} 매치 #{match.id} - YGOReplay
+                </title>
+            </Head>
+            <MatchRoute match={match} />
+        </>
+    );
 };
 
 Match.getInitialProps = async context => {

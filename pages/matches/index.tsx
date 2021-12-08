@@ -3,9 +3,18 @@ import type { GetServerSideProps, NextPage } from "next";
 import MatchesRoute, { MatchesRouteProps } from "@routes/matches";
 import { initializeApollo } from "@lib/apollo";
 import { BanListsDocument, BanListsQuery } from "queries/index";
+import Head from "next/head";
+import React from "react";
 
 const Matches: NextPage<MatchesRouteProps> = ({ banLists, initialMatchListFilterOptions }) => {
-    return <MatchesRoute banLists={banLists} initialMatchListFilterOptions={initialMatchListFilterOptions} />;
+    return (
+        <>
+            <Head>
+                <title>매치 - YGOReplay</title>
+            </Head>
+            <MatchesRoute banLists={banLists} initialMatchListFilterOptions={initialMatchListFilterOptions} />
+        </>
+    );
 };
 
 export const getServerSideProps: GetServerSideProps<MatchesRouteProps> = async ({ req }) => {

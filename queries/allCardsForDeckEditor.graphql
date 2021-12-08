@@ -1,0 +1,18 @@
+query allCardsForDeckEditor {
+    cards {
+        id
+        attribute
+        race
+        type
+        trapSpellType
+        monsterType
+        level
+        atk
+        def
+        isExtra
+        text {
+            id
+            name
+        }
+    }
+}
