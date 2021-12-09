@@ -1,7 +1,7 @@
 import React from "react";
 import { Global } from "@emotion/react";
 
-import { AppBar as MuiAppBar, Toolbar, Tooltip, Typography } from "@mui/material";
+import { AppBar as MuiAppBar, Tooltip, Typography } from "@mui/material";
 import SortIcon from "@mui/icons-material/Sort";
 
 import { CARD_EXPLORER_WIDTH } from "@routes/tools/deck/CardExplorer";
@@ -9,7 +9,7 @@ import { useDeckEditor } from "@routes/tools/deck/Context";
 
 import { Placeholder } from "@styles/Placeholder";
 
-import { CustomTooltipStyles, IconButton } from "./AppBar.styles";
+import { CustomTooltipStyles, IconButton, Toolbar } from "./AppBar.styles";
 
 export default function AppBar() {
     const { sortCards } = useDeckEditor();

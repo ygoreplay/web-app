@@ -1,4 +1,4 @@
-import { IconButton as MuiIconButton, tooltipClasses } from "@mui/material";
+import { IconButton as MuiIconButton, tooltipClasses, Toolbar as MuiToolbar } from "@mui/material";
 import styled from "@emotion/styled";
 import { css } from "@emotion/react";
 
@@ -29,4 +29,8 @@ export const CustomTooltipStyles = css`
 
         background-color: rgba(70, 80, 90, 0.92) !important;
     }
+`;
+
+export const Toolbar = styled(MuiToolbar)`
+    padding-right: ${({ theme }) => theme.spacing(2)} !important;
 `;
