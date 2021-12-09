@@ -17,6 +17,7 @@ type Card {
   monsterType: [MonsterCardType!]!
   ot: Int!
   race: CardRace!
+  rawType: Int!
   text: Text!
   trapSpellType: TrapSpellCardType!
   type: CardType!

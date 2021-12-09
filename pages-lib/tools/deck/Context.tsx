@@ -7,11 +7,13 @@ interface DeckEditorProviderProps {
     handleAddCardRequest(card: Card, side?: boolean): void;
     handleRemoveCardRequest(index: number, type: DeckType): void;
     handleMoveCardRequest(dragIndex: number, hoverIndex: number, type: DeckType): void;
+    handleSortCardsRequest(): void;
 }
 interface DeckEditorContextValues {
     addCard(card: Card, side?: boolean): void;
     removeCard(index: number, type: DeckType): void;
     moveCard(dragIndex: number, hoverIndex: number, type: DeckType): void;
+    sortCards(): void;
 }
 
 export type DeckType = "main" | "extra" | "side";
@@ -20,6 +22,7 @@ const DeckEditorContext = React.createContext<DeckEditorContextValues>({
     addCard() {},
     removeCard() {},
     moveCard() {},
+    sortCards() {},
 });
 
 export default class DeckEditorProvider extends React.Component<DeckEditorProviderProps> {
@@ -27,6 +30,7 @@ export default class DeckEditorProvider extends React.Component<DeckEditorProvid
         addCard: this.addCard.bind(this),
         removeCard: this.removeCard.bind(this),
         moveCard: this.moveCard.bind(this),
+        sortCards: this.sortCards.bind(this),
     };
 
     private addCard(card: Card, side?: boolean) {
@@ -37,6 +41,9 @@ export default class DeckEditorProvider extends React.Component<DeckEditorProvid
     }
     private moveCard(dragIndex: number, hoverIndex: number, type: DeckType) {
         this.props.handleMoveCardRequest(dragIndex, hoverIndex, type);
+    }
+    private sortCards() {
+        this.props.handleSortCardsRequest();
     }
 
     public render() {

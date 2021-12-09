@@ -16,6 +16,7 @@ import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
 import { AllCardsForDeckEditorDocument, AllCardsForDeckEditorQuery } from "queries/index";
 import DeckEditorProvider, { DeckType } from "@routes/tools/deck/Context";
+import { sortCardByLevel } from "@utils/sortCardByLevel";
 
 declare const createjs: any;
 declare const particlejs: any;
@@ -174,6 +175,15 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
             };
         });
     };
+    private handleSortCardRequest = () => {
+        this.setState((prevState: DeckToolRouteStates) => ({
+            deck: {
+                main: prevState.deck.main.sort(sortCardByLevel),
+                extra: prevState.deck.extra.sort(sortCardByLevel),
+                side: prevState.deck.side.sort(sortCardByLevel),
+            },
+        }));
+    };
 
     private renderGraphics = () => {
         return (
@@ -200,6 +210,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
                 handleMoveCardRequest={this.handleMoveCardRequest}
                 handleRemoveCardRequest={this.handleRemoveCardRequest}
                 handleAddCardRequest={this.handleAddCardRequest}
+                handleSortCardsRequest={this.handleSortCardRequest}
             >
                 <Global styles={GlobalStyles} />
                 {this.renderGraphics()}

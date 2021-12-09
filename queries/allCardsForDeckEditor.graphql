@@ -4,6 +4,7 @@ query allCardsForDeckEditor {
         attribute
         race
         type
+        rawType
         alias
         trapSpellType
         monsterType
