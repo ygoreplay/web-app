@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-export const Image = styled.div`
+export const Image = styled.div<{ dragging: boolean }>`
     width: 100px;
     height: 145px;
 
@@ -29,11 +29,14 @@ export const Image = styled.div`
             left: ${({ theme }) => theme.spacing(-0.75)};
             right: ${({ theme }) => theme.spacing(-0.75)};
             bottom: ${({ theme }) => theme.spacing(-0.75)};
+
+            visibility: ${({ dragging }) => (dragging ? "hidden" : "visible")};
         }
     }
 `;
 
-export const Root = styled.div`
+export const Root = styled.div<{ dragging?: boolean }>`
+    display: ${({ dragging }) => (dragging ? "none" : "block")};
     position: relative;
 
     background-color: transparent;

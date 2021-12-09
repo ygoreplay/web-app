@@ -1,5 +1,6 @@
 import _ from "lodash";
 import React from "react";
+import update from "immutability-helper";
 
 import { Global } from "@emotion/react";
 
@@ -157,6 +158,22 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
             },
         }));
     };
+    private handleMoveCardRequest = (dragIndex: number, hoverIndex: number, type: DeckType) => {
+        this.setState((prevState: DeckToolRouteStates) => {
+            const dragCard = prevState.deck[type][dragIndex];
+            return {
+                deck: {
+                    ...prevState.deck,
+                    [type]: update(prevState.deck[type], {
+                        $splice: [
+                            [dragIndex, 1],
+                            [hoverIndex, 0, dragCard],
+                        ],
+                    }),
+                },
+            };
+        });
+    };
 
     private renderGraphics = () => {
         return (
@@ -179,7 +196,11 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         }
 
         return (
-            <DeckEditorProvider handleRemoveCardRequest={this.handleRemoveCardRequest} handleAddCardRequest={this.handleAddCardRequest}>
+            <DeckEditorProvider
+                handleMoveCardRequest={this.handleMoveCardRequest}
+                handleRemoveCardRequest={this.handleRemoveCardRequest}
+                handleAddCardRequest={this.handleAddCardRequest}
+            >
                 <Global styles={GlobalStyles} />
                 {this.renderGraphics()}
                 <Box
