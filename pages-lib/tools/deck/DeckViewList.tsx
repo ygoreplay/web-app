@@ -2,6 +2,7 @@ import React from "react";
 import { useDrop } from "react-dnd";
 
 import { Card } from "@routes/tools/deck";
+import { useDeckEditor } from "@routes/tools/deck/Context";
 
 import { MainRoot, ExtraSideRoot, List, CardView, CardImage } from "./DeckViewList.styles";
 import Measure, { ContentRect } from "react-measure";
@@ -9,19 +10,19 @@ import Measure, { ContentRect } from "react-measure";
 export interface DeckViewListProps {
     type: "main" | "side" | "extra";
     cards: Card[];
-    onAddCardRequest(card: Card, side: boolean): void;
 }
 
 export default function DeckViewList(props: DeckViewListProps) {
-    const { type, cards, onAddCardRequest } = props;
+    const { type, cards } = props;
+    const { addCard } = useDeckEditor();
     const [, drop] = useDrop(
         () => ({
             accept: `card`,
             drop(item: { card: Card }) {
-                onAddCardRequest(item.card, type === "side");
+                addCard(item.card, type === "side");
             },
         }),
-        [type, onAddCardRequest],
+        [type, addCard],
     );
 
     const [width, setWidth] = React.useState<number>(0);

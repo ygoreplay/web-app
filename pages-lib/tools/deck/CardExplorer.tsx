@@ -5,13 +5,12 @@ import memoizeOne from "memoize-one";
 
 import { AppBar, Box, Drawer } from "@mui/material";
 
+import { Card } from "@routes/tools/deck";
 import CardExplorerItem from "@routes/tools/deck/CardExplorerItem";
 
 import { CardListContainer, Root, TextField, Toolbar } from "@routes/tools/deck/CardExplorer.styles";
 
 import { AllCardsForDeckEditorQuery } from "queries/index";
-
-export type Card = AllCardsForDeckEditorQuery["cards"][0];
 
 export interface CardExplorerProps {
     open: boolean;

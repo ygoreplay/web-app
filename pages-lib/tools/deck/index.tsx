@@ -14,6 +14,7 @@ import { Content, DeckViewWrapper, GlobalStyles, Graphics, Message, Particles } 
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
 import { AllCardsForDeckEditorDocument, AllCardsForDeckEditorQuery } from "queries/index";
+import DeckEditorProvider from "@routes/tools/deck/Context";
 
 declare const createjs: any;
 declare const particlejs: any;
@@ -167,7 +168,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         }
 
         return (
-            <>
+            <DeckEditorProvider handleAddCardRequest={this.handleAddCardRequest}>
                 <Global styles={GlobalStyles} />
                 {this.renderGraphics()}
                 <Box
@@ -185,7 +186,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
                     <Content>
                         <Toolbar />
                         <DeckViewWrapper>
-                            <DeckView onAddCardRequest={this.handleAddCardRequest} deck={deck} />
+                            <DeckView deck={deck} />
                         </DeckViewWrapper>
                     </Content>
                     <CardDragLayer />
@@ -197,7 +198,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
                     />
                 </Box>
                 {content}
-            </>
+            </DeckEditorProvider>
         );
     }
 }
