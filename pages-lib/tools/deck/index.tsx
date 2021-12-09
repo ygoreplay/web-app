@@ -14,7 +14,7 @@ import { Content, DeckViewWrapper, GlobalStyles, Graphics, Message, Particles } 
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
 import { AllCardsForDeckEditorDocument, AllCardsForDeckEditorQuery } from "queries/index";
-import DeckEditorProvider from "@routes/tools/deck/Context";
+import DeckEditorProvider, { DeckType } from "@routes/tools/deck/Context";
 
 declare const createjs: any;
 declare const particlejs: any;
@@ -146,6 +146,14 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
             };
         });
     };
+    public handleRemoveCardRequest = (index: number, type: DeckType) => {
+        this.setState((prevState: DeckToolRouteStates) => ({
+            deck: {
+                ...prevState.deck,
+                [type]: prevState.deck[type].filter((__, i) => i !== index),
+            },
+        }));
+    };
 
     private renderGraphics = () => {
         return (
@@ -168,7 +176,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         }
 
         return (
-            <DeckEditorProvider handleAddCardRequest={this.handleAddCardRequest}>
+            <DeckEditorProvider handleRemoveCardRequest={this.handleRemoveCardRequest} handleAddCardRequest={this.handleAddCardRequest}>
                 <Global styles={GlobalStyles} />
                 {this.renderGraphics()}
                 <Box

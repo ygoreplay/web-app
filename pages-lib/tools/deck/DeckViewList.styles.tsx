@@ -34,24 +34,3 @@ export const List = styled.div`
         flex: 1 1 auto;
     }
 `;
-
-export const CardView = styled.div`
-    position: relative;
-
-    background-color: transparent;
-    color: transparent;
-    user-select: none;
-`;
-
-export const CardImage = styled.div`
-    width: 100px;
-    height: 145px;
-
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    background-color: transparent;
-    background-size: cover;
-    background-position: center;
-`;

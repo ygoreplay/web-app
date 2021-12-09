@@ -1,11 +1,12 @@
 import React from "react";
 import { useDrop } from "react-dnd";
+import Measure, { ContentRect } from "react-measure";
 
 import { Card } from "@routes/tools/deck";
 import { useDeckEditor } from "@routes/tools/deck/Context";
+import DeckViewListItem from "@routes/tools/deck/DeckViewListItem";
 
-import { MainRoot, ExtraSideRoot, List, CardView, CardImage } from "./DeckViewList.styles";
-import Measure, { ContentRect } from "react-measure";
+import { MainRoot, ExtraSideRoot, List } from "./DeckViewList.styles";
 
 export interface DeckViewListProps {
     type: "main" | "side" | "extra";
@@ -38,20 +39,12 @@ export default function DeckViewList(props: DeckViewListProps) {
         },
         [width, height, setHeight, setWidth],
     );
-    const renderCard = React.useCallback(
-        (card: Card) => {
-            const cardsPerRow = type !== "main" ? 15 : Math.max(10, Math.ceil(cards.length / 4));
+    const cardsPerRow = type !== "main" ? 15 : Math.max(10, Math.ceil(cards.length / 4));
 
+    const renderCard = React.useCallback(
+        (card: Card, index: number) => {
             return (
-                <CardView
-                    style={{
-                        width: Math.floor(width / cardsPerRow - ((width / cardsPerRow) * (cardsPerRow - 1) + 100 - width) / cardsPerRow),
-                        height: type !== "main" ? "100%" : Math.floor(height / 4 - ((height / 4) * 3 + 145 - height) / 4),
-                    }}
-                >
-                    {card.text.name}
-                    <CardImage style={{ backgroundImage: `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/card-image/${card.id}.jpg)` }} />
-                </CardView>
+                <DeckViewListItem key={index} index={index} card={card} type={type} containerWidth={width} containerHeight={height} cardsPerRow={cardsPerRow} />
             );
         },
         [cards, type, width, height],
