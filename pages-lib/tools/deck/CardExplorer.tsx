@@ -77,7 +77,13 @@ export default class CardExplorer extends React.Component<CardExplorerProps, Car
             <Root>
                 <AppBar elevation={0} color="transparent" sx={{ backgroundColor: "#010001" }} position="sticky">
                     <Toolbar sx={{ paddingLeft: 2, borderBottom: "1px solid rgb(19, 47, 76)" }}>
-                        <TextField fullWidth size="small" sx={{ borderColor: "rgb(30, 73, 118)" }} onChange={this.handleSearchInputChange} />
+                        <TextField
+                            placeholder="카드 검색..."
+                            fullWidth
+                            size="small"
+                            sx={{ borderColor: "rgb(30, 73, 118)" }}
+                            onChange={this.handleSearchInputChange}
+                        />
                     </Toolbar>
                 </AppBar>
                 <CardListContainer>
