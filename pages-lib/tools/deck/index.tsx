@@ -126,7 +126,10 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
     };
     private handleAddCardRequest = (card: Card, side: boolean) => {
         const { deck: previousDeck } = this.state;
-        const cardCount = [...previousDeck.main, ...previousDeck.extra, ...previousDeck.side].filter(c => c.id === card.id).length;
+        const cardCount = [...previousDeck.main, ...previousDeck.extra, ...previousDeck.side].filter(
+            c => c.id === card.id || c.alias === card.id || card.alias === c.id,
+        ).length;
+
         if (cardCount >= 3) {
             return;
         }
