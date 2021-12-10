@@ -20,15 +20,15 @@ function compareCardByLevel(left: Card, right: Card) {
         }
 
         if (left.level !== right.level) {
-            return left.level < right.level;
+            return left.level > right.level;
         }
 
         if (left.atk !== right.atk) {
-            return left.atk < right.atk;
+            return left.atk > right.atk;
         }
 
         if (left.def !== right.def) {
-            return left.def < right.def;
+            return left.def > right.def;
         }
 
         return left.id < right.id;

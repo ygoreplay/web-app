@@ -7,16 +7,16 @@ import { AppBar, Box, Drawer } from "@mui/material";
 
 import { Card } from "@routes/tools/deck";
 import CardExplorerItem from "@routes/tools/deck/CardExplorerItem";
+import { withDeckEditor, WithDeckEditorProps } from "@routes/tools/deck/withDeckEditor";
 
 import { CardListContainer, Root, TextField, Toolbar } from "@routes/tools/deck/CardExplorer.styles";
 
 import { AllCardsForDeckEditorQuery } from "queries/index";
 
-export interface CardExplorerProps {
+export interface CardExplorerProps extends WithDeckEditorProps {
     open: boolean;
     onClose(): void;
     cards: AllCardsForDeckEditorQuery["cards"];
-    onAddCardRequest(card: Card, side: boolean): void;
 }
 export interface CardExplorerStates {
     filteredCards: Card[] | null;
@@ -24,7 +24,7 @@ export interface CardExplorerStates {
 
 export const CARD_EXPLORER_WIDTH = 400;
 
-export default class CardExplorer extends React.Component<CardExplorerProps, CardExplorerStates> {
+class CardExplorer extends React.Component<CardExplorerProps, CardExplorerStates> {
     public state: CardExplorerStates = {
         filteredCards: null,
     };
@@ -56,7 +56,7 @@ export default class CardExplorer extends React.Component<CardExplorerProps, Car
     };
     private handleCardContextMenu = memoizeOne((card: Card) => {
         return (e: React.MouseEvent<HTMLDivElement>) => {
-            this.props.onAddCardRequest(card, e.shiftKey);
+            this.props.addCard(card, e.shiftKey);
         };
     });
 
@@ -149,3 +149,5 @@ export default class CardExplorer extends React.Component<CardExplorerProps, Car
         );
     }
 }
+
+export default withDeckEditor(CardExplorer);

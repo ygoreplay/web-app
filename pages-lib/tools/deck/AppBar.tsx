@@ -3,6 +3,8 @@ import { Global } from "@emotion/react";
 
 import { AppBar as MuiAppBar, Tooltip, Typography } from "@mui/material";
 import SortIcon from "@mui/icons-material/Sort";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 import { CARD_EXPLORER_WIDTH } from "@routes/tools/deck/CardExplorer";
 import { useDeckEditor } from "@routes/tools/deck/Context";
@@ -31,6 +33,16 @@ export default function AppBar() {
                 <Tooltip title="정렬">
                     <IconButton onClick={sortCards} disableRipple disableFocusRipple disableTouchRipple>
                         <SortIcon />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="덱 파일 불러오기">
+                    <IconButton onClick={sortCards} disableRipple disableFocusRipple disableTouchRipple>
+                        <FileUploadIcon />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="덱 파일 내보내기">
+                    <IconButton onClick={sortCards} disableRipple disableFocusRipple disableTouchRipple>
+                        <FileDownloadIcon />
                     </IconButton>
                 </Tooltip>
             </Toolbar>

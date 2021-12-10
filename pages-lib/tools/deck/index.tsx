@@ -1,6 +1,4 @@
-import _ from "lodash";
 import React from "react";
-import update from "immutability-helper";
 
 import { Global } from "@emotion/react";
 
@@ -10,13 +8,14 @@ import AppBar from "@routes/tools/deck/AppBar";
 import CardExplorer from "@routes/tools/deck/CardExplorer";
 import CardDragLayer from "@routes/tools/deck/CardDragLayer";
 import DeckView from "@routes/tools/deck/DeckView";
+import YDKImporter from "@routes/tools/deck/YDKImporter";
 
 import { Content, DeckViewWrapper, GlobalStyles, Graphics, Message, Particles } from "@routes/tools/deck/index.styles";
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
 import { AllCardsForDeckEditorDocument, AllCardsForDeckEditorQuery } from "queries/index";
-import DeckEditorProvider, { DeckType } from "@routes/tools/deck/Context";
-import { sortCardByLevel } from "@utils/sortCardByLevel";
+import DeckEditorProvider from "@routes/tools/deck/Context";
+import { loadDeckFromString } from "@utils/loadDeckFromString";
 
 declare const createjs: any;
 declare const particlejs: any;
@@ -126,63 +125,24 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
             cardExplorerOpened: false,
         });
     };
-    private handleAddCardRequest = (card: Card, side: boolean) => {
-        const { deck: previousDeck } = this.state;
-        const cardCount = [...previousDeck.main, ...previousDeck.extra, ...previousDeck.side].filter(
-            c => c.id === card.id || c.alias === card.id || card.alias === c.id,
-        ).length;
-
-        if (cardCount >= 3) {
+    private handleYDKFileDrop = (file: File) => {
+        const fileReader = new FileReader();
+        fileReader.onload = this.handleYDKFileLoad.bind(this, file);
+        fileReader.readAsBinaryString(file);
+    };
+    private handleYDKFileLoad = (file: File, e: ProgressEvent<FileReader>) => {
+        const { cards } = this.state;
+        if (!e.target || typeof e.target.result !== "string" || !cards) {
             return;
         }
 
-        this.setState((prevState: DeckToolRouteStates) => {
-            const deck = _.cloneDeep(prevState.deck);
-            if (side && deck.side.length < 15) {
-                deck.side.push(card);
-            } else if (card.isExtra && deck.extra.length < 15 && !side) {
-                deck.extra.push(card);
-            } else if (deck.main.length < 60 && !side) {
-                deck.main.push(card);
-            }
-
-            return {
-                deck,
-            };
+        const loadedDeck = loadDeckFromString(e.target.result, cards);
+        this.setState({
+            deck: loadedDeck,
         });
     };
-    public handleRemoveCardRequest = (index: number, type: DeckType) => {
-        this.setState((prevState: DeckToolRouteStates) => ({
-            deck: {
-                ...prevState.deck,
-                [type]: prevState.deck[type].filter((__, i) => i !== index),
-            },
-        }));
-    };
-    private handleMoveCardRequest = (dragIndex: number, hoverIndex: number, type: DeckType) => {
-        this.setState((prevState: DeckToolRouteStates) => {
-            const dragCard = prevState.deck[type][dragIndex];
-            return {
-                deck: {
-                    ...prevState.deck,
-                    [type]: update(prevState.deck[type], {
-                        $splice: [
-                            [dragIndex, 1],
-                            [hoverIndex, 0, dragCard],
-                        ],
-                    }),
-                },
-            };
-        });
-    };
-    private handleSortCardRequest = () => {
-        this.setState((prevState: DeckToolRouteStates) => ({
-            deck: {
-                main: prevState.deck.main.sort(sortCardByLevel),
-                extra: prevState.deck.extra.sort(sortCardByLevel),
-                side: prevState.deck.side.sort(sortCardByLevel),
-            },
-        }));
+    private handleDeckChange = (deck: Deck) => {
+        this.setState({ deck });
     };
 
     private renderGraphics = () => {
@@ -206,12 +166,8 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         }
 
         return (
-            <DeckEditorProvider
-                handleMoveCardRequest={this.handleMoveCardRequest}
-                handleRemoveCardRequest={this.handleRemoveCardRequest}
-                handleAddCardRequest={this.handleAddCardRequest}
-                handleSortCardsRequest={this.handleSortCardRequest}
-            >
+            <DeckEditorProvider deck={deck} onDeckChange={this.handleDeckChange}>
+                <YDKImporter onDrop={this.handleYDKFileDrop} />
                 <Global styles={GlobalStyles} />
                 {this.renderGraphics()}
                 <Box
@@ -233,12 +189,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
                         </DeckViewWrapper>
                     </Content>
                     <CardDragLayer />
-                    <CardExplorer
-                        onAddCardRequest={this.handleAddCardRequest}
-                        cards={cards || []}
-                        open={cardExplorerOpened}
-                        onClose={this.handleCardExplorerClose}
-                    />
+                    <CardExplorer cards={cards || []} open={cardExplorerOpened} onClose={this.handleCardExplorerClose} />
                 </Box>
                 {content}
             </DeckEditorProvider>

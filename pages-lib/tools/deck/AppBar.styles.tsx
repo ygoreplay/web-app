@@ -20,6 +20,10 @@ export const IconButton = styled(MuiIconButton)`
             opacity: 0.85;
         }
     }
+
+    &:not(:last-child) {
+        margin-right: ${({ theme }) => theme.spacing(1)};
+    }
 `;
 
 export const CustomTooltipStyles = css`
