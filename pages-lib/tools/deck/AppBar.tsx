@@ -16,7 +16,7 @@ import { Placeholder } from "@styles/Placeholder";
 import { CustomTooltipStyles, IconButton, Toolbar } from "./AppBar.styles";
 
 export default function AppBar() {
-    const { sortCards, importYDKFile } = useDeckEditor();
+    const { sortCards, importYDKFile, exportYDKFile } = useDeckEditor();
     const dropzone = React.useRef<DropzoneRef>(null);
 
     const handleDrop = React.useCallback(
@@ -57,12 +57,12 @@ export default function AppBar() {
                 </Tooltip>
                 <Tooltip title="덱 파일 불러오기">
                     <IconButton onClick={handleImportYDKClick} disableRipple disableFocusRipple disableTouchRipple>
-                        <FileUploadIcon />
+                        <FileDownloadIcon />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title="덱 파일 내보내기">
-                    <IconButton onClick={sortCards} disableRipple disableFocusRipple disableTouchRipple>
-                        <FileDownloadIcon />
+                    <IconButton onClick={exportYDKFile} disableRipple disableFocusRipple disableTouchRipple>
+                        <FileUploadIcon />
                     </IconButton>
                 </Tooltip>
             </Toolbar>

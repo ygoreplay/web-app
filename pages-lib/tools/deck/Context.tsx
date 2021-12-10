@@ -108,7 +108,22 @@ export default class DeckEditorProvider extends React.Component<DeckEditorProvid
 
         fileReader.readAsBinaryString(file);
     }
-    private exportYDKFile() {}
+    private exportYDKFile() {
+        const { deck } = this.props;
+        const anchor = document.createElement("a");
+
+        const deckString = ["#main", ...deck.main.map(c => c.id), "#extra", ...deck.extra.map(c => c.id), "!side", ...deck.side.map(c => c.id)].join("\n");
+        anchor.setAttribute("href", `data:text/plain;charset=utf-8,${encodeURIComponent(deckString)}`);
+        anchor.setAttribute("download", "deck.ydk");
+
+        if ("createEvent" in document) {
+            const event = document.createEvent("MouseEvents");
+            event.initEvent("click", true, true);
+            anchor.dispatchEvent(event);
+        } else {
+            anchor.click();
+        }
+    }
 
     public render() {
         const { children } = this.props;
