@@ -1,0 +1,3 @@
+mutation generateDeckRecipeImage($main: [Int!]!, $extra: [Int!]!, $side: [Int!]!) {
+    generateDeckRecipeImage(mainDeck: $main, extraDeck: $extra, sideDeck: $side)
+}

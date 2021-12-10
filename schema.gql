@@ -203,6 +203,7 @@ enum MonsterCardType {
 }
 
 type Mutation {
+  generateDeckRecipeImage(extraDeck: [Int!]!, mainDeck: [Int!]!, sideDeck: [Int!]!): String!
   registerDeckTitleCards(input: [DeckTitleCardInput!]!): [DeckTitleCard!]!
   saveCropperData(input: [CardCropperDataInput!]!): [CardCropperItem!]!
 }
