@@ -15,7 +15,6 @@ import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
 import { AllCardsForDeckEditorDocument, AllCardsForDeckEditorQuery } from "queries/index";
 import DeckEditorProvider from "@routes/tools/deck/Context";
-import { loadDeckFromString } from "@utils/loadDeckFromString";
 
 declare const createjs: any;
 declare const particlejs: any;

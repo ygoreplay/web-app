@@ -1,4 +1,6 @@
 import React from "react";
+import Dropzone, { DropzoneRef } from "react-dropzone";
+
 import { Global } from "@emotion/react";
 
 import { AppBar as MuiAppBar, Tooltip, Typography } from "@mui/material";
@@ -14,11 +16,29 @@ import { Placeholder } from "@styles/Placeholder";
 import { CustomTooltipStyles, IconButton, Toolbar } from "./AppBar.styles";
 
 export default function AppBar() {
-    const { sortCards } = useDeckEditor();
+    const { sortCards, importYDKFile } = useDeckEditor();
+    const dropzone = React.useRef<DropzoneRef>(null);
+
+    const handleDrop = React.useCallback(
+        (file: File[]) => {
+            importYDKFile(file[0]);
+        },
+        [importYDKFile],
+    );
+    const handleImportYDKClick = React.useCallback(() => {
+        if (!dropzone.current) {
+            return;
+        }
+
+        dropzone.current.open();
+    }, [dropzone]);
 
     return (
         <MuiAppBar elevation={0} color="transparent" position="fixed" sx={{ width: `calc(100% - ${CARD_EXPLORER_WIDTH}px)`, mr: `${CARD_EXPLORER_WIDTH}px` }}>
             <Global styles={CustomTooltipStyles} />
+            <Dropzone ref={dropzone} onDrop={handleDrop}>
+                {({ getInputProps }) => <input type="file" {...getInputProps()} />}
+            </Dropzone>
             <Toolbar
                 sx={{
                     borderBottom: "1px solid rgb(19, 47, 76)",
@@ -36,7 +56,7 @@ export default function AppBar() {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title="덱 파일 불러오기">
-                    <IconButton onClick={sortCards} disableRipple disableFocusRipple disableTouchRipple>
+                    <IconButton onClick={handleImportYDKClick} disableRipple disableFocusRipple disableTouchRipple>
                         <FileUploadIcon />
                     </IconButton>
                 </Tooltip>
