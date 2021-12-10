@@ -9,7 +9,7 @@ import { loadDeckFromString } from "@utils/loadDeckFromString";
 interface DeckEditorProviderProps {
     children: React.ReactNode;
     deck: Deck;
-    cards: Card[];
+    cards: Card[] | null;
     onDeckChange(deck: Deck): void;
 }
 export interface DeckEditorContextValues {

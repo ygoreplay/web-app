@@ -125,22 +125,6 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
             cardExplorerOpened: false,
         });
     };
-    private handleYDKFileDrop = (file: File) => {
-        const fileReader = new FileReader();
-        fileReader.onload = this.handleYDKFileLoad.bind(this, file);
-        fileReader.readAsBinaryString(file);
-    };
-    private handleYDKFileLoad = (file: File, e: ProgressEvent<FileReader>) => {
-        const { cards } = this.state;
-        if (!e.target || typeof e.target.result !== "string" || !cards) {
-            return;
-        }
-
-        const loadedDeck = loadDeckFromString(e.target.result, cards);
-        this.setState({
-            deck: loadedDeck,
-        });
-    };
     private handleDeckChange = (deck: Deck) => {
         this.setState({ deck });
     };
@@ -166,8 +150,8 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         }
 
         return (
-            <DeckEditorProvider deck={deck} onDeckChange={this.handleDeckChange}>
-                <YDKImporter onDrop={this.handleYDKFileDrop} />
+            <DeckEditorProvider cards={cards} deck={deck} onDeckChange={this.handleDeckChange}>
+                <YDKImporter />
                 <Global styles={GlobalStyles} />
                 {this.renderGraphics()}
                 <Box
