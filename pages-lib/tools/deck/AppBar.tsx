@@ -9,6 +9,7 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ImageIcon from "@mui/icons-material/Image";
+import CampaignIcon from "@mui/icons-material/Campaign";
 
 import { CARD_EXPLORER_WIDTH } from "@routes/tools/deck/CardExplorer";
 import { useDeckEditor } from "@routes/tools/deck/Context";
@@ -18,7 +19,7 @@ import { Placeholder } from "@styles/Placeholder";
 import { CustomTooltipStyles, IconButton, Toolbar } from "./AppBar.styles";
 
 export default function AppBar() {
-    const { sortCards, importYDKFile, exportYDKFile, exportDeckToImage } = useDeckEditor();
+    const { sortCards, importYDKFile, exportYDKFile, exportDeckToImage, createChampionship } = useDeckEditor();
     const dropzone = React.useRef<DropzoneRef>(null);
     const [anchorElement, setAnchorElement] = React.useState<HTMLButtonElement | null>(null);
 
@@ -112,6 +113,13 @@ export default function AppBar() {
                         <Typography variant="body2" color="text.secondary" sx={{ fontFamily: "'Roboto Mono', monospace" }}>
                             Ctrl+Alt+S
                         </Typography>
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={createChampionship}>
+                        <ListItemIcon>
+                            <CampaignIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>대회 개설...</ListItemText>
                     </MenuItem>
                 </Menu>
             </Toolbar>

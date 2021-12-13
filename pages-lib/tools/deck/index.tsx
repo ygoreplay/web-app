@@ -27,7 +27,9 @@ export interface Deck {
     side: Card[];
 }
 
-export interface DeckToolRouteProps {}
+export interface DeckToolRouteProps {
+    banLists: string[];
+}
 export interface DeckToolRouteStates {
     cardExplorerOpened: boolean;
     cards: Card[] | null;
@@ -136,6 +138,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         );
     };
     public render() {
+        const { banLists } = this.props;
         const { cardExplorerOpened, cards, deck } = this.state;
         let content: React.ReactNode = null;
         if (!cards) {
@@ -149,7 +152,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         }
 
         return (
-            <DeckEditorProvider cards={cards} deck={deck} onDeckChange={this.handleDeckChange}>
+            <DeckEditorProvider banLists={banLists} cards={cards} deck={deck} onDeckChange={this.handleDeckChange}>
                 <YDKImporter />
                 <Global styles={GlobalStyles} />
                 {this.renderGraphics()}
@@ -180,4 +183,4 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
     }
 }
 
-export default withApollo(DeckToolRoute);
+export default withApollo<DeckToolRouteProps>(DeckToolRoute);

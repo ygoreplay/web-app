@@ -99,6 +99,24 @@ type CardUsage {
   count: Float!
 }
 
+enum ChampionshipType {
+  Individual
+  Team
+}
+
+input CreateChampionshipArgs {
+  banList: String!
+  shareBanLists: Boolean!
+  shareCardCount: Boolean!
+  title: String!
+  type: ChampionshipType!
+}
+
+type CreateChampionshipResult {
+  joinUrl: String!
+  monitorUrl: String!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -203,6 +221,7 @@ enum MonsterCardType {
 }
 
 type Mutation {
+  createChampionship(data: CreateChampionshipArgs!): CreateChampionshipResult!
   generateDeckRecipeImage(extraDeck: [Int!]!, mainDeck: [Int!]!, sideDeck: [Int!]!): String!
   registerDeckTitleCards(input: [DeckTitleCardInput!]!): [DeckTitleCard!]!
   saveCropperData(input: [CardCropperDataInput!]!): [CardCropperItem!]!
@@ -224,6 +243,7 @@ type PlayerDeck {
 }
 
 type Query {
+  availableBanLists: [String!]!
   banLists: [String!]!
   card(id: Int!): Card
   cardCount: Int!

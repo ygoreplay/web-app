@@ -15,16 +15,19 @@ import { loadDeckFromString } from "@utils/loadDeckFromString";
 import { GenerateDeckRecipeImageDocument, GenerateDeckRecipeImageMutation, GenerateDeckRecipeImageMutationVariables } from "queries/index";
 
 import { DeckImage } from "@routes/tools/deck/Context.styles";
+import ChampionshipSettingsDialog from "@routes/tools/deck/ChampionshipSettingsDialog";
 
 interface DeckEditorProviderProps {
     children: React.ReactNode;
     deck: Deck;
     cards: Card[] | null;
     onDeckChange(deck: Deck): void;
+    banLists: string[];
 }
 interface DeckEditorProviderStates {
     deckImageUrl: string | null;
     deckImageLoading: boolean;
+    championship: boolean;
 }
 
 export interface DeckEditorContextValues {
@@ -35,6 +38,8 @@ export interface DeckEditorContextValues {
     importYDKFile(file: File): void;
     exportYDKFile(): void;
     exportDeckToImage(): Promise<void>;
+    createChampionship(): void;
+    getAvailableBanLists(): string[];
 }
 
 export type DeckType = "main" | "extra" | "side";
@@ -47,6 +52,10 @@ const DeckEditorContext = React.createContext<DeckEditorContextValues>({
     importYDKFile() {},
     exportYDKFile() {},
     async exportDeckToImage() {},
+    createChampionship() {},
+    getAvailableBanLists() {
+        return [];
+    },
 });
 
 class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProviderProps>, DeckEditorProviderStates> {
@@ -58,11 +67,14 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
         importYDKFile: this.importYDKFile.bind(this),
         exportYDKFile: this.exportYDKFile.bind(this),
         exportDeckToImage: this.exportDeckToImage.bind(this),
+        createChampionship: this.createChampionship.bind(this),
+        getAvailableBanLists: this.getAvailableBanLists.bind(this),
     };
 
     public state: DeckEditorProviderStates = {
         deckImageUrl: null,
         deckImageLoading: false,
+        championship: false,
     };
 
     private handleClose = () => {
@@ -70,7 +82,15 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
             deckImageUrl: null,
         });
     };
+    public handleChampionshipSettingsDialogClose = () => {
+        this.setState({
+            championship: false,
+        });
+    };
 
+    private getAvailableBanLists() {
+        return this.props.banLists;
+    }
     private addCard(card: Card, side?: boolean) {
         const { deck: previousDeck, onDeckChange } = this.props;
         const cardCount = [...previousDeck.main, ...previousDeck.extra, ...previousDeck.side].filter(
@@ -175,10 +195,15 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
 
         this.setState({ deckImageUrl: data.generateDeckRecipeImage, deckImageLoading: false });
     }
+    private createChampionship() {
+        this.setState({
+            championship: true,
+        });
+    }
 
     public render() {
-        const { children } = this.props;
-        const { deckImageUrl, deckImageLoading } = this.state;
+        const { children, banLists } = this.props;
+        const { deckImageUrl, deckImageLoading, championship } = this.state;
 
         return (
             <DeckEditorContext.Provider value={this.contextValue}>
@@ -189,6 +214,7 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
                 <Backdrop sx={{ color: "#fff", zIndex: theme => theme.zIndex.drawer + 1 }} open={Boolean(deckImageUrl)} onClick={this.handleClose}>
                     {deckImageUrl && <DeckImage src={deckImageUrl} />}
                 </Backdrop>
+                <ChampionshipSettingsDialog banLists={banLists} open={championship} onClose={this.handleChampionshipSettingsDialogClose} />
             </DeckEditorContext.Provider>
         );
     }

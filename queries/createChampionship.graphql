@@ -1,0 +1,6 @@
+mutation createChampionship($data: CreateChampionshipArgs!) {
+    createChampionship(data: $data) {
+        joinUrl
+        monitorUrl
+    }
+}

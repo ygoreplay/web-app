@@ -1,16 +1,22 @@
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 
 import { createTheme, ThemeProvider } from "@mui/material";
 
+import { initializeApollo } from "@lib/apollo";
+
 import DeckToolRoute from "@routes/tools/deck";
 
-interface DeckToolProps {}
+import { AvailableBanListsDocument, AvailableBanListsQuery } from "@query";
 
-const deckToolTheme = createTheme({
+interface DeckToolProps {
+    banLists: string[];
+}
+
+export const deckToolTheme = createTheme({
     palette: {
         mode: "dark",
         text: {
@@ -23,7 +29,7 @@ const deckToolTheme = createTheme({
     },
 });
 
-const DeckTool: NextPage<DeckToolProps> = () => (
+const DeckTool: NextPage<DeckToolProps> = ({ banLists }) => (
     <ThemeProvider theme={deckToolTheme}>
         <DndProvider backend={HTML5Backend}>
             <Head>
@@ -31,9 +37,22 @@ const DeckTool: NextPage<DeckToolProps> = () => (
                 <script src="/scripts/createjs.min.js" />
                 <script src="/scripts/particlejs.min.js" />
             </Head>
-            <DeckToolRoute />
+            <DeckToolRoute banLists={banLists} />
         </DndProvider>
     </ThemeProvider>
 );
+
+export const getServerSideProps: GetServerSideProps<DeckToolProps> = async ({ req }) => {
+    const apolloClient = initializeApollo({ headers: req?.headers });
+    const { data } = await apolloClient.query<AvailableBanListsQuery>({
+        query: AvailableBanListsDocument,
+    });
+
+    return {
+        props: {
+            banLists: data.availableBanLists,
+        },
+    };
+};
 
 export default DeckTool;
