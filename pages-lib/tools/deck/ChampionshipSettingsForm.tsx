@@ -55,7 +55,7 @@ class ChampionshipSettingsForm extends React.Component<
 
     public state: ChampionshipSettingsFormStates = {
         currentStep: "title",
-        joinToken: { joinUrl: "LNwzhC0AgEIcPigL", monitorUrl: "KR6jkMWm8sK45Wdd", __typename: "CreateChampionshipResult" },
+        joinToken: null,
     };
 
     private handleClick = async () => {
@@ -177,7 +177,8 @@ class ChampionshipSettingsForm extends React.Component<
                     </Root>
                     <Footer>
                         <NextButton>
-                            <span>확인</span>
+                            <span>닫기</span>
+                            <ArrowRightIcon />
                         </NextButton>
                     </Footer>
                 </>

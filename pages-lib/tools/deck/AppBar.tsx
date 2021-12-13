@@ -19,7 +19,7 @@ import { Placeholder } from "@styles/Placeholder";
 import { CustomTooltipStyles, IconButton, Toolbar } from "./AppBar.styles";
 
 export default function AppBar() {
-    const { sortCards, importYDKFile, exportYDKFile, exportDeckToImage, createChampionship } = useDeckEditor();
+    const { sortCards, importYDKFile, exportYDKFile, exportDeckToImage, createChampionship, getCurrentChampionship } = useDeckEditor();
     const dropzone = React.useRef<DropzoneRef>(null);
     const [anchorElement, setAnchorElement] = React.useState<HTMLButtonElement | null>(null);
 
@@ -46,6 +46,8 @@ export default function AppBar() {
         dropzone.current.open();
     }, [dropzone]);
 
+    const championship = getCurrentChampionship();
+
     return (
         <MuiAppBar elevation={0} color="transparent" position="fixed" sx={{ width: `calc(100% - ${CARD_EXPLORER_WIDTH}px)`, mr: `${CARD_EXPLORER_WIDTH}px` }}>
             <Global styles={CustomTooltipStyles} />
@@ -60,7 +62,7 @@ export default function AppBar() {
                 }}
             >
                 <Typography variant="h6" noWrap component="div">
-                    덱 편집
+                    {championship ? `${championship.name} 덱 제출` : "덱 편집"}
                 </Typography>
                 <Placeholder />
                 <Tooltip title="정렬">
@@ -114,13 +116,17 @@ export default function AppBar() {
                             Ctrl+Alt+S
                         </Typography>
                     </MenuItem>
-                    <Divider />
-                    <MenuItem onClick={createChampionship}>
-                        <ListItemIcon>
-                            <CampaignIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText>대회 개설...</ListItemText>
-                    </MenuItem>
+                    {!championship && (
+                        <>
+                            <Divider />
+                            <MenuItem onClick={createChampionship}>
+                                <ListItemIcon>
+                                    <CampaignIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText>대회 개설...</ListItemText>
+                            </MenuItem>
+                        </>
+                    )}
                 </Menu>
             </Toolbar>
         </MuiAppBar>

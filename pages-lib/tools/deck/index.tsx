@@ -13,8 +13,10 @@ import YDKImporter from "@routes/tools/deck/YDKImporter";
 import { Content, DeckViewWrapper, GlobalStyles, Graphics, Message, Particles } from "@routes/tools/deck/index.styles";
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
-import { AllCardsForDeckEditorDocument, AllCardsForDeckEditorQuery } from "queries/index";
+import { AllCardsForDeckEditorDocument, AllCardsForDeckEditorQuery } from "@query";
 import DeckEditorProvider from "@routes/tools/deck/Context";
+
+import { Championship } from "@utils/type";
 
 declare const createjs: any;
 declare const particlejs: any;
@@ -28,6 +30,7 @@ export interface Deck {
 }
 
 export interface DeckToolRouteProps {
+    championship?: Championship;
     banLists: string[];
 }
 export interface DeckToolRouteStates {
@@ -138,7 +141,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         );
     };
     public render() {
-        const { banLists } = this.props;
+        const { banLists, championship } = this.props;
         const { cardExplorerOpened, cards, deck } = this.state;
         let content: React.ReactNode = null;
         if (!cards) {
@@ -152,7 +155,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         }
 
         return (
-            <DeckEditorProvider banLists={banLists} cards={cards} deck={deck} onDeckChange={this.handleDeckChange}>
+            <DeckEditorProvider championship={championship} banLists={banLists} cards={cards} deck={deck} onDeckChange={this.handleDeckChange}>
                 <YDKImporter />
                 <Global styles={GlobalStyles} />
                 {this.renderGraphics()}

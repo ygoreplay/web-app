@@ -1,0 +1,8 @@
+query championship($id: String!) {
+    championship(id: $id) {
+        id
+        name
+        banList
+        type
+    }
+}

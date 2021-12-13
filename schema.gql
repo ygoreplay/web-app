@@ -99,6 +99,19 @@ type CardUsage {
   count: Float!
 }
 
+type Championship {
+  banList: String!
+  createdAt: DateTime!
+  id: Int!
+  joinUrlCode: String!
+  monitorUrlCode: String!
+  name: String!
+  shareBanLists: Boolean!
+  shareCardCount: Boolean!
+  type: ChampionshipType!
+  updatedAt: DateTime!
+}
+
 enum ChampionshipType {
   Individual
   Team
@@ -249,6 +262,7 @@ type Query {
   cardCount: Int!
   cardSuggestions(count: Int!, query: String!): [CardSuggestion!]!
   cards(ids: [Int!]): [Card!]!
+  championship(id: String!): Championship
   cropperItem(id: Int!): CardCropperItem
   deck(id: Int!): Deck
   deckTitleCards: [DeckTitleCard!]!

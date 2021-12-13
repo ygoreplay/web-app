@@ -8,6 +8,7 @@ import { Backdrop, CircularProgress } from "@mui/material";
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
 import { Card, Deck } from "@routes/tools/deck";
+import ChampionshipSettingsDialog from "@routes/tools/deck/ChampionshipSettingsDialog";
 
 import { sortCardByLevel } from "@utils/sortCardByLevel";
 import { loadDeckFromString } from "@utils/loadDeckFromString";
@@ -15,7 +16,8 @@ import { loadDeckFromString } from "@utils/loadDeckFromString";
 import { GenerateDeckRecipeImageDocument, GenerateDeckRecipeImageMutation, GenerateDeckRecipeImageMutationVariables } from "queries/index";
 
 import { DeckImage } from "@routes/tools/deck/Context.styles";
-import ChampionshipSettingsDialog from "@routes/tools/deck/ChampionshipSettingsDialog";
+
+import { Championship } from "@utils/type";
 
 interface DeckEditorProviderProps {
     children: React.ReactNode;
@@ -23,6 +25,7 @@ interface DeckEditorProviderProps {
     cards: Card[] | null;
     onDeckChange(deck: Deck): void;
     banLists: string[];
+    championship?: Championship;
 }
 interface DeckEditorProviderStates {
     deckImageUrl: string | null;
@@ -40,6 +43,7 @@ export interface DeckEditorContextValues {
     exportDeckToImage(): Promise<void>;
     createChampionship(): void;
     getAvailableBanLists(): string[];
+    getCurrentChampionship(): Championship | null;
 }
 
 export type DeckType = "main" | "extra" | "side";
@@ -56,6 +60,9 @@ const DeckEditorContext = React.createContext<DeckEditorContextValues>({
     getAvailableBanLists() {
         return [];
     },
+    getCurrentChampionship() {
+        return null;
+    },
 });
 
 class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProviderProps>, DeckEditorProviderStates> {
@@ -69,6 +76,7 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
         exportDeckToImage: this.exportDeckToImage.bind(this),
         createChampionship: this.createChampionship.bind(this),
         getAvailableBanLists: this.getAvailableBanLists.bind(this),
+        getCurrentChampionship: this.getCurrentChampionship.bind(this),
     };
 
     public state: DeckEditorProviderStates = {
@@ -90,6 +98,9 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
 
     private getAvailableBanLists() {
         return this.props.banLists;
+    }
+    private getCurrentChampionship() {
+        return this.props.championship || null;
     }
     private addCard(card: Card, side?: boolean) {
         const { deck: previousDeck, onDeckChange } = this.props;
