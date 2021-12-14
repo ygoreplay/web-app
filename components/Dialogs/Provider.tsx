@@ -1,7 +1,7 @@
 import React from "react";
 
-import { DialogBaseProps, DialogCloseReason, DialogContextValues, DialogItem, DialogResult, DialogType } from "@components/Dialogs/types";
-import { DialogComponentMap } from "@components/Dialogs/constants";
+import { DialogBaseProps, DialogCloseReason, DialogContextValues, DialogItem, DialogResult, DialogType } from "@dialogs/types";
+import { DialogComponentMap } from "@dialogs/constants";
 
 export interface DialogProviderProps {
     children: React.ReactNode;

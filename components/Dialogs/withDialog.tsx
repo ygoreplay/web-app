@@ -1,8 +1,8 @@
 import React from "react";
 import { Diff } from "utility-types";
 
-import { useDialog } from "@components/Dialogs/Provider";
-import { DialogContextValues } from "@components/Dialogs/types";
+import { useDialog } from "@dialogs/Provider";
+import { DialogContextValues } from "@dialogs/types";
 
 // These props will be injected into the base component
 export interface WithDialogProps extends DialogContextValues {}

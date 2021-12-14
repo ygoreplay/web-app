@@ -25,7 +25,8 @@
             "@query": ["./queries"],
             "@lib/*": ["./lib/*"],
             "@utils/*": ["./utils/*"],
-            "@constants/*": ["./constants/*"]
+            "@constants/*": ["./constants/*"],
+            "@dialogs/*": ["./components/Dialogs/*"]
         }
     },
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

@@ -3,7 +3,7 @@ import memoizeOne from "memoize-one";
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
-import { DialogBaseProps, DialogCloseReason } from "@components/Dialogs/types";
+import { DialogBaseProps, DialogCloseReason } from "@dialogs/types";
 
 export interface AlertProps extends DialogBaseProps {
     positiveButtonLabel: string;

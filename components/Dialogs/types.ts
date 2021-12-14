@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 import React from "react";
-import { DialogComponentMap } from "@components/Dialogs/constants";
+import { DialogComponentMap } from "@dialogs/constants";
 
 export enum DialogType {
     Alert = "alert",

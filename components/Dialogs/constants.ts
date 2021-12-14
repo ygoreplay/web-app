@@ -1,6 +1,6 @@
-import { DialogType } from "@components/Dialogs/types";
+import { DialogType } from "@dialogs/types";
 
-import Alert from "@components/Dialogs/Alert";
+import Alert from "@dialogs/Alert";
 
 export const DialogComponentMap = {
     [DialogType.Alert]: Alert,
