@@ -13,6 +13,9 @@ export interface DialogProviderStates {
 const DialogContext = React.createContext<DialogContextValues>({});
 
 export default class DialogProvider extends React.Component<DialogProviderProps, DialogProviderStates> {
+    public state: DialogProviderStates = {
+        dialogQueue: [],
+    };
     private contextValue: DialogContextValues = {
         showDialog: this.showDialog.bind(this),
     };

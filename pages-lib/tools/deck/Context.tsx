@@ -11,15 +11,18 @@ import { Card, Deck } from "@routes/tools/deck";
 import ChampionshipSettingsDialog from "@routes/tools/deck/ChampionshipSettingsDialog";
 import ChampionshipJoinDialog, { ChampionshipJoinDialogValue } from "@routes/tools/deck/ChampionshipJoinDialog";
 
+import { withDialog, WithDialogProps } from "@dialogs/withDialog";
+
 import { sortCardByLevel } from "@utils/sortCardByLevel";
 import { loadDeckFromString } from "@utils/loadDeckFromString";
+import { BanList, Championship } from "@utils/type";
+import { getCardBanListStatus } from "@utils/getCardBanListStatus";
+import { getMaxCardCountFromBanListStatus } from "@utils/getMaxCardCountFromBanListStatus";
 
 import { GenerateDeckRecipeImageDocument, GenerateDeckRecipeImageMutation, GenerateDeckRecipeImageMutationVariables } from "queries/index";
 
 import { DeckImage } from "@routes/tools/deck/Context.styles";
-
-import { BanList, Championship } from "@utils/type";
-import { getCardBanListStatus } from "@utils/getCardBanListStatus";
+import { DialogType } from "@dialogs/types";
 
 interface DeckEditorProviderProps {
     children: React.ReactNode;
@@ -72,7 +75,7 @@ const DeckEditorContext = React.createContext<DeckEditorContextValues>({
     banList: { limit: [], semiLimit: [], forbidden: [], __typename: "BanListDeclaration" },
 });
 
-class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProviderProps>, DeckEditorProviderStates> {
+class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProviderProps> & WithDialogProps, DeckEditorProviderStates> {
     private contextValue: Omit<DeckEditorContextValues, "banList"> = {
         addCard: this.addCard.bind(this),
         removeCard: this.removeCard.bind(this),
@@ -179,13 +182,32 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
     }
     private importYDKFile(file: File) {
         const fileReader = new FileReader();
-        fileReader.onload = e => {
-            const { cards, onDeckChange } = this.props;
+        fileReader.onload = async e => {
+            const { cards, onDeckChange, banList } = this.props;
             if (!e.target || typeof e.target.result !== "string" || !cards) {
                 return;
             }
 
             const loadedDeck = loadDeckFromString(e.target.result, cards);
+            const allCards = _.uniqBy([...loadedDeck.main, ...loadedDeck.side, ...loadedDeck.extra], c => c.id);
+            const cardCountMap = _.countBy([...loadedDeck.main, ...loadedDeck.side, ...loadedDeck.extra], c => c.alias || c.id);
+            if (banList && allCards.length > 0) {
+                for (let i = 0; i < allCards.length; i++) {
+                    const card = allCards[i];
+                    const banListStatus = getCardBanListStatus(card, banList);
+                    const allowedCount = getMaxCardCountFromBanListStatus(banListStatus);
+                    if (allowedCount < cardCountMap[card.alias || card.id]) {
+                        if (this.props.showDialog) {
+                            this.props.showDialog(DialogType.Alert, `'${card.text.name}'의 매수가 설정된 금제에 부합하지 않습니다.`, {
+                                title: "오류",
+                                positiveButtonLabel: "확인",
+                            });
+                        }
+                        return;
+                    }
+                }
+            }
+
             onDeckChange(loadedDeck);
         };
 
@@ -263,4 +285,4 @@ export function useDeckEditor() {
     return React.useContext(DeckEditorContext);
 }
 
-export default withApollo<DeckEditorProviderProps>(DeckEditorProvider);
+export default withApollo<DeckEditorProviderProps>(withDialog(DeckEditorProvider));

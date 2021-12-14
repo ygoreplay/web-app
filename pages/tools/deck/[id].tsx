@@ -7,6 +7,8 @@ import Head from "next/head";
 
 import { ThemeProvider } from "@mui/material";
 
+import DialogProvider from "@dialogs/Provider";
+
 import { initializeApollo } from "@lib/apollo";
 
 import DeckToolRoute from "@routes/tools/deck";
@@ -33,12 +35,14 @@ interface DeckToolProps {
 const DeckTool: NextPage<DeckToolProps> = ({ banLists, championship, banList }) => (
     <ThemeProvider theme={deckToolTheme}>
         <DndProvider backend={HTML5Backend}>
-            <Head>
-                <title>{championship ? `${championship.name} 덱 제출` : "덱 편집"} - YGOReplay</title>
-                <script src="/scripts/createjs.min.js" />
-                <script src="/scripts/particlejs.min.js" />
-            </Head>
-            <DeckToolRoute banLists={banLists} championship={championship} banList={banList} />
+            <DialogProvider>
+                <Head>
+                    <title>{championship ? `${championship.name} 덱 제출` : "덱 편집"} - YGOReplay</title>
+                    <script src="/scripts/createjs.min.js" />
+                    <script src="/scripts/particlejs.min.js" />
+                </Head>
+                <DeckToolRoute banLists={banLists} championship={championship} banList={banList} />
+            </DialogProvider>
         </DndProvider>
     </ThemeProvider>
 );
