@@ -4,8 +4,11 @@ import { useDrag, useDrop } from "react-dnd";
 import { Card } from "@routes/tools/deck";
 import { DECK_TOOL_DRAG_DROP_TYPES } from "@routes/tools/deck/constants";
 import { DeckType, useDeckEditor } from "@routes/tools/deck/Context";
+import { BanListStatus } from "@routes/tools/deck/types";
 
-import { Image, Root } from "./DeckViewListItem.styles";
+import { Image, Root } from "@routes/tools/deck/DeckViewListItem.styles";
+import { BanList } from "@routes/tools/deck/CardExplorerItem.styles";
+import { getImagePositionFromBanListStatus } from "@utils/getImagePositionFromBanListStatus";
 
 export interface DeckViewListItemProps {
     card: Card;
@@ -14,6 +17,7 @@ export interface DeckViewListItemProps {
     containerWidth: number;
     containerHeight: number;
     cardsPerRow: number;
+    banListStatus?: BanListStatus;
 }
 
 interface DragItem {
@@ -21,7 +25,7 @@ interface DragItem {
     index: number;
 }
 
-export default function DeckViewListItem({ card, type, index, containerWidth, containerHeight, cardsPerRow }: DeckViewListItemProps) {
+export default function DeckViewListItem({ card, type, index, containerWidth, containerHeight, cardsPerRow, banListStatus }: DeckViewListItemProps) {
     const ref = React.useRef<HTMLDivElement>(null);
     const [hoverIndex, setHoverIndex] = React.useState<number>(-1);
 
@@ -71,6 +75,7 @@ export default function DeckViewListItem({ card, type, index, containerWidth, co
         [moveCard, hoverIndex],
     );
 
+    const banListImagePosition = getImagePositionFromBanListStatus(banListStatus);
     const handleContextMenu = React.useCallback(() => {
         removeCard(index, type);
     }, [removeCard, type, index]);
@@ -93,6 +98,7 @@ export default function DeckViewListItem({ card, type, index, containerWidth, co
                 onContextMenu={handleContextMenu}
                 style={{ backgroundImage: `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/card-image/${card.id}.jpg)` }}
             />
+            {banListImagePosition && <BanList style={{ backgroundPosition: banListImagePosition }} />}
         </Root>
     );
 }

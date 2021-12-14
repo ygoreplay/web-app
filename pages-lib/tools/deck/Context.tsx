@@ -19,6 +19,7 @@ import { GenerateDeckRecipeImageDocument, GenerateDeckRecipeImageMutation, Gener
 import { DeckImage } from "@routes/tools/deck/Context.styles";
 
 import { BanList, Championship } from "@utils/type";
+import { getCardBanListStatus } from "@utils/getCardBanListStatus";
 
 interface DeckEditorProviderProps {
     children: React.ReactNode;
@@ -115,12 +116,22 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
         return this.props.banLists;
     }
     private addCard(card: Card, side?: boolean) {
-        const { deck: previousDeck, onDeckChange } = this.props;
+        const { deck: previousDeck, onDeckChange, banList } = this.props;
         const cardCount = [...previousDeck.main, ...previousDeck.extra, ...previousDeck.side].filter(
             c => c.id === card.id || c.alias === card.id || card.alias === c.id,
         ).length;
 
-        if (cardCount >= 3) {
+        let cardLimit = 3;
+        const banListStatus = getCardBanListStatus(card, banList || null);
+        if (banListStatus === "semi-limit") {
+            cardLimit = 2;
+        } else if (banListStatus === "limit") {
+            cardLimit = 1;
+        } else if (banListStatus === "forbidden") {
+            cardLimit = 0;
+        }
+
+        if (cardCount >= cardLimit) {
             return;
         }
 

@@ -3,20 +3,23 @@ import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 
 import { Card } from "@routes/tools/deck";
+import { BanListStatus } from "@routes/tools/deck/types";
 
-import { CardDescription, CardDescriptionItem, CardImage, CardName, Container, Item } from "@routes/tools/deck/CardExplorerItem.styles";
+import { BanList, CardDescription, CardDescriptionItem, CardImage, CardName, Container, Item } from "@routes/tools/deck/CardExplorerItem.styles";
 
 import { CardAttributeNames, CardRaceNames, TrapSpellCardTypeNames } from "@constants/card";
 
 import { CardType, MonsterCardType } from "queries/index";
+import { getImagePositionFromBanListStatus } from "@utils/getImagePositionFromBanListStatus";
 
 interface CardExplorerItemProps {
     style: React.CSSProperties;
     onCardContextMenu(e: React.MouseEvent<HTMLDivElement>): void;
     card: Card;
+    banListStatus?: BanListStatus;
 }
 
-export default function CardExplorerItem({ style, onCardContextMenu, card }: CardExplorerItemProps) {
+export default function CardExplorerItem({ style, onCardContextMenu, card, banListStatus }: CardExplorerItemProps) {
     const [, drag, preview] = useDrag(
         () => ({
             type: "card",
@@ -48,13 +51,17 @@ export default function CardExplorerItem({ style, onCardContextMenu, card }: Car
             break;
     }
 
+    const banListImagePosition = getImagePositionFromBanListStatus(banListStatus);
+
     return (
         <Item ref={drag} style={{ ...style }} onContextMenu={onCardContextMenu}>
             <CardImage
                 style={{
                     backgroundImage: `url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/card-image/${card.id}.jpg)` /* , backgroundColor: "rgba(255, 255, 255, 0.15)" */,
                 }}
-            />
+            >
+                {banListImagePosition && <BanList style={{ backgroundPosition: banListImagePosition }} />}
+            </CardImage>
             <CardDescription>
                 <CardName>{card.text.name}</CardName>
                 <Container>

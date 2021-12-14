@@ -8,6 +8,8 @@ import DeckViewListItem from "@routes/tools/deck/DeckViewListItem";
 
 import { MainRoot, ExtraSideRoot, List } from "./DeckViewList.styles";
 
+import { getCardBanListStatus } from "@utils/getCardBanListStatus";
+
 export interface DeckViewListProps {
     type: "main" | "side" | "extra";
     cards: Card[];
@@ -15,7 +17,7 @@ export interface DeckViewListProps {
 
 export default function DeckViewList(props: DeckViewListProps) {
     const { type, cards } = props;
-    const { addCard } = useDeckEditor();
+    const { addCard, banList } = useDeckEditor();
     const [, drop] = useDrop(
         () => ({
             accept: `card`,
@@ -44,10 +46,19 @@ export default function DeckViewList(props: DeckViewListProps) {
     const renderCard = React.useCallback(
         (card: Card, index: number) => {
             return (
-                <DeckViewListItem key={index} index={index} card={card} type={type} containerWidth={width} containerHeight={height} cardsPerRow={cardsPerRow} />
+                <DeckViewListItem
+                    key={index}
+                    index={index}
+                    card={card}
+                    type={type}
+                    containerWidth={width}
+                    containerHeight={height}
+                    cardsPerRow={cardsPerRow}
+                    banListStatus={getCardBanListStatus(card, banList)}
+                />
             );
         },
-        [cards, type, width, height],
+        [cards, type, width, height, banList],
     );
 
     const Root = type === "main" ? MainRoot : ExtraSideRoot;

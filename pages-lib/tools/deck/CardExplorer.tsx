@@ -13,6 +13,8 @@ import { CardListContainer, Root, TextField, Toolbar } from "@routes/tools/deck/
 
 import { AllCardsForDeckEditorQuery } from "queries/index";
 
+import { getCardBanListStatus } from "@utils/getCardBanListStatus";
+
 export interface CardExplorerProps extends WithDeckEditorProps {
     open: boolean;
     onClose(): void;
@@ -61,12 +63,20 @@ class CardExplorer extends React.Component<CardExplorerProps, CardExplorerStates
     });
 
     private renderItem = ({ key, index, style }: ListRowProps) => {
-        const { cards } = this.props;
+        const { cards, banList } = this.props;
         const { filteredCards } = this.state;
         const targetCards = filteredCards || cards;
         const card = targetCards[index];
 
-        return <CardExplorerItem key={key} card={card} style={style} onCardContextMenu={this.handleCardContextMenu(card)} />;
+        return (
+            <CardExplorerItem
+                banListStatus={getCardBanListStatus(card, banList)}
+                key={key}
+                card={card}
+                style={style}
+                onCardContextMenu={this.handleCardContextMenu(card)}
+            />
+        );
     };
     private renderContent = () => {
         const { cards } = this.props;

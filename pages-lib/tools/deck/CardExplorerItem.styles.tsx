@@ -26,6 +26,8 @@ export const CardImage = styled.div`
     width: 55px;
     height: 80px;
 
+    position: relative;
+
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -58,4 +60,20 @@ export const CardDescriptionItem = styled.span`
 
         display: block;
     }
+`;
+
+export const BanList = styled.div`
+    width: 64px;
+    height: 64px;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10000;
+
+    background-image: url(https://ygoreplay-static.s3.ap-northeast-2.amazonaws.com/card-limit.png);
+    background-repeat: no-repeat;
+
+    transform-origin: right top;
+    transform: scale(0.4) translate(12px, -12px);
 `;
