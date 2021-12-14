@@ -9,6 +9,7 @@ import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
 import { Card, Deck } from "@routes/tools/deck";
 import ChampionshipSettingsDialog from "@routes/tools/deck/ChampionshipSettingsDialog";
+import ChampionshipJoinDialog, { ChampionshipJoinDialogValue } from "@routes/tools/deck/ChampionshipJoinDialog";
 
 import { sortCardByLevel } from "@utils/sortCardByLevel";
 import { loadDeckFromString } from "@utils/loadDeckFromString";
@@ -31,6 +32,8 @@ interface DeckEditorProviderStates {
     deckImageUrl: string | null;
     deckImageLoading: boolean;
     championship: boolean;
+    championshipJoin: boolean;
+    championshipJoinValue: ChampionshipJoinDialogValue | null;
 }
 
 export interface DeckEditorContextValues {
@@ -44,6 +47,7 @@ export interface DeckEditorContextValues {
     createChampionship(): void;
     getAvailableBanLists(): string[];
     getCurrentChampionship(): Championship | null;
+    championshipJoinValue: ChampionshipJoinDialogValue | null;
 }
 
 export type DeckType = "main" | "extra" | "side";
@@ -63,6 +67,7 @@ const DeckEditorContext = React.createContext<DeckEditorContextValues>({
     getCurrentChampionship() {
         return null;
     },
+    championshipJoinValue: null,
 });
 
 class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProviderProps>, DeckEditorProviderStates> {
@@ -77,12 +82,15 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
         createChampionship: this.createChampionship.bind(this),
         getAvailableBanLists: this.getAvailableBanLists.bind(this),
         getCurrentChampionship: this.getCurrentChampionship.bind(this),
+        championshipJoinValue: null,
     };
 
     public state: DeckEditorProviderStates = {
         deckImageUrl: null,
         deckImageLoading: false,
         championship: false,
+        championshipJoin: Boolean(this.props.championship),
+        championshipJoinValue: null,
     };
 
     private handleClose = () => {
@@ -93,6 +101,12 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
     public handleChampionshipSettingsDialogClose = () => {
         this.setState({
             championship: false,
+        });
+    };
+    private handleChampionshipJoinDialogSubmit = (value: ChampionshipJoinDialogValue) => {
+        this.setState({
+            championshipJoinValue: value,
+            championshipJoin: false,
         });
     };
 
@@ -213,11 +227,11 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
     }
 
     public render() {
-        const { children, banLists } = this.props;
-        const { deckImageUrl, deckImageLoading, championship } = this.state;
+        const { children, banLists, championship: championshipData } = this.props;
+        const { deckImageUrl, deckImageLoading, championship, championshipJoin, championshipJoinValue } = this.state;
 
         return (
-            <DeckEditorContext.Provider value={this.contextValue}>
+            <DeckEditorContext.Provider value={{ ...this.contextValue, championshipJoinValue }}>
                 {children}
                 <Backdrop sx={{ color: "#fff", zIndex: theme => theme.zIndex.drawer + 1 }} open={deckImageLoading}>
                     <CircularProgress color="inherit" />
@@ -226,6 +240,9 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
                     {deckImageUrl && <DeckImage src={deckImageUrl} />}
                 </Backdrop>
                 <ChampionshipSettingsDialog banLists={banLists} open={championship} onClose={this.handleChampionshipSettingsDialogClose} />
+                {championshipData && (
+                    <ChampionshipJoinDialog onSubmit={this.handleChampionshipJoinDialogSubmit} championship={championshipData} open={championshipJoin} />
+                )}
             </DeckEditorContext.Provider>
         );
     }

@@ -29,6 +29,7 @@ export type ChampionshipType = "team" | "individual";
 export interface ChampionshipSettingsFormProps {
     banLists: string[];
     onSubmit(values: ChampionshipSettingsFormValues): Promise<CreateChampionshipResult>;
+    onClose(): void;
 }
 export interface ChampionshipSettingsFormStates {
     currentStep: StepId;
@@ -153,36 +154,39 @@ class ChampionshipSettingsForm extends React.Component<
         );
     }
 
+    private renderComplete = (joinToken: Exclude<ChampionshipSettingsFormStates["joinToken"], null>) => {
+        return (
+            <>
+                <Title>
+                    <Typography variant="h6">대회 개설 완료</Typography>
+                </Title>
+                <Root>
+                    <Typography variant="body1">대회 개설을 성공 하였습니다! 참가자를 모집하기 위해 다음 URL을 참가자들에게 알려주세요:</Typography>
+                    <UrlBlock>
+                        {location.protocol}
+                        {"//"}
+                        {location.host}/tools/deck/{joinToken.joinUrl}
+                    </UrlBlock>
+                    <Typography variant="body1">실시간 참가자 덱 모니터링과 같은 덱 접수 관리는 다음과 같은 URL에서 확인 하실 수 있습니다:</Typography>
+                    <UrlBlock>
+                        {location.protocol}
+                        {"//"}
+                        {location.host}/tools/deck/{joinToken.monitorUrl}
+                    </UrlBlock>
+                </Root>
+                <Footer>
+                    <NextButton onClick={this.props.onClose}>
+                        <span>닫기</span>
+                        <ArrowRightIcon />
+                    </NextButton>
+                </Footer>
+            </>
+        );
+    };
     public render() {
         const { currentStep, joinToken } = this.state;
         if (joinToken) {
-            return (
-                <>
-                    <Title>
-                        <Typography variant="h6">대회 개설 완료</Typography>
-                    </Title>
-                    <Root>
-                        <Typography variant="body1">대회 개설을 성공 하였습니다! 참가자를 모집하기 위해 다음 URL을 참가자들에게 알려주세요:</Typography>
-                        <UrlBlock>
-                            {location.protocol}
-                            {"//"}
-                            {location.host}/tools/deck/{joinToken.joinUrl}
-                        </UrlBlock>
-                        <Typography variant="body1">실시간 참가자 덱 모니터링과 같은 덱 접수 관리는 다음과 같은 URL에서 확인 하실 수 있습니다:</Typography>
-                        <UrlBlock>
-                            {location.protocol}
-                            {"//"}
-                            {location.host}/tools/deck/{joinToken.monitorUrl}
-                        </UrlBlock>
-                    </Root>
-                    <Footer>
-                        <NextButton>
-                            <span>닫기</span>
-                            <ArrowRightIcon />
-                        </NextButton>
-                    </Footer>
-                </>
-            );
+            return this.renderComplete(joinToken);
         }
 
         const currentStepItem = FORM_STEPS.find(step => step.id === currentStep);

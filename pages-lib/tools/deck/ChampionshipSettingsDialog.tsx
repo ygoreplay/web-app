@@ -61,14 +61,14 @@ class ChampionshipSettingsDialog extends React.Component<WithApolloClient<Champi
     };
 
     public render() {
-        const { open, banLists } = this.props;
+        const { open, banLists, onClose } = this.props;
         const { championshipSubmitting } = this.state;
 
         return (
             <ThemeProvider theme={deckToolDialogTheme}>
                 <Dialog maxWidth="sm" fullWidth open={open} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                     <Root>
-                        <ChampionshipSettingsForm onSubmit={this.handleSubmit} banLists={banLists} />
+                        <ChampionshipSettingsForm onClose={onClose} onSubmit={this.handleSubmit} banLists={banLists} />
                     </Root>
                 </Dialog>
                 <Backdrop sx={{ color: "#fff", zIndex: theme => theme.zIndex.drawer + 1 }} open={championshipSubmitting}>

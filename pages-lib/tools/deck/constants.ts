@@ -15,10 +15,10 @@ export const FORM_STEPS: StepDefinition[] = [
     {
         id: "title",
         title: "대회 이름 입력",
-        description: "진행할 대회의 이름을 입력 해주세요. 해당 이름은 덱 제출 인원 모두에게 공개 됩니다.",
+        description: "진행할 대회의 이름을 입력해주세요. 해당 이름은 덱 제출 인원 모두에게 공개 됩니다.",
         validate(values: ChampionshipSettingsFormValues) {
             try {
-                Yup.string().required("대회 이름을 입력 해주세요.").validateSync(values.title);
+                Yup.string().required("대회 이름을 입력해주세요.").validateSync(values.title);
                 return true;
             } catch {
                 return false;
@@ -57,8 +57,8 @@ export const FORM_STEPS: StepDefinition[] = [
 ];
 
 export const CHAMPIONSHIP_FORM_VALIDATION_SCHEMA = Yup.object().shape({
-    title: Yup.string().required("대회 이름을 입력 해주세요."),
-    type: Yup.string().oneOf(["individual", "team"], "알 수 없는 대회 진행 형식 값 입니다.").required("대회 진행 형식 값을 입력 해주세요."),
+    title: Yup.string().required("대회 이름을 입력해주세요."),
+    type: Yup.string().oneOf(["individual", "team"], "알 수 없는 대회 진행 형식 값 입니다.").required("대회 진행 형식 값을 입력해주세요."),
     banList: Yup.string().required("적용 금제 항목을 선택 해주세요."),
 });
 
