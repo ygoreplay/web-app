@@ -20,10 +20,16 @@ export default class Alert extends React.Component<AlertProps> {
     };
 
     public render() {
-        const { open, title, content, positiveButtonLabel } = this.props;
+        const { open, title, content, positiveButtonLabel, onClosed } = this.props;
 
         return (
-            <Dialog open={open} onClose={this.handleDialogClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+            <Dialog
+                TransitionProps={{ onExited: onClosed }}
+                open={open}
+                onClose={this.handleDialogClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
                 {title && <DialogTitle id="alert-dialog-title">{title}</DialogTitle>}
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">{content}</DialogContentText>
