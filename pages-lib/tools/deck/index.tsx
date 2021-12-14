@@ -38,7 +38,6 @@ export interface DeckToolRouteProps {
 export interface DeckToolRouteStates {
     cardExplorerOpened: boolean;
     cards: Card[] | null;
-    deck: Deck;
 }
 
 const LOCAL_STORAGE_KEY = "__YGOREPLAY_DECK_EDITOR_CARDS__";
@@ -47,11 +46,6 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
     public state: DeckToolRouteStates = {
         cardExplorerOpened: false,
         cards: null,
-        deck: {
-            side: [],
-            extra: [],
-            main: [],
-        },
     };
 
     public async componentDidMount() {
@@ -131,9 +125,6 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
             cardExplorerOpened: false,
         });
     };
-    private handleDeckChange = (deck: Deck) => {
-        this.setState({ deck });
-    };
 
     private renderGraphics = () => {
         return (
@@ -144,7 +135,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
     };
     public render() {
         const { banLists, championship, banList } = this.props;
-        const { cardExplorerOpened, cards, deck } = this.state;
+        const { cardExplorerOpened, cards } = this.state;
         let content: React.ReactNode = null;
         if (!cards) {
             content = (
@@ -157,14 +148,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         }
 
         return (
-            <DeckEditorProvider
-                banList={banList}
-                championship={championship}
-                banLists={banLists}
-                cards={cards}
-                deck={deck}
-                onDeckChange={this.handleDeckChange}
-            >
+            <DeckEditorProvider banList={banList} championship={championship} banLists={banLists} cards={cards}>
                 <YDKImporter />
                 <Global styles={GlobalStyles} />
                 {this.renderGraphics()}
@@ -183,8 +167,8 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
                     <Content>
                         <Toolbar />
                         <DeckViewWrapper>
-                            {championship && <ChampionshipDescription championship={championship} />}
-                            <DeckView deck={deck} />
+                            {championship && <ChampionshipDescription championshipData={championship} />}
+                            <DeckView />
                         </DeckViewWrapper>
                     </Content>
                     <CardDragLayer />

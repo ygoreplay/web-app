@@ -8,6 +8,7 @@ import { Backdrop, CircularProgress } from "@mui/material";
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
 import { Card, Deck } from "@routes/tools/deck";
+import { ParticipantType } from "@routes/tools/deck/types";
 import ChampionshipSettingsDialog from "@routes/tools/deck/ChampionshipSettingsDialog";
 import ChampionshipJoinDialog, { ChampionshipJoinDialogValue } from "@routes/tools/deck/ChampionshipJoinDialog";
 
@@ -26,9 +27,7 @@ import { DialogType } from "@dialogs/types";
 
 interface DeckEditorProviderProps {
     children: React.ReactNode;
-    deck: Deck;
     cards: Card[] | null;
-    onDeckChange(deck: Deck): void;
     banLists: string[];
     championship?: Championship;
     banList?: BanList;
@@ -39,6 +38,8 @@ interface DeckEditorProviderStates {
     championship: boolean;
     championshipJoin: boolean;
     championshipJoinValue: ChampionshipJoinDialogValue | null;
+    selectedParticipant: ParticipantType;
+    decks: { [key in ParticipantType]: Deck };
 }
 
 export interface DeckEditorContextValues {
@@ -54,6 +55,10 @@ export interface DeckEditorContextValues {
     championship: Championship | null;
     championshipJoinValue: ChampionshipJoinDialogValue | null;
     banList: BanList | null;
+    selectedParticipant: ParticipantType;
+    setSelectedParticipant(participantType: ParticipantType): void;
+    deck: Deck;
+    decks: DeckEditorProviderStates["decks"];
 }
 
 export type DeckType = "main" | "extra" | "side";
@@ -73,10 +78,14 @@ const DeckEditorContext = React.createContext<DeckEditorContextValues>({
     championship: null,
     championshipJoinValue: null,
     banList: { limit: [], semiLimit: [], forbidden: [], __typename: "BanListDeclaration" },
+    selectedParticipant: "first",
+    setSelectedParticipant() {},
+    deck: { side: [], extra: [], main: [] },
+    decks: { first: { side: [], extra: [], main: [] }, third: { side: [], extra: [], main: [] }, second: { side: [], extra: [], main: [] } },
 });
 
 class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProviderProps> & WithDialogProps, DeckEditorProviderStates> {
-    private contextValue: Omit<DeckEditorContextValues, "banList"> = {
+    private contextValue: Omit<DeckEditorContextValues, "banList" | "selectedParticipant" | "deck" | "decks"> = {
         addCard: this.addCard.bind(this),
         removeCard: this.removeCard.bind(this),
         moveCard: this.moveCard.bind(this),
@@ -86,16 +95,28 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
         exportDeckToImage: this.exportDeckToImage.bind(this),
         createChampionship: this.createChampionship.bind(this),
         getAvailableBanLists: this.getAvailableBanLists.bind(this),
+        setSelectedParticipant: this.setSelectedParticipant.bind(this),
         championship: null,
         championshipJoinValue: null,
     };
 
     public state: DeckEditorProviderStates = {
+        decks: {
+            first: { side: [], extra: [], main: [] },
+            second: { side: [], extra: [], main: [] },
+            third: { side: [], extra: [], main: [] },
+        },
         deckImageUrl: null,
         deckImageLoading: false,
         championship: false,
-        championshipJoin: Boolean(this.props.championship),
-        championshipJoinValue: null,
+        championshipJoin: false, // Boolean(this.props.championship),
+        championshipJoinValue: {
+            name: "비티어 크루",
+            firstParticipantName: "안인균",
+            secondParticipantName: "안호균",
+            thirdParticipantName: "민병현",
+        },
+        selectedParticipant: "first",
     };
 
     private handleClose = () => {
@@ -118,8 +139,30 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
     private getAvailableBanLists() {
         return this.props.banLists;
     }
+    private setSelectedParticipant(participantType: ParticipantType) {
+        this.setState({
+            selectedParticipant: participantType,
+        });
+    }
+
+    private updateDeck = (deck: Deck) => {
+        this.setState((prevState: DeckEditorProviderStates) => ({
+            decks: {
+                ...prevState.decks,
+                [prevState.selectedParticipant]: deck,
+            },
+        }));
+    };
+    private getCurrentDeck = () => {
+        const { decks, selectedParticipant } = this.state;
+        return decks[selectedParticipant];
+    };
+
     private addCard(card: Card, side?: boolean) {
-        const { deck: previousDeck, onDeckChange, banList } = this.props;
+        const { banList } = this.props;
+        const { decks, selectedParticipant } = this.state;
+        const previousDeck = decks[selectedParticipant];
+
         const cardCount = [...previousDeck.main, ...previousDeck.extra, ...previousDeck.side].filter(
             c => c.id === card.id || c.alias === card.id || card.alias === c.id,
         ).length;
@@ -147,21 +190,21 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
             deck.main.push(card);
         }
 
-        onDeckChange(deck);
+        this.updateDeck(deck);
     }
     private removeCard(index: number, type: DeckType) {
-        const { deck, onDeckChange } = this.props;
+        const deck = this.getCurrentDeck();
 
-        onDeckChange({
+        this.updateDeck({
             ...deck,
             [type]: deck[type].filter((__, i) => i !== index),
         });
     }
     private moveCard(dragIndex: number, hoverIndex: number, type: DeckType) {
-        const { deck, onDeckChange } = this.props;
+        const deck = this.getCurrentDeck();
         const dragCard = deck[type][dragIndex];
 
-        onDeckChange({
+        this.updateDeck({
             ...deck,
             [type]: update(deck[type], {
                 $splice: [
@@ -172,9 +215,9 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
         });
     }
     private sortCards() {
-        const { onDeckChange, deck } = this.props;
+        const deck = this.getCurrentDeck();
 
-        onDeckChange({
+        this.updateDeck({
             main: deck.main.sort(sortCardByLevel),
             extra: deck.extra.sort(sortCardByLevel),
             side: deck.side.sort(sortCardByLevel),
@@ -183,7 +226,7 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
     private importYDKFile(file: File) {
         const fileReader = new FileReader();
         fileReader.onload = async e => {
-            const { cards, onDeckChange, banList } = this.props;
+            const { cards, banList } = this.props;
             if (!e.target || typeof e.target.result !== "string" || !cards) {
                 return;
             }
@@ -198,23 +241,29 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
                     const allowedCount = getMaxCardCountFromBanListStatus(banListStatus);
                     if (allowedCount < cardCountMap[card.alias || card.id]) {
                         if (this.props.showDialog) {
-                            this.props.showDialog(DialogType.Alert, `'${card.text.name}'의 매수가 설정된 금제에 부합하지 않습니다.`, {
-                                title: "오류",
-                                positiveButtonLabel: "확인",
-                            });
+                            this.props.showDialog(
+                                DialogType.Alert,
+                                `'${card.text.name}'의 매수가 설정된 금제에 부합하지 않습니다. (포함 매 수: ${
+                                    cardCountMap[card.alias || card.id]
+                                }, 금제: ${allowedCount})`,
+                                {
+                                    title: "오류",
+                                    positiveButtonLabel: "확인",
+                                },
+                            );
                         }
                         return;
                     }
                 }
             }
 
-            onDeckChange(loadedDeck);
+            this.updateDeck(loadedDeck);
         };
 
         fileReader.readAsBinaryString(file);
     }
     private exportYDKFile() {
-        const { deck } = this.props;
+        const deck = this.getCurrentDeck();
         const anchor = document.createElement("a");
 
         const deckString = ["#main", ...deck.main.map(c => c.id), "#extra", ...deck.extra.map(c => c.id), "!side", ...deck.side.map(c => c.id)].join("\n");
@@ -230,7 +279,8 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
         }
     }
     private async exportDeckToImage() {
-        const { deck, client } = this.props;
+        const { client } = this.props;
+        const deck = this.getCurrentDeck();
         if (!client) {
             return;
         }
@@ -259,11 +309,19 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
 
     public render() {
         const { children, banLists, championship: championshipData, banList } = this.props;
-        const { deckImageUrl, deckImageLoading, championship, championshipJoin, championshipJoinValue } = this.state;
+        const { deckImageUrl, deckImageLoading, championship, championshipJoin, championshipJoinValue, selectedParticipant, decks } = this.state;
 
         return (
             <DeckEditorContext.Provider
-                value={{ ...this.contextValue, championshipJoinValue, championship: championshipData || null, banList: banList || null }}
+                value={{
+                    ...this.contextValue,
+                    championshipJoinValue,
+                    championship: championshipData || null,
+                    banList: banList || null,
+                    selectedParticipant,
+                    deck: this.getCurrentDeck(),
+                    decks,
+                }}
             >
                 {children}
                 <Backdrop sx={{ color: "#fff", zIndex: theme => theme.zIndex.drawer + 1 }} open={deckImageLoading}>
