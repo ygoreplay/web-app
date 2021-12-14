@@ -97,3 +97,7 @@ export const Indicator = styled.div<{ passed?: boolean }>`
     transform: translate(-50%, -50%);
     transition: background-color 0.2s ease;
 `;
+
+export const ButtonWrapper = styled.div`
+    padding: ${({ theme }) => theme.spacing(2)};
+`;

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 import React from "react";
 import memoizeOne from "memoize-one";
 
@@ -32,7 +33,9 @@ export default class Alert extends React.Component<AlertProps> {
             >
                 {title && <DialogTitle id="alert-dialog-title">{title}</DialogTitle>}
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-description">{content}</DialogContentText>
+                    <DialogContentText id="alert-dialog-description">
+                        <span dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, "<br />") }} />
+                    </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleClose(DialogCloseReason.Yes)} autoFocus>

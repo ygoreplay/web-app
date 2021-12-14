@@ -132,11 +132,11 @@ class ChampionshipSettingsForm extends React.Component<
                     <FormGroup>
                         <FormControlLabel
                             control={<Checkbox checked={values.shareCardCount} onChange={handleChange} name="shareCardCount" />}
-                            label="카드 매 수 공유"
+                            label="카드 매수 공유"
                         />
                     </FormGroup>
                     <FormHelperText>
-                        카드 매 수를 공유하게 되면 모든 팀원의 덱을 합쳐서 한 카드의 매 수가 3매를 넘을 수 없게 됩니다.
+                        카드 매수를 공유하게 되면 모든 팀원의 덱을 합쳐서 한 카드의 매수가 3매를 넘을 수 없게 됩니다.
                         <br />
                         (금제는 고려 안함)
                     </FormHelperText>

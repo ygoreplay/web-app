@@ -1,13 +1,23 @@
 import React from "react";
 import memoizeOne from "memoize-one";
 
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 
 import { withDeckEditor, WithDeckEditorProps } from "@routes/tools/deck/withDeckEditor";
 import { ParticipantType } from "@routes/tools/deck/types";
 
-import { DeckList, DeckListItem, DescriptionGroup, DescriptionItem, Indicator, Root, Title, Value } from "@routes/tools/deck/ChampionshipDescription.styles";
+import {
+    ButtonWrapper,
+    DeckList,
+    DeckListItem,
+    DescriptionGroup,
+    DescriptionItem,
+    Indicator,
+    Root,
+    Title,
+    Value,
+} from "@routes/tools/deck/ChampionshipDescription.styles";
 
 import { Championship } from "@utils/type";
 
@@ -67,7 +77,7 @@ class ChampionshipDescription extends React.Component<ChampionshipDescriptionPro
                             <Value>{championshipData.shareBanLists ? "예" : "아니오"}</Value>
                         </DescriptionItem>
                         <DescriptionItem>
-                            <Title>카드 매 수 공유</Title>
+                            <Title>카드 매수 공유</Title>
                             <Placeholder />
                             <Value>{championshipData.shareCardCount ? "예" : "아니오"}</Value>
                         </DescriptionItem>
@@ -113,6 +123,12 @@ class ChampionshipDescription extends React.Component<ChampionshipDescriptionPro
                             </DeckList>
                         </DescriptionGroup>
                     )}
+                    <Placeholder />
+                    <ButtonWrapper>
+                        <Button fullWidth variant="outlined">
+                            제출
+                        </Button>
+                    </ButtonWrapper>
                 </Root>
             </Box>
         );

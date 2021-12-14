@@ -24,12 +24,6 @@ declare const particlejs: any;
 
 export type Card = AllCardsForDeckEditorQuery["cards"][0];
 
-export interface Deck {
-    main: Card[];
-    extra: Card[];
-    side: Card[];
-}
-
 export interface DeckToolRouteProps {
     championship?: Championship;
     banLists: string[];

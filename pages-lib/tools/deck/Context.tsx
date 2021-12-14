@@ -7,8 +7,8 @@ import { Backdrop, CircularProgress } from "@mui/material";
 
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 
-import { Card, Deck } from "@routes/tools/deck";
-import { ParticipantType } from "@routes/tools/deck/types";
+import { Card } from "@routes/tools/deck";
+import { Deck, ParticipantType, TeamDeck } from "@routes/tools/deck/types";
 import ChampionshipSettingsDialog from "@routes/tools/deck/ChampionshipSettingsDialog";
 import ChampionshipJoinDialog, { ChampionshipJoinDialogValue } from "@routes/tools/deck/ChampionshipJoinDialog";
 
@@ -17,13 +17,18 @@ import { withDialog, WithDialogProps } from "@dialogs/withDialog";
 import { sortCardByLevel } from "@utils/sortCardByLevel";
 import { loadDeckFromString } from "@utils/loadDeckFromString";
 import { BanList, Championship } from "@utils/type";
-import { getCardBanListStatus } from "@utils/getCardBanListStatus";
-import { getMaxCardCountFromBanListStatus } from "@utils/getMaxCardCountFromBanListStatus";
 
 import { GenerateDeckRecipeImageDocument, GenerateDeckRecipeImageMutation, GenerateDeckRecipeImageMutationVariables } from "queries/index";
 
 import { DeckImage } from "@routes/tools/deck/Context.styles";
 import { DialogCloseReason, DialogType } from "@dialogs/types";
+import { getMaxCountFromCard } from "@utils/getMaxCountFromCard";
+import { checkIfTeamChampionship } from "@utils/checkIfTeamChampionship";
+import { checkIfTeamData } from "@utils/checkIfTeamData";
+import { searchCardCountFromDeck } from "@utils/searchCardCountFromDeck";
+import { searchCardCountFromDecks } from "@utils/searchCardCountFromDecks";
+import { generateCardCountString } from "@utils/generateCardCountString";
+import { getCardUsageCountFromDecks } from "@utils/getCardUsageCountFromDecks";
 
 interface DeckEditorProviderProps {
     children: React.ReactNode;
@@ -39,7 +44,7 @@ interface DeckEditorProviderStates {
     championshipJoin: boolean;
     championshipJoinValue: ChampionshipJoinDialogValue | null;
     selectedParticipant: ParticipantType;
-    decks: { [key in ParticipantType]: Deck };
+    decks: TeamDeck;
 }
 
 export interface DeckEditorContextValues {
@@ -184,22 +189,39 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
     }
 
     private addCard(card: Card, side?: boolean) {
-        const { banList } = this.props;
-        const { decks, selectedParticipant } = this.state;
+        if (!this.props.showDialog) {
+            return;
+        }
+
+        const { banList, championship } = this.props;
+        const { decks, selectedParticipant, championshipJoinValue } = this.state;
         const previousDeck = decks[selectedParticipant];
+        const cardCount = searchCardCountFromDeck(previousDeck, card);
+        const cardLimit = getMaxCountFromCard(banList || null, card);
+        const isTeamChampionship = checkIfTeamChampionship(championship) && checkIfTeamData(championshipJoinValue);
+        if (isTeamChampionship) {
+            const universalCardCount = searchCardCountFromDecks(decks, card);
+            // 금제 공유
+            if (championship.shareBanLists && cardLimit < 3 && cardLimit > 0 && universalCardCount >= cardLimit) {
+                const countString = generateCardCountString(decks, card, championshipJoinValue);
+                this.props.showDialog(DialogType.Alert, `'${card.text.name}'의 매수가 설정된 금제에 부합하지 않습니다.\n(${countString})`, {
+                    positiveButtonLabel: "확인",
+                    title: "매수 초과",
+                });
 
-        const cardCount = [...previousDeck.main, ...previousDeck.extra, ...previousDeck.side].filter(
-            c => c.id === card.id || c.alias === card.id || card.alias === c.id,
-        ).length;
+                return;
+            }
 
-        let cardLimit = 3;
-        const banListStatus = getCardBanListStatus(card, banList || null);
-        if (banListStatus === "semi-limit") {
-            cardLimit = 2;
-        } else if (banListStatus === "limit") {
-            cardLimit = 1;
-        } else if (banListStatus === "forbidden") {
-            cardLimit = 0;
+            // 매수 공유
+            if (championship.shareCardCount && universalCardCount >= cardLimit) {
+                const countString = generateCardCountString(decks, card, championshipJoinValue);
+                this.props.showDialog(DialogType.Alert, `전체 덱의 '${card.text.name}' 카드 매수가 3장을 초과합니다.\n(${countString})`, {
+                    positiveButtonLabel: "확인",
+                    title: "매수 초과",
+                });
+
+                return;
+            }
         }
 
         if (cardCount >= cardLimit) {
@@ -251,24 +273,29 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
     private importYDKFile(file: File) {
         const fileReader = new FileReader();
         fileReader.onload = async e => {
-            const { cards, banList } = this.props;
+            if (!this.props.showDialog) {
+                return;
+            }
+
+            const { cards, banList, championship } = this.props;
+            const { championshipJoinValue, decks } = this.state;
             if (!e.target || typeof e.target.result !== "string" || !cards) {
                 return;
             }
 
+            // 개인 체크
             const loadedDeck = loadDeckFromString(e.target.result, cards);
-            const allCards = _.uniqBy([...loadedDeck.main, ...loadedDeck.side, ...loadedDeck.extra], c => c.id);
+            const uniqueCards = _.uniqBy([...loadedDeck.main, ...loadedDeck.side, ...loadedDeck.extra], c => c.id);
             const cardCountMap = _.countBy([...loadedDeck.main, ...loadedDeck.side, ...loadedDeck.extra], c => c.alias || c.id);
-            if (banList && allCards.length > 0) {
-                for (let i = 0; i < allCards.length; i++) {
-                    const card = allCards[i];
-                    const banListStatus = getCardBanListStatus(card, banList);
-                    const allowedCount = getMaxCardCountFromBanListStatus(banListStatus);
+            if (banList && uniqueCards.length > 0) {
+                for (let i = 0; i < uniqueCards.length; i++) {
+                    const card = uniqueCards[i];
+                    const allowedCount = getMaxCountFromCard(banList, card);
                     if (allowedCount < cardCountMap[card.alias || card.id]) {
                         if (this.props.showDialog) {
                             this.props.showDialog(
                                 DialogType.Alert,
-                                `'${card.text.name}'의 매수가 설정된 금제에 부합하지 않습니다. (포함 매 수: ${
+                                `'${card.text.name}'의 매수가 설정된 금제에 부합하지 않습니다. (포함 매수: ${
                                     cardCountMap[card.alias || card.id]
                                 }, 금제: ${allowedCount})`,
                                 {
@@ -278,6 +305,40 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
                             );
                         }
                         return;
+                    }
+                }
+            }
+
+            // 팀 체크
+            const isTeamChampionship = checkIfTeamChampionship(championship) && checkIfTeamData(championshipJoinValue);
+            if (isTeamChampionship && uniqueCards.length > 0 && banList && (championship.shareBanLists || championship.shareCardCount)) {
+                const cardUsageCount = getCardUsageCountFromDecks(decks);
+                for (let i = 0; i < uniqueCards.length; i++) {
+                    const addedCard = uniqueCards[i];
+                    const addedCount = cardCountMap[addedCard.alias || addedCard.id];
+                    const originalCount = cardUsageCount[addedCard.alias || addedCard.id] || 0;
+                    const allowedCount = getMaxCountFromCard(banList, addedCard);
+
+                    if (addedCount + originalCount > allowedCount) {
+                        if (championship.shareBanLists && allowedCount < 3 && allowedCount > 0) {
+                            const countString = generateCardCountString(decks, addedCard, championshipJoinValue);
+                            this.props.showDialog(DialogType.Alert, `'${addedCard.text.name}'의 매수가 설정된 금제에 부합하지 않습니다.\n(${countString})`, {
+                                positiveButtonLabel: "확인",
+                                title: "매수 초과",
+                            });
+
+                            return;
+                        }
+
+                        if (championship.shareCardCount && allowedCount >= 3) {
+                            const countString = generateCardCountString(decks, addedCard, championshipJoinValue);
+                            this.props.showDialog(DialogType.Alert, `전체 덱의 '${addedCard.text.name}' 카드 매수가 3장을 초과하게 됩니다.\n(${countString})`, {
+                                positiveButtonLabel: "확인",
+                                title: "매수 초과",
+                            });
+
+                            return;
+                        }
                     }
                 }
             }
