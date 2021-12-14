@@ -4,6 +4,7 @@ import { DialogComponentMap } from "@dialogs/constants";
 
 export enum DialogType {
     Alert = "alert",
+    YesNo = "yes-no",
 }
 
 export enum DialogCloseReason {
@@ -34,13 +35,15 @@ export interface DialogContextValues {
     ): Promise<DialogResult>;
 }
 
+type PickDistributed<T> = T extends React.ComponentType<infer K> ? Omit<K, keyof DialogBaseProps> : never;
+
 export interface DialogItem {
     type: DialogType;
     title?: string;
     content: string;
     closing: boolean;
 
-    additionalProps: Omit<React.ComponentProps<typeof DialogComponentMap[DialogType]>, keyof DialogBaseProps>;
+    additionalProps: PickDistributed<typeof DialogComponentMap[keyof typeof DialogComponentMap]>;
 
     resolve(dialogResult: DialogResult): void;
 }

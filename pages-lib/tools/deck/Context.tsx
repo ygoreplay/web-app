@@ -23,7 +23,7 @@ import { getMaxCardCountFromBanListStatus } from "@utils/getMaxCardCountFromBanL
 import { GenerateDeckRecipeImageDocument, GenerateDeckRecipeImageMutation, GenerateDeckRecipeImageMutationVariables } from "queries/index";
 
 import { DeckImage } from "@routes/tools/deck/Context.styles";
-import { DialogType } from "@dialogs/types";
+import { DialogCloseReason, DialogType } from "@dialogs/types";
 
 interface DeckEditorProviderProps {
     children: React.ReactNode;
@@ -52,6 +52,7 @@ export interface DeckEditorContextValues {
     exportDeckToImage(): Promise<void>;
     createChampionship(): void;
     getAvailableBanLists(): string[];
+    clearDeck(): Promise<void>;
     championship: Championship | null;
     championshipJoinValue: ChampionshipJoinDialogValue | null;
     banList: BanList | null;
@@ -75,6 +76,7 @@ const DeckEditorContext = React.createContext<DeckEditorContextValues>({
     getAvailableBanLists() {
         return [];
     },
+    async clearDeck() {},
     championship: null,
     championshipJoinValue: null,
     banList: { limit: [], semiLimit: [], forbidden: [], __typename: "BanListDeclaration" },
@@ -96,6 +98,7 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
         createChampionship: this.createChampionship.bind(this),
         getAvailableBanLists: this.getAvailableBanLists.bind(this),
         setSelectedParticipant: this.setSelectedParticipant.bind(this),
+        clearDeck: this.clearDeck.bind(this),
         championship: null,
         championshipJoinValue: null,
     };
@@ -157,6 +160,28 @@ class DeckEditorProvider extends React.Component<WithApolloClient<DeckEditorProv
         const { decks, selectedParticipant } = this.state;
         return decks[selectedParticipant];
     };
+    private async clearDeck() {
+        const { showDialog } = this.props;
+        if (!showDialog) {
+            return;
+        }
+
+        const result = await showDialog(DialogType.YesNo, "덱을 초기화 하시겠습니까?", {
+            title: "덱 비우기",
+            negativeButtonLabel: "취소",
+            positiveButtonLabel: "초기화",
+        });
+
+        if (result.reason !== DialogCloseReason.Yes) {
+            return;
+        }
+
+        this.updateDeck({
+            main: [],
+            extra: [],
+            side: [],
+        });
+    }
 
     private addCard(card: Card, side?: boolean) {
         const { banList } = this.props;

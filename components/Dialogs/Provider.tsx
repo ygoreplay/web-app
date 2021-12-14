@@ -78,7 +78,7 @@ export default class DialogProvider extends React.Component<DialogProviderProps,
                 content={dialog.content}
                 onClose={this.handleClose}
                 onClosed={this.handleClosed}
-                {...dialog.additionalProps}
+                {...(dialog.additionalProps as any)}
             />
         );
     };

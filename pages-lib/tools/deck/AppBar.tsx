@@ -10,6 +10,7 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ImageIcon from "@mui/icons-material/Image";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import { CARD_EXPLORER_WIDTH } from "@routes/tools/deck/CardExplorer";
 import { useDeckEditor } from "@routes/tools/deck/Context";
@@ -19,7 +20,7 @@ import { Placeholder } from "@styles/Placeholder";
 import { CustomTooltipStyles, IconButton, Toolbar } from "./AppBar.styles";
 
 export default function AppBar() {
-    const { sortCards, importYDKFile, exportYDKFile, exportDeckToImage, createChampionship, championship, championshipJoinValue } = useDeckEditor();
+    const { sortCards, importYDKFile, exportYDKFile, exportDeckToImage, createChampionship, championship, championshipJoinValue, clearDeck } = useDeckEditor();
     const dropzone = React.useRef<DropzoneRef>(null);
     const [anchorElement, setAnchorElement] = React.useState<HTMLButtonElement | null>(null);
 
@@ -71,7 +72,12 @@ export default function AppBar() {
                     {championship ? `${championship.name} 덱 제출${championshipJoinValue ? ` - ${championshipJoinValue.name}` : ""}` : "덱 편집"}
                 </Typography>
                 <Placeholder />
-                <Tooltip title="정렬">
+                <Tooltip title="덱 비우기">
+                    <IconButton onClick={clearDeck} disableRipple disableFocusRipple disableTouchRipple>
+                        <DeleteIcon />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="덱 정렬">
                     <IconButton onClick={sortCards} disableRipple disableFocusRipple disableTouchRipple>
                         <SortIcon />
                     </IconButton>
