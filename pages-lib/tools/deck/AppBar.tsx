@@ -19,7 +19,7 @@ import { Placeholder } from "@styles/Placeholder";
 import { CustomTooltipStyles, IconButton, Toolbar } from "./AppBar.styles";
 
 export default function AppBar() {
-    const { sortCards, importYDKFile, exportYDKFile, exportDeckToImage, createChampionship, getCurrentChampionship, championshipJoinValue } = useDeckEditor();
+    const { sortCards, importYDKFile, exportYDKFile, exportDeckToImage, createChampionship, championship, championshipJoinValue } = useDeckEditor();
     const dropzone = React.useRef<DropzoneRef>(null);
     const [anchorElement, setAnchorElement] = React.useState<HTMLButtonElement | null>(null);
 
@@ -46,10 +46,16 @@ export default function AppBar() {
         dropzone.current.open();
     }, [dropzone]);
 
-    const championship = getCurrentChampionship();
-
     return (
-        <MuiAppBar elevation={0} color="transparent" position="fixed" sx={{ width: `calc(100% - ${CARD_EXPLORER_WIDTH}px)`, mr: `${CARD_EXPLORER_WIDTH}px` }}>
+        <MuiAppBar
+            elevation={0}
+            color="transparent"
+            position="fixed"
+            sx={{
+                width: `calc(100% - ${CARD_EXPLORER_WIDTH}px)`,
+                mr: `${CARD_EXPLORER_WIDTH}px`,
+            }}
+        >
             <Global styles={CustomTooltipStyles} />
             <Dropzone ref={dropzone} onDrop={handleDrop}>
                 {({ getInputProps }) => <input type="file" {...getInputProps()} />}

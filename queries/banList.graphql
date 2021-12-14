@@ -1,0 +1,7 @@
+query banList($title: String!) {
+    banList(title: $title) {
+        forbidden
+        limit
+        semiLimit
+    }
+}

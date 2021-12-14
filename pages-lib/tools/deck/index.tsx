@@ -9,6 +9,7 @@ import CardExplorer from "@routes/tools/deck/CardExplorer";
 import CardDragLayer from "@routes/tools/deck/CardDragLayer";
 import DeckView from "@routes/tools/deck/DeckView";
 import YDKImporter from "@routes/tools/deck/YDKImporter";
+import ChampionshipDescription from "@routes/tools/deck/ChampionshipDescription";
 
 import { Content, DeckViewWrapper, GlobalStyles, Graphics, Message, Particles } from "@routes/tools/deck/index.styles";
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
@@ -16,7 +17,7 @@ import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 import { AllCardsForDeckEditorDocument, AllCardsForDeckEditorQuery } from "@query";
 import DeckEditorProvider from "@routes/tools/deck/Context";
 
-import { Championship } from "@utils/type";
+import { BanList, Championship } from "@utils/type";
 
 declare const createjs: any;
 declare const particlejs: any;
@@ -32,6 +33,7 @@ export interface Deck {
 export interface DeckToolRouteProps {
     championship?: Championship;
     banLists: string[];
+    banList?: BanList;
 }
 export interface DeckToolRouteStates {
     cardExplorerOpened: boolean;
@@ -141,7 +143,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         );
     };
     public render() {
-        const { banLists, championship } = this.props;
+        const { banLists, championship, banList } = this.props;
         const { cardExplorerOpened, cards, deck } = this.state;
         let content: React.ReactNode = null;
         if (!cards) {
@@ -155,7 +157,14 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
         }
 
         return (
-            <DeckEditorProvider championship={championship} banLists={banLists} cards={cards} deck={deck} onDeckChange={this.handleDeckChange}>
+            <DeckEditorProvider
+                banList={banList}
+                championship={championship}
+                banLists={banLists}
+                cards={cards}
+                deck={deck}
+                onDeckChange={this.handleDeckChange}
+            >
                 <YDKImporter />
                 <Global styles={GlobalStyles} />
                 {this.renderGraphics()}
@@ -174,6 +183,7 @@ class DeckToolRoute extends React.Component<WithApolloClient<DeckToolRouteProps>
                     <Content>
                         <Toolbar />
                         <DeckViewWrapper>
+                            {championship && <ChampionshipDescription championship={championship} />}
                             <DeckView deck={deck} />
                         </DeckViewWrapper>
                     </Content>

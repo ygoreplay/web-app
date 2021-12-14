@@ -12,15 +12,25 @@ import { initializeApollo } from "@lib/apollo";
 import DeckToolRoute from "@routes/tools/deck";
 import { deckToolTheme } from "@pages/tools/deck";
 
-import { AvailableBanListsDocument, AvailableBanListsQuery, ChampionshipDocument, ChampionshipQuery, ChampionshipQueryVariables } from "@query";
-import { Championship } from "@utils/type";
+import {
+    AvailableBanListsDocument,
+    AvailableBanListsQuery,
+    BanListDocument,
+    BanListQuery,
+    BanListQueryVariables,
+    ChampionshipDocument,
+    ChampionshipQuery,
+    ChampionshipQueryVariables,
+} from "@query";
+import { BanList, Championship } from "@utils/type";
 
 interface DeckToolProps {
     banLists: string[];
     championship?: Championship;
+    banList?: BanList;
 }
 
-const DeckTool: NextPage<DeckToolProps> = ({ banLists, championship }) => (
+const DeckTool: NextPage<DeckToolProps> = ({ banLists, championship, banList }) => (
     <ThemeProvider theme={deckToolTheme}>
         <DndProvider backend={HTML5Backend}>
             <Head>
@@ -28,7 +38,7 @@ const DeckTool: NextPage<DeckToolProps> = ({ banLists, championship }) => (
                 <script src="/scripts/createjs.min.js" />
                 <script src="/scripts/particlejs.min.js" />
             </Head>
-            <DeckToolRoute banLists={banLists} championship={championship} />
+            <DeckToolRoute banLists={banLists} championship={championship} banList={banList} />
         </DndProvider>
     </ThemeProvider>
 );
@@ -68,7 +78,17 @@ DeckTool.getInitialProps = async ({ req, res, query }) => {
         return { banLists: [] };
     }
 
+    const {
+        data: { banList },
+    } = await apolloClient.query<BanListQuery, BanListQueryVariables>({
+        query: BanListDocument,
+        variables: {
+            title: championship.banList,
+        },
+    });
+
     return {
+        banList,
         banLists: data.availableBanLists,
         championship,
     };

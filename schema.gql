@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type BanListDeclaration {
+  forbidden: [Int!]!
+  limit: [Int!]!
+  semiLimit: [Int!]!
+}
+
 type Card {
   _setcode: Int!
   alias: Int!
@@ -257,6 +263,7 @@ type PlayerDeck {
 
 type Query {
   availableBanLists: [String!]!
+  banList(title: String!): BanListDeclaration!
   banLists: [String!]!
   card(id: Int!): Card
   cardCount: Int!

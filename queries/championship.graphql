@@ -4,5 +4,7 @@ query championship($id: String!) {
         name
         banList
         type
+        shareBanLists
+        shareCardCount
     }
 }
