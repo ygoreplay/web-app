@@ -1,0 +1,6 @@
+mutation submitChampionshipParticipants($args: [SubmitParticipantsArgsInput!]!, $championshipId: Int!) {
+    submitChampionshipParticipants(participants: $args, championshipId: $championshipId) {
+        errors
+        succeeded
+    }
+}

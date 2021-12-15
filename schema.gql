@@ -112,9 +112,20 @@ type Championship {
   joinUrlCode: String!
   monitorUrlCode: String!
   name: String!
+  participants: [ChampionshipParticipant!]!
   shareBanLists: Boolean!
   shareCardCount: Boolean!
   type: ChampionshipType!
+  updatedAt: DateTime!
+}
+
+type ChampionshipParticipant {
+  createdAt: DateTime!
+  extra: [Int!]!
+  id: Int!
+  main: [Int!]!
+  name: String!
+  side: [Int!]!
   updatedAt: DateTime!
 }
 
@@ -182,6 +193,11 @@ type DeckUsage {
   titleCard: Card
 }
 
+type ExecutionResult {
+  errors: [String!]!
+  succeeded: Boolean!
+}
+
 type Match {
   away: PlayerDeck!
   createdAt: DateTime!
@@ -244,6 +260,7 @@ type Mutation {
   generateDeckRecipeImage(extraDeck: [Int!]!, mainDeck: [Int!]!, sideDeck: [Int!]!): String!
   registerDeckTitleCards(input: [DeckTitleCardInput!]!): [DeckTitleCard!]!
   saveCropperData(input: [CardCropperDataInput!]!): [CardCropperItem!]!
+  submitChampionshipParticipants(championshipId: Int!, participants: [SubmitParticipantsArgsInput!]!): ExecutionResult!
 }
 
 type Player {
@@ -294,6 +311,11 @@ type Round {
   updatedAt: DateTime!
 }
 
+input SubmitParticipantsArgsInput {
+  deckFile: Upload!
+  name: String!
+}
+
 type Subscription {
   cardUsageListUpdated: [CardUsage!]!
   matchCountUpdated: Int!
@@ -331,6 +353,9 @@ enum TrapSpellCardType {
   QuickPlay
   Ritual
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 type WinRate {
   deckName: String!
