@@ -1,5 +1,5 @@
-mutation submitChampionshipParticipants($args: [SubmitParticipantsArgsInput!]!, $championshipId: Int!) {
-    submitChampionshipParticipants(participants: $args, championshipId: $championshipId) {
+mutation submitChampionshipParticipants($args: [SubmitParticipantsArgsInput!]!, $championshipId: Int!, $teamName: String!) {
+    submitChampionshipParticipants(participants: $args, championshipId: $championshipId, teamName: $teamName) {
         errors
         succeeded
     }

@@ -8,8 +8,9 @@ import { withDialog, WithDialogProps } from "@dialogs/withDialog";
 
 import ParticipantList from "@routes/championship/submit/ParticipantList";
 import { ParticipantData } from "@routes/championship/submit/types";
+import ErrorList from "@routes/championship/submit/ErrorList";
 
-import { Footer, GlobalStyles, Header, Root, Section } from "@routes/championship/submit/index.styles";
+import { Footer, GlobalStyles, Header, Root, Section, TeamNameInput } from "@routes/championship/submit/index.styles";
 
 import { Championship } from "@utils/type";
 import { checkIfParticipantDataIsValid } from "@utils/checkIfParticipantDataIsValid";
@@ -27,10 +28,14 @@ export interface ChampionshipSubmitRouteProps {
 export interface ChampionshipSubmitRouteStates {
     participants: ParticipantData[];
     submitting: boolean;
+    errors: string[];
+    teamName: string;
 }
 
 class ChampionshipSubmitRoute extends React.Component<WithApolloClient<ChampionshipSubmitRouteProps> & WithDialogProps, ChampionshipSubmitRouteStates> {
     public state: ChampionshipSubmitRouteStates = {
+        errors: [],
+        teamName: "",
         submitting: false,
         participants: new Array(this.props.championship.type === ChampionshipType.Individual ? 1 : 3).fill(null).map(() => {
             return {
@@ -40,12 +45,28 @@ class ChampionshipSubmitRoute extends React.Component<WithApolloClient<Champions
         }),
     };
 
+    private handleClearClick = () => {
+        this.setState({
+            teamName: "",
+            participants: new Array(this.props.championship.type === ChampionshipType.Individual ? 1 : 3).fill(null).map(() => {
+                return {
+                    deckFile: null,
+                    name: "",
+                };
+            }),
+        });
+    };
+    private handleTeamNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            teamName: e.target.value,
+        });
+    };
     private handleChange = (participants: ParticipantData[]) => {
         this.setState({ participants });
     };
     private handleSubmitClick = async () => {
         const { client, showDialog, championship } = this.props;
-        const { participants } = this.state;
+        const { participants, teamName } = this.state;
         if (!client || !showDialog) {
             return;
         }
@@ -54,6 +75,7 @@ class ChampionshipSubmitRoute extends React.Component<WithApolloClient<Champions
         const { data } = await client.mutate<SubmitChampionshipParticipantsMutation, SubmitChampionshipParticipantsMutationVariables>({
             mutation: SubmitChampionshipParticipantsDocument,
             variables: {
+                teamName,
                 championshipId: championship.id,
                 args: participants.map(p => ({ name: p.name, deckFile: p.deckFile })),
             },
@@ -64,12 +86,18 @@ class ChampionshipSubmitRoute extends React.Component<WithApolloClient<Champions
             return;
         }
 
+        if (!data.submitChampionshipParticipants.succeeded) {
+            this.setState({
+                errors: data.submitChampionshipParticipants.errors,
+            });
+        }
+
         this.setState({ submitting: false });
     };
 
     public render() {
         const { championship } = this.props;
-        const { participants, submitting } = this.state;
+        const { participants, submitting, errors, teamName } = this.state;
 
         return (
             <Root>
@@ -80,9 +108,13 @@ class ChampionshipSubmitRoute extends React.Component<WithApolloClient<Champions
                         <Header>
                             <Typography variant="h6">{championship.name} 덱 제출</Typography>
                         </Header>
+                        {championship.type === ChampionshipType.Team && (
+                            <TeamNameInput value={teamName} onChange={this.handleTeamNameChange} placeholder="팀 이름 입력..." />
+                        )}
                         <ParticipantList onChange={this.handleChange} value={participants} count={championship.type === ChampionshipType.Individual ? 1 : 3} />
                         <Footer>
                             <Placeholder />
+                            <Button onClick={this.handleClearClick}>초기화</Button>
                             <Button
                                 onClick={this.handleSubmitClick}
                                 disabled={!checkIfParticipantDataIsValid(participants)}
@@ -93,6 +125,7 @@ class ChampionshipSubmitRoute extends React.Component<WithApolloClient<Champions
                             </Button>
                         </Footer>
                     </Section>
+                    {errors.length > 0 && <ErrorList errors={errors} />}
                 </Container>
                 <Backdrop sx={{ color: "#fff", zIndex: theme => theme.zIndex.drawer + 1 }} open={submitting}>
                     <CircularProgress color="inherit" />

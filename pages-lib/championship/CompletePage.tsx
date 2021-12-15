@@ -35,7 +35,7 @@ class CompletePage extends React.Component<CompletePageProps & WithChampionshipC
                     <UrlBlock>
                         {location.protocol}
                         {"//"}
-                        {location.host}/championship/submit/{result.joinUrl}
+                        {location.host}/championship/monitor/{result.monitorUrl}
                     </UrlBlock>
                     <Typography variant="body1">위 URL은 다시 조회할수 없으므로 메모 및 저장을 권장합니다.</Typography>
                 </Root>

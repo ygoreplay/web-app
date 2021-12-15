@@ -126,6 +126,7 @@ type ChampionshipParticipant {
   main: [Int!]!
   name: String!
   side: [Int!]!
+  teamName: String!
   updatedAt: DateTime!
 }
 
@@ -260,7 +261,7 @@ type Mutation {
   generateDeckRecipeImage(extraDeck: [Int!]!, mainDeck: [Int!]!, sideDeck: [Int!]!): String!
   registerDeckTitleCards(input: [DeckTitleCardInput!]!): [DeckTitleCard!]!
   saveCropperData(input: [CardCropperDataInput!]!): [CardCropperItem!]!
-  submitChampionshipParticipants(championshipId: Int!, participants: [SubmitParticipantsArgsInput!]!): ExecutionResult!
+  submitChampionshipParticipants(championshipId: Int!, participants: [SubmitParticipantsArgsInput!]!, teamName: String): ExecutionResult!
 }
 
 type Player {
