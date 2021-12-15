@@ -43,6 +43,7 @@
         "react-rnd": "^10.3.5",
         "react-virtualized": "^9.22.3",
         "rxjs": "^7.4.0",
+        "swiper": "^7.3.2",
         "tinygradient": "^1.1.5",
         "utility-types": "^3.10.0",
         "yup": "^0.32.11"

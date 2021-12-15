@@ -2,6 +2,7 @@ import {
     BanListQuery,
     CardSuggestionsQuery,
     ChampionshipQuery,
+    CreateChampionshipMutation,
     DeckTypesQuery,
     HomeDataQuery,
     MatchDetailedQuery,
@@ -18,5 +19,6 @@ export type DeckType = DeckTypesQuery["deckTypes"][0];
 export type DeckTitleCard = NormalDeckTitleCardFragment;
 export type Championship = Exclude<ChampionshipQuery["championship"], null | undefined>;
 export type BanList = BanListQuery["banList"];
+export type CreateChampionshipResult = CreateChampionshipMutation["createChampionship"];
 
 export type DeckBase = Pick<MatchDetail["home"]["deck"], "side" | "main" | "extra" | "recognizedName">;

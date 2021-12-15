@@ -7,6 +7,8 @@ import ChevronRight from "@mui/icons-material/ChevronRight";
 import { withDeckEditor, WithDeckEditorProps } from "@routes/tools/deck/withDeckEditor";
 import { ParticipantType } from "@routes/tools/deck/types";
 
+import { withDialog, WithDialogProps } from "@dialogs/withDialog";
+
 import {
     ButtonWrapper,
     DeckList,
@@ -23,6 +25,7 @@ import { Championship } from "@utils/type";
 
 import { Placeholder } from "@styles/Placeholder";
 import { ChampionshipType } from "queries/index";
+import { DialogType } from "@dialogs/types";
 
 export interface ChampionshipDescriptionProps {
     championshipData: Championship;
@@ -30,15 +33,32 @@ export interface ChampionshipDescriptionProps {
 
 export const CHAMPIONSHIP_DESCRIPTION_WIDTH = 300;
 
-class ChampionshipDescription extends React.Component<ChampionshipDescriptionProps & WithDeckEditorProps> {
+class ChampionshipDescription extends React.Component<ChampionshipDescriptionProps & WithDeckEditorProps & WithDialogProps> {
     private handleParticipantClick = memoizeOne((participantType: ParticipantType) => {
         return () => {
             this.props.setSelectedParticipant(participantType);
         };
     });
+    private handleSubmitClick = async () => {
+        if (!this.props.showDialog) {
+            return;
+        }
+
+        await this.props.showDialog(DialogType.YesNo, "해당 덱을 제출 하시겠습니까?\n덱을 제출한 이후에는 수정할 수 없습니다.", {
+            title: "제출",
+            positiveButtonLabel: "제출",
+            negativeButtonLabel: "취소",
+        });
+    };
 
     render() {
-        const { championshipData, championshipJoinValue, selectedParticipant, decks } = this.props;
+        const { championshipData, championshipJoinValue, selectedParticipant, decks, deck } = this.props;
+        let isValid: boolean;
+        if (championshipData.type === ChampionshipType.Team) {
+            isValid = decks.first.main.length >= 40 && decks.second.main.length >= 40 && decks.third.main.length >= 40;
+        } else {
+            isValid = deck.main.length >= 40;
+        }
 
         return (
             <Box component="nav" sx={{ width: { sm: CHAMPIONSHIP_DESCRIPTION_WIDTH }, flexShrink: { sm: 0 } }} aria-label="mailbox folders">
@@ -125,7 +145,7 @@ class ChampionshipDescription extends React.Component<ChampionshipDescriptionPro
                     )}
                     <Placeholder />
                     <ButtonWrapper>
-                        <Button fullWidth variant="outlined">
+                        <Button disabled={!isValid} fullWidth variant="outlined" onClick={this.handleSubmitClick}>
                             제출
                         </Button>
                     </ButtonWrapper>
@@ -135,4 +155,4 @@ class ChampionshipDescription extends React.Component<ChampionshipDescriptionPro
     }
 }
 
-export default withDeckEditor(ChampionshipDescription);
+export default withDeckEditor(withDialog(ChampionshipDescription));

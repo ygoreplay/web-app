@@ -9,6 +9,7 @@ import { theme } from "@styles/theme";
 import "@styles/globals.css";
 import "react-mosaic-component/react-mosaic-component.css";
 import "react-virtualized/styles.css";
+import "swiper/css";
 
 function MyApp({ Component, pageProps }: AppProps) {
     const apolloClient = useApollo(pageProps);
