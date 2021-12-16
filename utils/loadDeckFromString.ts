@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-syntax,no-continue */
-import { Card, Deck } from "@routes/tools/deck";
+import { Card } from "@routes/tools/deck";
+import { Deck } from "@routes/tools/deck/types";
 
 const YDK_FILE_VALIDATORS = [/!side/];
 

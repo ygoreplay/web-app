@@ -1,5 +1,5 @@
-import { ParticipantType } from "@routes/tools/deck/types";
-import { Card, Deck } from "@routes/tools/deck";
+import { Deck, ParticipantType } from "@routes/tools/deck/types";
+import { Card } from "@routes/tools/deck";
 import { searchCardCountFromDeck } from "@utils/searchCardCountFromDeck";
 import { TeamChampionshipFormValues } from "@routes/tools/deck/TeamChampionshipForm";
 
