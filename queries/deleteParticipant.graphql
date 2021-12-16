@@ -1,0 +1,6 @@
+mutation deleteParticipant($participantId: Int!) {
+    deleteParticipant(participantId: $participantId) {
+        succeeded
+        errors
+    }
+}

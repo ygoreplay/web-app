@@ -1,0 +1,18 @@
+query championshipForMonitor($code: String!) {
+    championship(id: $code) {
+        id
+        name
+        type
+        participants {
+            id
+            teamName
+            name
+            main
+            extra
+            side
+            createdAt
+            updatedAt
+        }
+        createdAt
+    }
+}

@@ -112,6 +112,7 @@ type Championship {
   joinUrlCode: String!
   monitorUrlCode: String!
   name: String!
+  participantCount: Int!
   participants: [ChampionshipParticipant!]!
   shareBanLists: Boolean!
   shareCardCount: Boolean!
@@ -126,7 +127,7 @@ type ChampionshipParticipant {
   main: [Int!]!
   name: String!
   side: [Int!]!
-  teamName: String!
+  teamName: String
   updatedAt: DateTime!
 }
 
@@ -258,6 +259,7 @@ enum MonsterCardType {
 
 type Mutation {
   createChampionship(data: CreateChampionshipArgs!): CreateChampionshipResult!
+  deleteParticipant(participantId: Int!): ExecutionResult!
   generateDeckRecipeImage(extraDeck: [Int!]!, mainDeck: [Int!]!, sideDeck: [Int!]!): String!
   registerDeckTitleCards(input: [DeckTitleCardInput!]!): [DeckTitleCard!]!
   saveCropperData(input: [CardCropperDataInput!]!): [CardCropperItem!]!
