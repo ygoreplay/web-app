@@ -70,3 +70,8 @@ export const GlobalStyles = css`
         background: rgb(242, 243, 246);
     }
 `;
+
+export const SectionTitle = styled.div`
+    padding: ${({ theme }) => theme.spacing(2)};
+    border-bottom: 1px solid #ccc;
+`;

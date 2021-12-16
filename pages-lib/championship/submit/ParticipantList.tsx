@@ -10,6 +10,7 @@ export interface ParticipantListProps {
     count: number;
     value: ParticipantData[];
     onChange(value: ParticipantData[]): void;
+    disabled: boolean;
 }
 export interface ParticipantListStates {}
 
@@ -46,7 +47,7 @@ export default class ParticipantList extends React.Component<ParticipantListProp
     };
 
     private renderItem = (value: ParticipantData, index: number) => {
-        const { count } = this.props;
+        const { count, disabled } = this.props;
 
         return (
             <Item key={index}>
@@ -54,11 +55,12 @@ export default class ParticipantList extends React.Component<ParticipantListProp
                     {this.renderDropzone}
                 </Dropzone>
                 <NameInput
+                    disabled={disabled}
                     value={value.name}
                     onChange={this.handleNameChange(index)}
                     placeholder={count === 1 ? "참가자명 입력..." : `${index + 1}번 팀원 이름 입력...`}
                 />
-                <Button onClick={this.handleUploadFileClick(index)} variant="outlined" disableElevation>
+                <Button disabled={disabled} onClick={this.handleUploadFileClick(index)} variant="outlined" disableElevation>
                     {value.deckFile ? `다른 덱 파일 선택` : "덱 파일 추가"}
                 </Button>
             </Item>

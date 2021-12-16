@@ -16,6 +16,7 @@ import { Placeholder } from "@styles/Placeholder";
 
 import { CreateChampionshipDocument, CreateChampionshipMutation, CreateChampionshipMutationVariables } from "@query";
 import { CreateChampionshipResult } from "@utils/type";
+import Head from "next/head";
 
 export interface ChampionshipRouteProps {}
 export interface ChampionshipRouteStates {
@@ -153,6 +154,9 @@ class ChampionshipRoute extends React.Component<WithApolloClient<ChampionshipRou
 
         return (
             <Root>
+                <Head>
+                    <title>대회 개최</title>
+                </Head>
                 <CssBaseline />
                 <Global styles={GlobalStyles} />
                 <Dialog>
