@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { NextPage } from "next";
 
 import { initializeApollo } from "@lib/apollo";
@@ -11,7 +12,6 @@ import { redirect } from "@utils/redirect";
 import { ChampionshipForMonitor } from "@utils/type";
 
 import { ChampionshipForMonitorDocument, ChampionshipForMonitorQuery, ChampionshipForMonitorQueryVariables, ChampionshipType } from "@query";
-import _ from "lodash";
 
 interface ChampionshipMonitorProps {
     championship: ChampionshipForMonitor | null;

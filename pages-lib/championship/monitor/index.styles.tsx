@@ -23,6 +23,10 @@ export const Section = styled.div<{ padding?: boolean }>`
 
 export const Header = styled.div`
     margin: 0;
-    padding: ${({ theme }) => theme.spacing(2)};
+    padding: ${({ theme }) => theme.spacing(1, 2)};
     border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;

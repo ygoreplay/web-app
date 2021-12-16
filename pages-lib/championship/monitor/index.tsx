@@ -1,7 +1,9 @@
 import React from "react";
 import _ from "lodash";
+import Head from "next/head";
 
-import { Backdrop, CircularProgress, Container, CssBaseline, Typography } from "@mui/material";
+import { Backdrop, CircularProgress, Container, CssBaseline, IconButton, Typography } from "@mui/material";
+import CachedIcon from "@mui/icons-material/Cached";
 import { Global } from "@emotion/react";
 
 import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
@@ -26,6 +28,7 @@ import {
     DeleteParticipantMutation,
     DeleteParticipantMutationVariables,
 } from "queries/index";
+import { Placeholder } from "@styles/Placeholder";
 
 export interface ChampionshipMonitorRouteProps {
     championship: ChampionshipForMonitor;
@@ -56,6 +59,7 @@ class ChampionshipMonitorRoute extends React.Component<WithApolloClient<Champion
             variables: {
                 code: this.props.code,
             },
+            fetchPolicy: "no-cache",
         });
 
         if (!data || !data.championship) {
@@ -117,12 +121,20 @@ class ChampionshipMonitorRoute extends React.Component<WithApolloClient<Champion
         await this.invalidateData();
         this.setState({ deleting: false });
     };
+    private handleRefreshClick = async () => {
+        this.setState({ deleting: true });
+        await this.invalidateData();
+        this.setState({ deleting: false });
+    };
 
     public render() {
         const { deleting, championship, teams } = this.state;
 
         return (
             <Root>
+                <Head>
+                    <title>{championship.name} 덱 제출 현황</title>
+                </Head>
                 <CssBaseline />
                 <Global styles={GlobalStyles} />
                 <Container maxWidth="md">
@@ -135,6 +147,10 @@ class ChampionshipMonitorRoute extends React.Component<WithApolloClient<Champion
                     <Section>
                         <Header style={{ borderBottom: 0 }}>
                             <Typography variant="body1">제출한 {championship.type === ChampionshipType.Team ? "팀" : "참가자"} 목록</Typography>
+                            <Placeholder />
+                            <IconButton onClick={this.handleRefreshClick}>
+                                <CachedIcon />
+                            </IconButton>
                         </Header>
                     </Section>
                     <TeamParticipantList onDeleteTeam={this.handleDeleteTeam} teams={teams} />

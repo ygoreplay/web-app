@@ -24,7 +24,9 @@ export default class CompleteDialog extends React.Component<CompleteDialogProps,
                         덱 제출 완료
                     </Typography>
                     <Description>
-                        <Typography variant="body1">덱 제출을 완료 하였습니다. 참가해주셔서 감사합니다.</Typography>
+                        <Typography variant="body1" align="center">
+                            덱 제출을 완료 하였습니다. 참가해주셔서 감사합니다.
+                        </Typography>
                     </Description>
                 </Root>
             </Dialog>
