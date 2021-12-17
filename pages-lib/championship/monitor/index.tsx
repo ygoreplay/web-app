@@ -80,6 +80,19 @@ class ChampionshipMonitorRoute extends React.Component<WithApolloClient<Champion
                     participants: teamMap[teamName],
                 });
             }
+        } else {
+            const teamMap = _.chain(data.championship.participants)
+                .groupBy(p => p.name)
+                .value();
+
+            const teamNames = Object.keys(teamMap);
+            for (let i = 0; i < teamNames.length; i++) {
+                const teamName = teamNames[i];
+                result.push({
+                    name: teamName,
+                    participants: teamMap[teamName],
+                });
+            }
         }
 
         this.setState({
