@@ -53,6 +53,7 @@ ChampionshipMonitor.getInitialProps = async ({ req, res, query }) => {
             variables: {
                 code: query.id,
             },
+            fetchPolicy: "no-cache",
         });
 
         if (!data.championship) {

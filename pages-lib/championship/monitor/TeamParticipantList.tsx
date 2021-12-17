@@ -26,7 +26,7 @@ export default class TeamParticipantList extends React.Component<TeamParticipant
     };
     private renderParticipant = (p: ChampionshipTeam["participants"][0]) => {
         return (
-            <ParticipantSection key={p.name}>
+            <ParticipantSection key={p.id}>
                 <Typography variant="body1">
                     {p.name} (메인: {p.main.length}, 엑스트라: {p.extra.length}, 사이드: {p.side.length})
                 </Typography>
